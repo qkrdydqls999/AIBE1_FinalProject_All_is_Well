@@ -1,12 +1,12 @@
 plugins {
     id 'java'
-    id 'org.springframework.boot' version '3.5.0' // Spring Boot 버전 확인
-    id 'io.spring.dependency-management' version '1.1.7' // 의존성 관리 플러그인 버전 확인
+    id 'org.springframework.boot' version '3.5.0'
+    id 'io.spring.dependency-management' version '1.1.7'
 }
 
-group = 'org.example.bookmarket' // 여러분의 그룹명 확인
+group = 'org.example.bookmarket'
 version = '0.0.1-SNAPSHOT'
-sourceCompatibility = '17' // Java 17
+sourceCompatibility = '17'
 
 configurations {
     compileOnly {
@@ -15,64 +15,34 @@ configurations {
 }
 
 repositories {
-    mavenCentral() // Maven Central 저장소
+    mavenCentral()
 }
 
-// ### [여기가 중요!] dependencyManagement 블록 위치 확인 ###
-// 이 블록은 repositories { ... } 바로 아래, dependencies { ... } 바로 위에 있어야 합니다.
 dependencyManagement {
     imports {
-        // Spring Boot 3.5.0과 호환되는 Spring Cloud 버전 (2023.0.x)
         mavenBom "org.springframework.cloud:spring-cloud-dependencies:2023.0.3"
     }
 }
-// ######################################################
 
 dependencies {
-    // 웹 개발
+
     implementation 'org.springframework.boot:spring-boot-starter-web'
-
-    // 데이터베이스 연동 (JPA)
     implementation 'org.springframework.boot:spring-boot-starter-data-jpa'
-    runtimeOnly 'com.mysql:mysql-connector-j' // MySQL 드라이버
-
-    // 캐싱 (Redis)
+    runtimeOnly 'com.mysql:mysql-connector-j'
     implementation 'org.springframework.boot:spring-boot-starter-data-redis'
-
-    // 보안 (Spring Security)
     implementation 'org.springframework.boot:spring-boot-starter-security'
-
-    // 소셜 로그인 (OAuth2 Client)
     implementation 'org.springframework.boot:spring-boot-starter-oauth2-client'
-
-    // 실시간 통신 (WebSocket)
     implementation 'org.springframework.boot:spring-boot-starter-websocket'
-
-    // 메시지 큐 (Kafka)
     implementation 'org.springframework.kafka:spring-kafka'
-
-    // 입력값 유효성 검증 (Validation)
     implementation 'org.springframework.boot:spring-boot-starter-validation'
-
-    // AWS S3 연동 (이 부분은 위 dependencyManagement가 해결해 줍니다)
     implementation 'io.awspring.cloud:spring-cloud-aws-starter-s3:3.1.0'
-
-    // 코드 간소화 (Lombok)
     compileOnly 'org.projectlombok:lombok'
     annotationProcessor 'org.projectlombok:lombok'
-
-    // 개발 편의성 (Spring Boot DevTools)
     developmentOnly 'org.springframework.boot:spring-boot-devtools'
-
-    // API 문서화 (Swagger)
     implementation 'org.springdoc:springdoc-openapi-starter-webmvc-ui:2.8.6'
-
-    // JWT 라이브러리
     implementation 'io.jsonwebtoken:jjwt-api:0.12.6'
     runtimeOnly 'io.jsonwebtoken:jjwt-impl:0.12.6'
     runtimeOnly 'io.jsonwebtoken:jjwt-jackson:0.12.6'
-
-    // 테스트
     testImplementation 'org.springframework.boot:spring-boot-starter-test'
     testImplementation 'org.springframework.security:spring-security-test'
     testImplementation 'org.springframework.kafka:spring-kafka-test'
