@@ -1,5 +1,3 @@
-// 파일 경로: org/example/bookmarket/handler/exception/ErrorCode.java
-
 package org.example.bookmarket.common.handler.exception;
 
 import lombok.Getter;
