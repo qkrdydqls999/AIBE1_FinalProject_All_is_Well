@@ -3,5 +3,5 @@ spring:
     ansi:
       enabled: always
   profiles:
-    active: prod
+    active: dev
 
