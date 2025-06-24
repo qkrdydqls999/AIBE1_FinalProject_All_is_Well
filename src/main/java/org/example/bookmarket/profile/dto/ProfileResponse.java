@@ -1,20 +1,11 @@
 
 package org.example.bookmarket.profile.dto;
 
-import lombok.AllArgsConstructor;
-import lombok.Builder;
-import lombok.Data;
-import lombok.NoArgsConstructor;
-
 import java.util.List;
 
-@Data
-@Builder
-@NoArgsConstructor
-@AllArgsConstructor
-public class ProfileResponse {
-    private String nickname;
-    private String email;
-    private String profileImageUrl;
-    private List<String> interestCategories;
-}
+public record ProfileResponse(
+    String nickname,
+    String email,
+    String profileImageUrl,
+    List<String> interestCategories
+) {}

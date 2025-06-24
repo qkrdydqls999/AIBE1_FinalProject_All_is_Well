@@ -1,12 +1,8 @@
 
 package org.example.bookmarket.profile.service;
 
-import com.bukgeokbukgeok.profile.dto.ProfileResponse;
-import com.bukgeokbukgeok.profile.dto.ProfileUpdateRequest;
-import com.bukgeokbukgeok.chat.dto.ChatSummary;
-import com.bukgeokbukgeok.usedbook.dto.UsedBookSummary;
-import com.bukgeokbukgeok.trade.dto.PurchaseSummary;
-import com.bukgeokbukgeok.wishlist.dto.WishlistItem;
+import org.example.bookmarket.profile.dto.ProfileResponse;
+import org.example.bookmarket.profile.dto.ProfileUpdateRequest;
 
 import java.util.List;
 
@@ -16,11 +12,11 @@ public interface ProfileService {
 
     void updateMyProfile(Long userId, ProfileUpdateRequest request);
 
-    List<ChatSummary> getMyDmList(Long userId);
+    List<String> getMyDmList(Long userId); // TODO: ChatSummary 대신 임시 문자열 목록
 
-    List<UsedBookSummary> getMySellBooks(Long userId);
+    List<String> getMySellBooks(Long userId); // TODO: UsedBookSummary 대신 임시 문자열 목록
 
-    List<PurchaseSummary> getMyPurchases(Long userId);
+    List<String> getMyPurchases(Long userId); // TODO: PurchaseSummary 대신 임시 문자열 목록
 
-    List<WishlistItem> getMyWishlist(Long userId);
+    List<String> getMyWishlist(Long userId); // TODO: WishlistItem 대신 임시 문자열 목록
 }
