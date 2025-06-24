@@ -1,4 +1,3 @@
-
 package org.example.bookmarket.profile.service;
 
 import org.example.bookmarket.chat.dto.ChatSummary;

@@ -1,4 +1,3 @@
-
 package org.example.bookmarket.profile.dto;
 
 import java.util.List;

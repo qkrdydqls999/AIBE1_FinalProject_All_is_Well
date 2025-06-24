@@ -1,21 +1,20 @@
+package org.example.bookmarket.profile.service;
 
- package org.example.bookmarket.profile.service;
+import lombok.RequiredArgsConstructor;
+import org.example.bookmarket.profile.dto.ProfileResponse;
+import org.example.bookmarket.profile.dto.ProfileUpdateRequest;
+//import org.example.bookmarket.common.handler.exception.CustomException;
+//import org.example.bookmarket.common.handler.exception.ErrorCode;
+//import org.example.bookmarket.user.entity.User;
+//import org.example.bookmarket.user.repository.UserRepository;
+//import org.example.bookmarket.category.repository.CategoryRepository;
+//import org.example.bookmarket.user.repository.UserCategoryRepository;
+//import org.example.bookmarket.user.entity.UserCategory;
+//import org.example.bookmarket.category.entity.Category;
+//import org.springframework.stereotype.Service;
 
- import lombok.RequiredArgsConstructor;
- import org.example.bookmarket.profile.dto.ProfileResponse;
- import org.example.bookmarket.profile.dto.ProfileUpdateRequest;
-// import org.example.bookmarket.common.handler.exception.CustomException;
-// import org.example.bookmarket.common.handler.exception.ErrorCode;
-// import org.example.bookmarket.user.entity.User;
-// import org.example.bookmarket.user.repository.UserRepository;
-// import org.example.bookmarket.category.repository.CategoryRepository;
-// import org.example.bookmarket.user.repository.UserCategoryRepository;
-// import org.example.bookmarket.user.entity.UserCategory;
-// import org.example.bookmarket.category.entity.Category;
-// import org.springframework.stereotype.Service;
-
-// import java.util.*;
-// import java.util.stream.Collectors;
+//import java.util.*;
+//import java.util.stream.Collectors;
 
 // @Service
 // @RequiredArgsConstructor

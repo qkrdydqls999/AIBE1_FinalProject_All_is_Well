@@ -1,4 +1,3 @@
-
 package org.example.bookmarket.usedbook.dto;
 
 import java.time.LocalDateTime;

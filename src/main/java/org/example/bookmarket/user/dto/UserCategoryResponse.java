@@ -1,4 +1,3 @@
-
 package org.example.bookmarket.user.dto;
 
 public record UserCategoryResponse(

@@ -1,4 +1,3 @@
-
 package org.example.bookmarket.user.entity;
 
 import jakarta.persistence.*;

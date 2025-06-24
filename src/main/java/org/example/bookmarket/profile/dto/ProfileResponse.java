@@ -1,4 +1,3 @@
-
 package org.example.bookmarket.profile.dto;
 
 import org.example.bookmarket.user.dto.UserCategoryResponse;

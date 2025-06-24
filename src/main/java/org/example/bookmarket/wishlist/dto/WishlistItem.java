@@ -1,4 +1,3 @@
-
 package org.example.bookmarket.wishlist.dto;
 
 public record WishlistItem(

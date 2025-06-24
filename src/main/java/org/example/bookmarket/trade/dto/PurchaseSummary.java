@@ -1,4 +1,3 @@
-
 package org.example.bookmarket.trade.dto;
 
 import java.time.LocalDateTime;
