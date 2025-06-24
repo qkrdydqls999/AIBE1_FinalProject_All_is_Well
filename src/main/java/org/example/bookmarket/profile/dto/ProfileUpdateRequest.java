@@ -3,9 +3,8 @@ package org.example.bookmarket.profile.dto;
 
 import java.util.List;
 
-public record ProfileResponse(
+public record ProfileUpdateRequest(
     String nickname,
-    String email,
     String profileImageUrl,
-    List<String> interestCategories
+    List<Long> interestCategoryIds
 ) {}
