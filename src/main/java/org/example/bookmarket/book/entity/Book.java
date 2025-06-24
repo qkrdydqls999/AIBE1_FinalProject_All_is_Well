@@ -1,4 +1,3 @@
-
 package org.example.bookmarket.book.entity;
 
 import jakarta.persistence.Entity;
