@@ -1,6 +1,10 @@
 
 package org.example.bookmarket.profile.service;
 
+import org.example.bookmarket.chat.dto.ChatSummary;
+import org.example.bookmarket.trade.dto.PurchaseSummary;
+import org.example.bookmarket.usedbook.dto.UsedBookSummary;
+import org.example.bookmarket.wishlist.dto.WishlistItem;
 import org.example.bookmarket.profile.dto.ProfileResponse;
 import org.example.bookmarket.profile.dto.ProfileUpdateRequest;
 
@@ -12,11 +16,11 @@ public interface ProfileService {
 
     void updateMyProfile(Long userId, ProfileUpdateRequest request);
 
-    List<String> getMyDmList(Long userId); // TODO: ChatSummary 대신 임시 문자열 목록
+    List<ChatSummary> getMyDmList(Long userId);
 
-    List<String> getMySellBooks(Long userId); // TODO: UsedBookSummary 대신 임시 문자열 목록
+    List<UsedBookSummary> getMySellBooks(Long userId);
 
-    List<String> getMyPurchases(Long userId); // TODO: PurchaseSummary 대신 임시 문자열 목록
+    List<PurchaseSummary> getMyPurchases(Long userId);
 
-    List<String> getMyWishlist(Long userId); // TODO: WishlistItem 대신 임시 문자열 목록
+    List<WishlistItem> getMyWishlist(Long userId);
 }
