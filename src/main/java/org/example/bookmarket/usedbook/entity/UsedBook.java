@@ -5,8 +5,8 @@ import lombok.*;
 import org.example.bookmarket.book.entity.Book;
 import org.example.bookmarket.category.entity.Category;
 import org.example.bookmarket.user.entity.User;
+import org.example.bookmarket.common.TimeEntity;
 
-import java.time.LocalDateTime;
 import java.util.List;
 
 @Entity
@@ -16,7 +16,7 @@ import java.util.List;
 @NoArgsConstructor
 @AllArgsConstructor
 @Builder
-public class UsedBook {
+public class UsedBook extends TimeEntity {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -47,9 +47,6 @@ public class UsedBook {
     private Integer aiSuggestedMaxPrice;
 
     private String status;
-
-    private LocalDateTime createdAt;
-    private LocalDateTime updatedAt;
 
     @OneToMany(mappedBy = "usedBook", cascade = CascadeType.ALL, orphanRemoval = true)
     private List<UsedBookImage> images;
