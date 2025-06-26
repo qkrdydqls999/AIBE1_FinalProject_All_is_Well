@@ -1,4 +1,10 @@
 package org.example.bookmarket.chat.dto;
 
-public record ChatRequest() {
+import lombok.Getter;
+
+@Getter
+public class ChatRequest {
+    private Long user1Id;
+    private Long user2Id;
+    private Long usedBookId;
 }
