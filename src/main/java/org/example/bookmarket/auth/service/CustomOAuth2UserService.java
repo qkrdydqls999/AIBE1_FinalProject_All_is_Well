@@ -50,7 +50,7 @@ public class CustomOAuth2UserService extends DefaultOAuth2UserService {
                     .nickname(nickname)
                     // 소셜 로그인 사용자의 이메일은 선택 동의 항목이라 없을 수 있으므로, 임시 이메일을 생성합니다.
                     .email(socialId + "@kakao.com")
-                    .password(UUID.randomUUID().toString()) // 소셜 유저는 비밀번호를 사용하지 않으므로 임의의 값 설정
+                    .password(UUID.randomUUID().toString())
                     .role(Role.USER)
                     .socialType(SocialType.KAKAO)
                     .socialId(socialId)

@@ -1,0 +1,59 @@
+<!DOCTYPE html>
+<html lang="ko" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8" />
+    <title>위시리스트 - 북적북적</title>
+    <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Noto+Sans:wght@400;500;700;900&family=Plus+Jakarta+Sans:wght@400;500;700;800&display=swap" />
+    <script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+</head>
+<body class="relative flex min-h-screen flex-col bg-white" style="font-family: 'Plus Jakarta Sans', 'Noto Sans', sans-serif;">
+<div class="flex flex-col grow layout-container">
+    <div th:replace="~{fragments/header :: header}"></div>
+
+    <main class="flex-1 flex justify-center px-6 md:px-40 py-6">
+        <div class="w-full max-w-[960px] flex flex-col gap-10"> <div class="flex justify-center gap-2 flex-wrap">
+            <a th:href="@{/profile/dm}" class="tab-btn px-4 py-2 rounded-full text-sm font-medium text-gray-500 hover:bg-gray-100"
+               th:classappend="${currentUri == '/profile/dm' ? 'bg-gray-200 text-black font-bold' : ''}">DM 목록</a>
+            <a th:href="@{/profile/sales}" class="tab-btn px-4 py-2 rounded-full text-sm font-medium text-gray-500 hover:bg-gray-100"
+               th:classappend="${currentUri == '/profile/sales' || currentUri == '/profile/main' ? 'bg-gray-200 text-black font-bold' : ''}">판매 목록</a>
+            <a th:href="@{/profile/purchases}" class="tab-btn px-4 py-2 rounded-full text-sm font-medium text-gray-500 hover:bg-gray-100"
+               th:classappend="${currentUri == '/profile/purchases' ? 'bg-gray-200 text-black font-bold' : ''}">구매 목록</a>
+            <a th:href="@{/profile/wishlist}" class="tab-btn px-4 py-2 rounded-full text-sm font-medium text-gray-500 hover:bg-gray-100"
+               th:classappend="${currentUri == '/profile/wishlist' ? 'bg-gray-200 text-black font-bold' : ''}">위시리스트</a>
+        </div>
+
+            <section th:fragment="section">
+                <h1 class="text-2xl font-bold text-[#111418] px-4 pb-4">위시리스트</h1>
+
+                <div class="w-full overflow-auto rounded-lg border bg-white">
+                    <table class="w-full text-sm text-left text-gray-600">
+                        <thead class="bg-gray-50 text-xs text-gray-700 uppercase">
+                        <tr>
+                            <th class="px-6 py-3">책 제목</th>
+                            <th class="px-6 py-3">가격</th>
+                            <th class="px-6 py-3">판매자</th>
+                            <th class="px-6 py-3">등록일</th>
+                        </tr>
+                        </thead>
+                        <tbody>
+                        <tr th:if="${wishlist.isEmpty()}">
+                            <td colspan="4" class="text-center p-8 text-gray-500">찜한 상품이 없습니다.</td>
+                        </tr>
+                        <tr th:each="item : ${wishlist}" class="border-b hover:bg-gray-50">
+                            <td class="px-6 py-4 font-medium text-gray-900 whitespace-nowrap" th:text="${item.title}">책 제목</td>
+                            <td class="px-6 py-4" th:text="${#numbers.formatInteger(item.price, 3, 'COMMA')} + '원'">8,000원</td>
+                            <td class="px-6 py-4" th:text="${item.sellerNickname ?: '-'}">판매자</td>
+                            <td class="px-6 py-4" th:text="${#temporals.format(item.createdAt, 'yyyy-MM-dd')}">2025-06-26</td>
+                        </tr>
+                        </tbody>
+                    </table>
+                </div>
+            </section>
+
+        </div>
+    </main>
+
+    <div th:replace="~{fragments/footer :: footer}"></div>
+</div>
+</body>
+</html>
