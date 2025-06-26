@@ -40,7 +40,11 @@ public enum ErrorCode {
     INVALID_BOOK_CONDITION(HttpStatus.BAD_REQUEST, "잘못된 도서 상태 정보입니다."),
 
     // == Book Errors == //
-    BOOK_NOT_FOUND(HttpStatus.NOT_FOUND, "해당 도서를 찾을 수 없습니다.");
+    BOOK_NOT_FOUND(HttpStatus.NOT_FOUND, "해당 도서를 찾을 수 없습니다."),
+
+    // --- Trade Errors ---
+    CANNOT_BUY_OWN_ITEM(HttpStatus.FORBIDDEN, "본인의 판매글에는 거래를 신청할 수 없습니다."),
+    TRADE_ALREADY_EXISTS(HttpStatus.CONFLICT, "이미 진행 중인 거래가 존재합니다.");
 
     private final HttpStatus statusCode;
     private final String message;

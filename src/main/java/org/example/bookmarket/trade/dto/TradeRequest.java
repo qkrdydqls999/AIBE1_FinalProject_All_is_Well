@@ -1,4 +1,14 @@
+
 package org.example.bookmarket.trade.dto;
 
-public record TradeRequest() {
-}
+import org.example.bookmarket.trade.entity.TradeType;
+
+public record TradeRequest(
+    Long usedBookId,
+    Long buyerId,
+    Integer agreedPrice,
+    TradeType tradeType,
+    String pickupLocation,
+    String deliveryAddress,
+    String buyerContactInfo
+) {}
