@@ -1,5 +1,6 @@
 package org.example.bookmarket.auth.controller;
 
+import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.example.bookmarket.auth.JwtTokenProvider;
 import org.example.bookmarket.auth.dto.LoginRequest;
@@ -8,35 +9,40 @@ import org.example.bookmarket.auth.dto.SignUpRequest;
 import org.example.bookmarket.auth.service.AuthService;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
-import org.springframework.security.authentication.AuthenticationManager;
-import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
-import org.springframework.security.core.Authentication;
+import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.*;
-import jakarta.validation.Valid;
 
-@RestController
+
+@Controller
 @RequestMapping("/auth")
 @RequiredArgsConstructor
 public class AuthController {
 
     private final AuthService authService;
-    private final AuthenticationManager authenticationManager;
-    private final JwtTokenProvider jwtTokenProvider;
 
-    @PostMapping("/signup")
-    public ResponseEntity<Void> signup(@Valid @RequestBody SignUpRequest request) {
-        authService.signUp(request);
-        return ResponseEntity.status(HttpStatus.CREATED).build();
+    @PostMapping("/api/login")
+    @ResponseBody
+    public ResponseEntity<LoginResponse> apiLogin(@Valid @RequestBody LoginRequest request) {
+
+        return ResponseEntity.ok(new LoginResponse("dummy-api-token-for-" + request.email()));
     }
 
-    @PostMapping("/login")
-    public ResponseEntity<LoginResponse> login(@Valid @RequestBody LoginRequest request) {
-        Authentication authentication = authenticationManager.authenticate(
-                new UsernamePasswordAuthenticationToken(request.email(), request.password())
-        );
+    // [페이지 반환] 로그인 페이지를 보여줍니다.
+    @GetMapping("/login")
+    public String loginPage() {
+        return "login";
+    }
 
-        String token = jwtTokenProvider.generateToken(authentication);
+    // [페이지 반환] 회원가입 페이지를 보여줍니다.
+    @GetMapping("/signup")
+    public String signupPage() {
+        return "signup";
+    }
 
-        return ResponseEntity.ok(new LoginResponse(token));
+    // [기능 처리] 회원가입을 처리합니다.
+    @PostMapping("/signup")
+    public String signup(@Valid @ModelAttribute SignUpRequest request) {
+        authService.signUp(request);
+        return "redirect:/auth/login";
     }
 }

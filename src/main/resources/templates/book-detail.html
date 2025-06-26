@@ -1,0 +1,82 @@
+<!DOCTYPE html>
+<html lang="ko" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8" />
+    <title th:text="${book.title} + ' - 북적북적'">책 상세 정보</title>
+    <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Noto+Sans:wght@400;500;700;900&family=Plus+Jakarta+Sans:wght@400;500;700;800&display=swap" />
+    <script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+</head>
+<body class="relative flex min-h-screen flex-col bg-white" style="font-family: 'Plus Jakarta Sans', 'Noto Sans', sans-serif;">
+<div class="flex flex-col grow layout-container">
+    <div th:replace="~{fragments/header :: header}"></div>
+
+    <main class="flex flex-1 justify-center px-6 md:px-40 py-6">
+        <div class="w-full max-w-[960px] flex flex-col">
+
+            <!-- 이미지 미리보기 -->
+            <section class="grid grid-cols-[2fr_1fr_1fr] gap-1 @[480px]:gap-2 p-4 bg-white">
+                <div class="bg-center bg-cover bg-no-repeat aspect-auto rounded-lg col-span-3 md:col-span-1"
+                     th:style="'background-image: url(' + ${book.coverImageUrl} + ')'">
+                </div>
+            </section>
+
+            <!-- 기본 정보 -->
+            <section class="px-4 pt-4">
+                <h1 class="text-[22px] font-bold text-[#111418] pb-2" th:text="${book.title}">The Great Gatsby</h1>
+                <p class="text-base text-[#111418] pb-2" th:text="${book.author} + ' | ' + ${book.publisher} + ' | ' + ${book.publicationYear}"></p>
+            </section>
+
+            <!-- 판매자 정보 -->
+            <section class="px-4 pt-6">
+                <h2 class="text-lg font-bold text-[#111418] pb-2">판매자 정보</h2>
+                <div class="flex items-center gap-4 bg-white py-2">
+                    <div class="size-14 aspect-square bg-center bg-cover rounded-full"
+                         style="background-image: url('https://images.unsplash.com/photo-1532074205216-d0e1f4b87368?q=80&w=1941&auto=format&fit=crop');"></div>
+                    <div>
+                        <p class="text-base font-medium text-[#111418] line-clamp-1">Emma Carter</p>
+                        <p class="text-sm font-normal text-[#60748a] line-clamp-2">4.5 (123 reviews)</p>
+                    </div>
+                </div>
+            </section>
+
+            <!-- 책 상태 -->
+            <section class="px-4 pt-6">
+                <h2 class="text-lg font-bold text-[#111418] pb-2">책 상태</h2>
+                <div class="flex items-center gap-4 py-2">
+                    <div class="shrink-0 size-12 flex items-center justify-center rounded-lg bg-[#f0f2f5]">
+                        <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" fill="currentColor" viewBox="0 0 256 256">
+                            <path d="M224,48H160a40,40,0,0,0-32,16A40,40,0,0,0,96,48H32A16,16,0,0,0,16,64V192a16,16,0,0,0,16,16H96a24,24,0,0,1,24,24,8,8,0,0,0,16,0,24,24,0,0,1,24-24h64a16,16,0,0,0,16-16V64A16,16,0,0,0,224,48ZM96,192H32V64H96a24,24,0,0,1,24,24V200A39.81,39.81,0,0,0,96,192Zm128,0H160a39.81,39.81,0,0,0-24,8V88a24,24,0,0,1,24-24h64Z" />
+                        </svg>
+                    </div>
+                    <div>
+                        <p class="text-base font-medium text-[#111418]">최상</p>
+                        <p class="text-sm text-[#60748a]">Excellent</p>
+                    </div>
+                </div>
+                <p class="text-base text-[#111418] py-2" th:text="${book.description}">This book is in excellent condition...</p>
+            </section>
+
+            <!-- 가격 및 상태 -->
+            <section class="px-4 pt-6 pb-4">
+                <h2 class="text-lg font-bold text-[#111418] pb-2">가격 및 상태</h2>
+                <div class="flex justify-between items-center bg-white min-h-14">
+                    <p class="text-xl font-bold text-[#111418] truncate" th:text="${#numbers.formatInteger(book.newPrice, 3, 'COMMA')} + '원'"></p>
+                    <div class="flex items-center gap-2">
+                        <div class="size-3 rounded-full bg-[#07883b]"></div>
+                        <span class="text-sm font-medium text-[#07883b]">판매중</span>
+                    </div>
+                </div>
+            </section>
+
+        </div>
+    </main>
+
+    <footer class="sticky bottom-0 border-t border-gray-200 bg-white">
+        <div class="flex justify-between items-center gap-3 p-3 max-w-[960px] mx-auto">
+            <button class="min-w-[84px] h-12 px-4 bg-[#f0f2f5] text-[#111418] font-bold rounded-lg">찜하기</button>
+            <button class="flex-1 min-w-[84px] h-12 px-4 bg-gray-800 text-white font-bold rounded-lg hover:bg-gray-700">채팅하기 / 구매 요청</button>
+        </div>
+    </footer>
+</div>
+</body>
+</html>

@@ -1,0 +1,71 @@
+<!DOCTYPE html>
+<html lang="ko" xmlns:th="http://www.thymeleaf.org" xmlns:sec="http://www.thymeleaf.org/extras/spring-security">
+<head>
+    <meta charset="UTF-8" />
+    <title>북적북적 - AI 중고서적 플랫폼</title>
+    <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Noto+Sans:wght@400;500;700;900&family=Plus+Jakarta+Sans:wght@400;500;700;800&display=swap" />
+    <script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+</head>
+<body class="relative flex min-h-screen flex-col bg-white" style="font-family: 'Plus Jakarta Sans', 'Noto Sans', sans-serif;">
+<div class="flex grow flex-col">
+    <div th:replace="~{fragments/header :: header}"></div>
+
+    <main class="flex-1 flex justify-center px-4 md:px-40 py-6">
+        <div class="flex flex-col w-full max-w-[960px]">
+
+            <!-- Hero Section -->
+            <section class="relative min-h-[218px] rounded-lg overflow-hidden">
+                <div class="absolute inset-0 bg-cover bg-center z-0" style="background-image: url('https://images.unsplash.com/photo-1550399105-c4db5fb85c18?q=80&w=2071&auto=format&fit=crop');"></div>
+                <div class="absolute inset-0 bg-black/40 z-10"></div>
+                <div class="relative z-20 flex p-4 h-full items-end">
+                    <h1 class="text-white text-[28px] font-bold leading-tight">AI가 돕는 합리적인 중고 책 거래, 북적북적!</h1>
+                </div>
+            </section>
+
+            <!-- 인기 태그 -->
+            <section class="mt-6">
+                <h2 class="text-[#111418] text-[22px] font-bold leading-tight px-4 pb-3">지금 많이 찾는 책</h2>
+                <div class="flex flex-wrap gap-3 px-4">
+                    <a th:each="tag : ${popularTags}" href="#" class="rounded-lg bg-[#f0f2f5] hover:bg-gray-200 px-4 h-8 flex items-center text-sm font-medium text-[#111418] transition-colors">
+                        <span th:text="${tag}"></span>
+                    </a>
+                </div>
+            </section>
+
+            <!-- AI 추천 도서 -->
+            <section class="mt-6">
+                <h2 class="text-[#111418] text-[22px] font-bold leading-tight px-4 pb-3">AI 맞춤 추천 도서</h2>
+                <div class="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 gap-4 px-4">
+                    <a th:each="book : ${recommendedBooks}" th:href="@{/used-books/{id}(id=${book.id})}" class="flex flex-col gap-2 hover:scale-105 hover:shadow-lg transition duration-300 cursor-pointer">
+                        <div class="w-full aspect-[3/4] rounded-lg bg-cover bg-center" th:style="'background-image: url(' + ${book.coverImageUrl} + ')'">
+                        </div>
+                        <div>
+                            <p class="font-bold text-base text-[#111418] truncate" th:text="${book.title}"></p>
+                            <p class="text-sm text-gray-600 truncate" th:text="${book.author}"></p>
+                        </div>
+                    </a>
+                </div>
+            </section>
+
+            <!-- 최신 등록 도서 -->
+            <section class="mt-6">
+                <h2 class="text-[#111418] text-[22px] font-bold leading-tight px-4 pb-3">방금 올라온 따끈한 책</h2>
+                <div class="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 gap-4 px-4">
+                    <a th:each="book : ${newlyAddedBooks}" th:href="@{/used-books/{id}(id=${book.id})}" class="flex flex-col gap-2 hover:scale-105 hover:shadow-lg transition duration-300 cursor-pointer">
+                        <div class="w-full aspect-[3/4] rounded-lg bg-cover bg-center" th:style="'background-image: url(' + ${book.coverImageUrl} + ')'">
+                        </div>
+                        <div>
+                            <p class="font-bold text-base text-[#111418] truncate" th:text="${book.title}"></p>
+                            <p class="text-sm text-gray-600 truncate" th:text="${book.author}"></p>
+                        </div>
+                    </a>
+                </div>
+            </section>
+
+        </div>
+    </main>
+
+    <div th:replace="~{fragments/footer :: footer}"></div>
+</div>
+</body>
+</html>
