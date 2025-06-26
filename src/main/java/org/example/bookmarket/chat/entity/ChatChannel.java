@@ -1,4 +1,4 @@
-package org.example.bookmarket.dm.entity;
+package org.example.bookmarket.chat.entity;
 
 import jakarta.persistence.*;
 import lombok.*;
@@ -8,27 +8,26 @@ import org.example.bookmarket.usedbook.entity.UsedBook;
 import java.time.LocalDateTime;
 
 @Entity
-@Table(name = "dm_channel")
 @Getter
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
 @AllArgsConstructor
 @Builder
-public class DmChannel {
+public class ChatChannel {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
-    @ManyToOne(fetch = FetchType.LAZY)
+    @ManyToOne
     @JoinColumn(name = "user1_id", nullable = false)
     private User user1;
 
-    @ManyToOne(fetch = FetchType.LAZY)
+    @ManyToOne
     @JoinColumn(name = "user2_id", nullable = false)
     private User user2;
 
-    @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "related_used_book_id")
+    @ManyToOne
+    @JoinColumn(name = "used_book_id")
     private UsedBook relatedUsedBook;
 
     private LocalDateTime lastMessageAt;
@@ -36,11 +35,9 @@ public class DmChannel {
     private LocalDateTime createdAt;
 
     @PrePersist
-    public void prePersist() {
-        this.createdAt = LocalDateTime.now();
-    }
-
-    public void updateLastMessageAt(LocalDateTime time) {
-        this.lastMessageAt = time;
+    protected void onCreate() {
+        LocalDateTime now = LocalDateTime.now();
+        this.createdAt = now;
+        this.lastMessageAt = now;
     }
 }

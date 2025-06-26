@@ -1,4 +1,4 @@
-package org.example.bookmarket.dm.entity;
+package org.example.bookmarket.chat.entity;
 
 import jakarta.persistence.*;
 import lombok.*;
@@ -7,39 +7,36 @@ import org.example.bookmarket.user.entity.User;
 import java.time.LocalDateTime;
 
 @Entity
-@Table(name = "direct_message")
 @Getter
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
 @AllArgsConstructor
 @Builder
-public class DirectMessage {
+public class ChatMessage {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
-    @ManyToOne(fetch = FetchType.LAZY)
+    @ManyToOne
     @JoinColumn(name = "channel_id", nullable = false)
-    private DmChannel channel;
+    private ChatChannel channel;
 
-    @ManyToOne(fetch = FetchType.LAZY)
+    @ManyToOne
     @JoinColumn(name = "sender_id", nullable = false)
     private User sender;
 
-    @Column(columnDefinition = "TEXT", nullable = false)
+    @Lob
     private String messageContent;
+
+    private Boolean isRead;
 
     private LocalDateTime sentAt;
 
-    @Column(nullable = false)
-    private Boolean isRead = false;
-
     @PrePersist
-    public void prePersist() {
+    protected void onSend() {
         this.sentAt = LocalDateTime.now();
-    }
-
-    public void markAsRead() {
-        this.isRead = true;
+        if (this.isRead == null) {
+            this.isRead = false;
+        }
     }
 }
