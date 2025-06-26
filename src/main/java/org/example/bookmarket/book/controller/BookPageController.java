@@ -15,9 +15,6 @@ import java.util.List;
 @RequiredArgsConstructor
 public class BookPageController {
 
-    // 나중에는 BookService를 주입받아 실제 DB 검색 및 조회 기능을 수행해야 합니다.
-    // private final BookService bookService;
-
     /**
      * 검색 결과 페이지를 보여주는 메소드
      * @param keyword 검색어
@@ -27,7 +24,6 @@ public class BookPageController {
     @GetMapping("/search")
     public String search(@RequestParam(value = "keyword", required = false, defaultValue = "") String keyword, Model model) {
 
-        // 지금은 가상의 검색 결과 데이터를 만듭니다.
         List<BookResponse> searchResults = List.of(
                 new BookResponse(1L, "979-11-6224-484-9", "The Great Gatsby", "F. Scott Fitzgerald", "Scribner", 1925, 15000, "설명...", "https://images.unsplash.com/photo-1608649699552-e31d5a4a5a0d?q=80&w=1887&auto=format&fit=crop"),
                 new BookResponse(2L, "978-0-7432-7356-5", "To Kill a Mockingbird", "Harper Lee", "J. B. Lippincott & Co.", 1960, 18000, "설명...", "https://images.unsplash.com/photo-1544716278-ca5e3ac4030e?q=80&w=1887&auto=format&fit=crop"),
@@ -38,7 +34,7 @@ public class BookPageController {
         model.addAttribute("keyword", keyword);
         model.addAttribute("searchResults", searchResults);
 
-        return "search-results"; // /templates/search-results.html 템플릿을 보여줌
+        return "search-results";
     }
 
     /**
@@ -50,8 +46,6 @@ public class BookPageController {
     @GetMapping("/used-books/{bookId}")
     public String bookDetail(@PathVariable Long bookId, Model model) {
 
-        // 나중에는 bookService.findById(bookId) 와 같이 실제 DB에서 데이터를 조회해야 합니다.
-        // 지금은 가상의 상세 페이지 데이터를 만듭니다.
         BookResponse book = new BookResponse(
                 bookId,
                 "978-0321765723",
@@ -66,7 +60,7 @@ public class BookPageController {
 
         model.addAttribute("book", book);
 
-        return "book-detail"; // /templates/book-detail.html 템플릿을 반환
+        return "book-detail";
     }
 
     /**
@@ -76,11 +70,10 @@ public class BookPageController {
      */
     @GetMapping("/used-books/new")
     public String registerBookForm(Model model) {
-        // 폼을 위한 비어있는 DTO 객체를 모델에 추가합니다.
-        // 이렇게 하면 th:object를 사용할 때 초기값이 null이 되는 것을 방지할 수 있습니다.
+
         model.addAttribute("bookRequest", new UsedBookPostRequest(
                 null, null, null, null, null, null, false, false, false, false, false, null, null, null, null
         ));
-        return "book-register"; // /templates/book-register.html 템플릿을 반환
+        return "book-register";
     }
 }

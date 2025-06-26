@@ -50,22 +50,22 @@ public class JwtTokenProvider {
     public boolean validateToken(String token) {
         try {
             Jwts.parser()
-                    .setSigningKey(getSecretKey()) // 구버전 문법에서는 setSigningKey 사용
+                    .setSigningKey(getSecretKey())
                     .build()
                     .parseClaimsJws(token);
             return true;
         } catch (io.jsonwebtoken.security.SecurityException | MalformedJwtException e) {
             log.warn("유효하지 않은 JWT 토큰입니다.");
-            throw new CustomException(ErrorCode.INVALID_TOKEN); // [수정]
+            throw new CustomException(ErrorCode.INVALID_TOKEN);
         } catch (ExpiredJwtException e) {
             log.warn("만료된 JWT 토큰입니다.");
-            throw new CustomException(ErrorCode.EXPIRED_TOKEN); // [수정]
+            throw new CustomException(ErrorCode.EXPIRED_TOKEN);
         } catch (UnsupportedJwtException e) {
             log.warn("지원되지 않는 JWT 토큰입니다.");
-            throw new CustomException(ErrorCode.INVALID_TOKEN); // [수정]
+            throw new CustomException(ErrorCode.INVALID_TOKEN);
         } catch (IllegalArgumentException e) {
             log.warn("JWT 클레임 문자열이 비어있습니다.");
-            throw new CustomException(ErrorCode.TOKEN_NOT_FOUND); // [수정]
+            throw new CustomException(ErrorCode.TOKEN_NOT_FOUND);
         }
     }
 
