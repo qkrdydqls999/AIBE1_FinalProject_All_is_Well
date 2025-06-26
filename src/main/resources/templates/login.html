@@ -1,0 +1,69 @@
+<!DOCTYPE html>
+<html lang="ko" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8" />
+    <title>로그인 - 북적북적</title>
+    <link rel="stylesheet" href="https://fonts.googleapis.com/css2?display=swap&family=Noto+Sans:wght@400;500;700;900&family=Plus+Jakarta+Sans:wght@400;500;700;800" />
+    <script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+</head>
+<body class="relative flex min-h-screen flex-col bg-white" style="font-family: 'Plus Jakarta Sans', 'Noto Sans', sans-serif;">
+<div class="flex grow flex-col layout-container">
+
+    <header class="flex items-center justify-between px-10 py-3 border-b border-[#f0f2f5]">
+        <a th:href="@{/}" class="flex items-center gap-4 text-[#111418]">
+            <div class="size-4">
+                <svg viewBox="0 0 48 48" fill="none" xmlns="http://www.w3.org/2000/svg">
+                    <path fill-rule="evenodd" clip-rule="evenodd" d="M24 0.757355L47.2426 24L24 47.2426L0.757355 24L24 0.757355ZM21 35.7574V12.2426L9.24264 24L21 35.7574Z" fill="currentColor" />
+                </svg>
+            </div>
+            <h2 class="text-lg font-bold">북적북적</h2>
+        </a>
+    </header>
+
+    <main class="flex flex-1 items-center justify-center px-4 md:px-40 py-5">
+        <div class="w-full max-w-[512px] flex flex-col py-5">
+            <h2 class="text-center text-[28px] font-bold leading-tight text-[#111418] pb-8">로그인</h2>
+
+            <form th:action="@{/auth/login}" method="post" class="space-y-4">
+                <input type="hidden" th:name="${_csrf.parameterName}" th:value="${_csrf.token}" />
+
+                <div th:if="${param.error}" class="text-center text-red-500 text-sm">이메일 또는 비밀번호가 올바르지 않습니다.</div>
+
+                <label class="block">
+                    <p class="text-base font-medium pb-2">이메일</p>
+                    <input type="email" name="username" placeholder="Enter your email" required class="form-input w-full h-14 rounded-lg border border-[#dbe0e6] px-4 placeholder:text-[#60748a]" />
+                </label>
+
+                <label class="block">
+                    <p class="text-base font-medium pb-2">비밀번호</p>
+                    <input type="password" name="password" placeholder="Enter your password" required class="form-input w-full h-14 rounded-lg border border-[#dbe0e6] px-4 placeholder:text-[#60748a]" />
+                </label>
+
+                <button type="submit" class="w-full h-12 bg-gray-800 hover:bg-gray-700 text-white font-bold rounded-lg">로그인</button>
+            </form>
+
+            <p class="text-sm text-center text-[#60748a] pt-4">
+                <a href="#" class="underline hover:text-blue-500">비밀번호를 잊으셨나요?</a>
+            </p>
+
+            <div class="flex items-center my-4">
+                <hr class="flex-grow border-t border-gray-300" />
+                <span class="px-2 text-sm text-gray-500">또는</span>
+                <hr class="flex-grow border-t border-gray-300" />
+            </div>
+
+            <a th:href="@{/oauth2/authorization/kakao}" class="flex items-center justify-center h-12 rounded-lg bg-[#FEE500] text-black font-bold gap-2">
+                <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24">
+                    <path d="M12 1.5c-5.799 0-10.5 3.7-10.5 8.25s4.701 8.25 10.5 8.25c2.298 0 4.2-.6 5.901-1.65l-1.05-1.755c-1.2.75-2.7.9-4.851.9-4.2 0-7.5-2.85-7.5-6.75s3.3-6.75 7.5-6.75c2.7 0 4.65.9 5.85 2.85l1.65-1.05c-1.5-2.4-3.9-3.6-7.5-3.6z"/>
+                </svg>
+                카카오로 로그인
+            </a>
+
+            <p class="mt-4 text-sm text-center text-gray-600">
+                아직 회원이 아니신가요? <a th:href="@{/auth/signup}" class="font-bold text-blue-600 hover:underline">회원가입</a>
+            </p>
+        </div>
+    </main>
+</div>
+</body>
+</html>

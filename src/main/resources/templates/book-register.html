@@ -1,0 +1,117 @@
+<!DOCTYPE html>
+<html lang="ko" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8" />
+    <title>중고책 판매 등록</title>
+    <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Noto+Sans:wght@400;500;700;900&family=Plus+Jakarta+Sans:wght@400;500;700;800&display=swap" />
+    <script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+</head>
+<body class="relative flex min-h-screen flex-col bg-white" style="font-family: 'Plus Jakarta Sans', 'Noto Sans', sans-serif;">
+<div class="flex flex-col grow layout-container">
+    <div th:replace="~{fragments/header :: header}"></div>
+
+    <main class="flex-1 flex justify-center px-6 md:px-40 py-6">
+        <div class="w-full max-w-[960px] flex flex-col">
+            <form th:action="@{/used-books}" th:object="${bookRequest}" method="post" enctype="multipart/form-data" class="space-y-12">
+
+                <section>
+                    <h1 class="text-[32px] font-bold text-[#111418] mb-2">중고책 판매 등록</h1>
+                </section>
+
+                <!-- Step 1: 책 정보 -->
+                <section>
+                    <h2 class="text-lg font-bold text-[#111418] border-b border-gray-200 px-4 pb-3">Step 1: 책 정보</h2>
+                    <div class="grid grid-cols-1 md:grid-cols-2 gap-4 p-4">
+                        <div>
+                            <label class="font-medium text-base">ISBN</label>
+                            <input th:field="*{isbn}" placeholder="ISBN 13자리를 입력하세요" class="form-input w-full h-14 mt-2 rounded-lg border-gray-300" />
+                        </div>
+                        <div>
+                            <label class="font-medium text-base">제목</label>
+                            <input th:field="*{title}" placeholder="책 제목" class="form-input w-full h-14 mt-2 rounded-lg border-gray-300" />
+                        </div>
+                        <div>
+                            <label class="font-medium text-base">저자</label>
+                            <input th:field="*{author}" placeholder="저자" class="form-input w-full h-14 mt-2 rounded-lg border-gray-300" />
+                        </div>
+                        <div>
+                            <label class="font-medium text-base">출판사</label>
+                            <input th:field="*{publisher}" placeholder="출판사" class="form-input w-full h-14 mt-2 rounded-lg border-gray-300" />
+                        </div>
+                        <div class="md:col-span-2">
+                            <label class="font-medium text-base">출판년도</label>
+                            <input type="number" th:field="*{publicationYear}" placeholder="예) 2024" class="form-input w-full h-14 mt-2 rounded-lg border-gray-300" />
+                        </div>
+                    </div>
+                </section>
+
+                <!-- Step 2: 책 상태 -->
+                <section>
+                    <h2 class="text-lg font-bold text-[#111418] border-b border-gray-200 px-4 pb-3">Step 2: 책 상태</h2>
+                    <div class="grid grid-cols-1 md:grid-cols-2 gap-4 p-4">
+                        <div>
+                            <label class="font-medium text-base">상태 등급</label>
+                            <select th:field="*{conditionGrade}" class="form-select w-full h-14 mt-2 rounded-lg border-gray-300">
+                                <option value="">선택하세요</option>
+                                <option value="최상">최상 (거의 새 책)</option>
+                                <option value="상">상 (사용감 거의 없음)</option>
+                                <option value="중">중 (일반적인 중고책 상태)</option>
+                                <option value="하">하 (사용감 많음)</option>
+                            </select>
+                        </div>
+                        <div class="grid grid-cols-2 gap-2 items-center pt-6">
+                            <label class="flex items-center gap-2"><input type="checkbox" th:field="*{hasWriting}" class="h-5 w-5 rounded" /><span>필기/낙서 흔적</span></label>
+                            <label class="flex items-center gap-2"><input type="checkbox" th:field="*{hasStains}" class="h-5 w-5 rounded" /><span>얼룩/오염</span></label>
+                            <label class="flex items-center gap-2"><input type="checkbox" th:field="*{hasTears}" class="h-5 w-5 rounded" /><span>찢어짐</span></label>
+                            <label class="flex items-center gap-2"><input type="checkbox" th:field="*{hasWaterDamage}" class="h-5 w-5 rounded" /><span>물에 젖은 흔적</span></label>
+                            <label class="flex items-center gap-2"><input type="checkbox" th:field="*{likeNew}" class="h-5 w-5 rounded" /><span>새 책 수준</span></label>
+                        </div>
+                        <div class="md:col-span-2">
+                            <label class="font-medium text-base">상세 설명</label>
+                            <textarea th:field="*{detailedCondition}" placeholder="책의 상태를 자세히 설명해주세요" class="form-textarea w-full min-h-36 mt-2 rounded-lg border-gray-300"></textarea>
+                        </div>
+                        <div class="md:col-span-2">
+                            <label class="font-medium text-base" for="image-upload">사진 업로드</label>
+                            <div class="mt-2 flex justify-center rounded-lg border border-dashed border-gray-300 px-6 py-10">
+                                <div class="text-center">
+                                    <svg class="mx-auto h-12 w-12 text-gray-300" fill="currentColor" viewBox="0 0 24 24"><path fill-rule="evenodd" d="M1.5 6a2.25..." clip-rule="evenodd" /></svg>
+                                    <div class="mt-4 flex text-sm text-gray-600">
+                                        <label for="image-upload" class="relative cursor-pointer rounded-md bg-white font-semibold text-indigo-600 hover:text-indigo-500">
+                                            <span>파일 선택</span>
+                                            <input id="image-upload" name="images" type="file" class="sr-only" multiple />
+                                        </label>
+                                        <p class="pl-1">또는 파일을 끌어다 놓으세요</p>
+                                    </div>
+                                    <p class="text-xs text-gray-500">PNG, JPG, GIF up to 10MB</p>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </section>
+
+                <!-- Step 3: 가격 정보 -->
+                <section>
+                    <h2 class="text-lg font-bold text-[#111418] border-b border-gray-200 px-4 pb-3">Step 3: 가격 정보</h2>
+                    <div class="grid grid-cols-1 md:grid-cols-2 gap-4 p-4">
+                        <div>
+                            <label class="font-medium text-base">판매 가격</label>
+                            <input type="number" th:field="*{sellingPrice}" placeholder="원하시는 가격을 입력하세요" class="form-input w-full h-14 mt-2 rounded-lg border-gray-300" />
+                        </div>
+                        <div class="flex items-end pb-2">
+                            <p class="text-sm text-gray-500">AI 추천가: 10,000원 ~ 15,000원</p>
+                        </div>
+                    </div>
+                </section>
+
+                <div class="flex justify-end gap-3 px-4 py-6">
+                    <button type="button" class="h-12 px-6 bg-gray-200 hover:bg-gray-300 font-bold text-gray-700 rounded-lg">취소</button>
+                    <button type="submit" class="h-12 px-6 bg-gray-800 hover:bg-gray-700 text-white font-bold rounded-lg">판매 등록하기</button>
+                </div>
+            </form>
+        </div>
+    </main>
+
+    <div th:replace="~{fragments/footer :: footer}"></div>
+</div>
+</body>
+</html>

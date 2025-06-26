@@ -1,5 +1,3 @@
-// 파일 경로: org/example/bookmarket/handler/exception/ErrorCode.java
-
 package org.example.bookmarket.common.handler.exception;
 
 import lombok.Getter;
@@ -25,8 +23,24 @@ public enum ErrorCode {
 
     // == Common Errors == //
     INVALID_REQUEST(HttpStatus.BAD_REQUEST, "잘못된 요청입니다."),
-    INTERNAL_SERVER_ERROR(HttpStatus.INTERNAL_SERVER_ERROR, "서버에 오류가 발생했습니다.");
+    INTERNAL_SERVER_ERROR(HttpStatus.INTERNAL_SERVER_ERROR, "서버에 오류가 발생했습니다."),
 
+    // === Profile Errors ===
+    PROFILE_USER_NOT_FOUND(HttpStatus.NOT_FOUND, "프로필의 사용자 정보를 찾을 수 없습니다."),
+    INVALID_PROFILE_IMAGE(HttpStatus.BAD_REQUEST, "잘못된 프로필 이미지입니다."),
+    NICKNAME_DUPLICATED(HttpStatus.CONFLICT, "이미 사용 중인 닉네임입니다."),
+
+    // === Category Errors ===
+    CATEGORY_NOT_FOUND(HttpStatus.NOT_FOUND, "카테고리를 찾을 수 없습니다."),
+    CATEGORY_DUPLICATED(HttpStatus.CONFLICT, "이미 존재하는 카테고리입니다."),
+
+    // === UsedBook Errors ===
+    USED_BOOK_NOT_FOUND(HttpStatus.NOT_FOUND, "해당 중고도서를 찾을 수 없습니다."),
+    USED_BOOK_IMAGE_REQUIRED(HttpStatus.BAD_REQUEST, "중고도서 등록 시 이미지는 최소 1장 이상 필요합니다."),
+    INVALID_BOOK_CONDITION(HttpStatus.BAD_REQUEST, "잘못된 도서 상태 정보입니다."),
+
+    // == Book Errors == //
+    BOOK_NOT_FOUND(HttpStatus.NOT_FOUND, "해당 도서를 찾을 수 없습니다.");
 
     private final HttpStatus statusCode;
     private final String message;
