@@ -10,3 +10,4 @@ public record WishlistItem(
         String sellerNickname, 
         LocalDateTime createdAt
 ) {}
+

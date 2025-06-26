@@ -7,6 +7,7 @@ import org.springframework.stereotype.Controller; // @RestController에서 변�
 import org.springframework.web.bind.annotation.*;
 
 @Controller
+
 @RequestMapping("/used-books")
 @RequiredArgsConstructor
 public class UsedBookPostController {
