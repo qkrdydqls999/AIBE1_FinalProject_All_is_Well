@@ -1,4 +1,3 @@
-
 package org.example.bookmarket.trade.entity;
 
 import jakarta.persistence.*;

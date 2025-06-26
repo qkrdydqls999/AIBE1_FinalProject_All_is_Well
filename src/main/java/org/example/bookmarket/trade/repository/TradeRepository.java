@@ -1,4 +1,3 @@
-
 package org.example.bookmarket.trade.repository;
 
 import org.example.bookmarket.trade.entity.Trade;

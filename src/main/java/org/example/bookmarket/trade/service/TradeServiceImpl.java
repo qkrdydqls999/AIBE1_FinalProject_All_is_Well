@@ -1,4 +1,3 @@
-
 package org.example.bookmarket.trade.service;
 
 import lombok.RequiredArgsConstructor;
