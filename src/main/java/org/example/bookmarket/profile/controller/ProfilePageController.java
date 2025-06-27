@@ -20,11 +20,6 @@ import java.util.List;
 @RequiredArgsConstructor
 public class ProfilePageController {
 
-    // 대표 마이페이지.
-    @GetMapping("/me")
-    public String myPageRoot() {
-        return "redirect:/profile/main";
-    }
 
     // 프로필 메인 페이지 (판매 목록이 기본으로 표시)
     @GetMapping("/main")
