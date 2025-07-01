@@ -2,8 +2,8 @@ package org.example.bookmarket.chat.entity;
 
 import jakarta.persistence.*;
 import lombok.*;
-import org.example.bookmarket.user.entity.User;
 import org.example.bookmarket.usedbook.entity.UsedBook;
+import org.example.bookmarket.user.entity.User;
 
 import java.time.LocalDateTime;
 
