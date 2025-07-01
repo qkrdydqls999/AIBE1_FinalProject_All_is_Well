@@ -44,7 +44,11 @@ public enum ErrorCode {
 
     // --- Trade Errors ---
     CANNOT_BUY_OWN_ITEM(HttpStatus.FORBIDDEN, "본인의 판매글에는 거래를 신청할 수 없습니다."),
-    TRADE_ALREADY_EXISTS(HttpStatus.CONFLICT, "이미 진행 중인 거래가 존재합니다.");
+    TRADE_ALREADY_EXISTS(HttpStatus.CONFLICT, "이미 진행 중인 거래가 존재합니다."),
+
+    // == 외부 시스템 연동 오류 ==
+    S3_UPLOAD_FAILED(HttpStatus.INTERNAL_SERVER_ERROR, "S3 이미지 업로드에 실패했습니다."),
+    AI_ANALYSIS_FAILED(HttpStatus.INTERNAL_SERVER_ERROR, "AI 이미지 분석에 실패했습니다.");
 
     private final HttpStatus statusCode;
     private final String message;

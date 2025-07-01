@@ -44,7 +44,7 @@ public class SecurityConfig {
                         // ▼▼▼ 모든 사람이 접근할 수 있는 경로 설정 ▼▼▼
                         .requestMatchers(
                                 "/", "/welcome", "/search","/used-books/**",               // 홈 관련
-                                "/auth/login", "/auth/signup", // 인증 관련 페이지
+                                "/auth/login", "/auth/signup","/auth/api/login", // 인증 관련 페이지
                                 "/oauth2/**",                   // 소셜 로그인 처리 경로
                                 "/swagger-ui/**", "/v3/api-docs/**", // API 문서
                                 "/css/**", "/js/**", "/images/**" // 정적 리소스
