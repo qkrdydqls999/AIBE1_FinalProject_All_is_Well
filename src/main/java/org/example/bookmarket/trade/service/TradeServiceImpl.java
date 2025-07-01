@@ -83,9 +83,10 @@ public class TradeServiceImpl implements TradeService {
 
     @Override
     public List<TradeResponse> getMyTrades(Long userId, String role) {
-        List<Trade> list = tradeRepository.findAll();
+        List<Trade> list = "buyer".equals(role)
+                ? tradeRepository.findByBuyerId(userId)
+                : tradeRepository.findBySellerId(userId);
         return list.stream()
-                .filter(tx -> "buyer".equals(role) ? tx.getBuyer().getId().equals(userId) : tx.getSeller().getId().equals(userId))
                 .map(this::toResponse)
                 .collect(Collectors.toList());
     }

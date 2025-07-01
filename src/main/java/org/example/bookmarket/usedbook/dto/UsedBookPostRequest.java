@@ -19,5 +19,6 @@ public record UsedBookPostRequest(
     String detailedCondition,
     Integer sellingPrice,
     Long categoryId,
+    Long sellerId,
     List<MultipartFile> images
 ) {}
