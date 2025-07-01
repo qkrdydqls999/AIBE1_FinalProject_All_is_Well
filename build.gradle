@@ -50,6 +50,7 @@ dependencies {
     implementation 'org.thymeleaf.extras:thymeleaf-extras-springsecurity6'
     implementation platform('com.google.cloud:libraries-bom:26.42.0') // Google Cloud 라이브러리 버전 관리
     implementation 'com.google.cloud:google-cloud-vertexai'          // Vertex AI 라이브러리
+    implementation 'org.redisson:redisson-spring-boot-starter:3.27.2'
 }
 
 tasks.named('test') {
