@@ -1,7 +1,10 @@
 package org.example.bookmarket.chat.service;
 
 import lombok.RequiredArgsConstructor;
-import org.example.bookmarket.chat.dto.*;
+import org.example.bookmarket.chat.dto.ChatMessageRequest;
+import org.example.bookmarket.chat.dto.ChatMessageResponse;
+import org.example.bookmarket.chat.dto.ChatRequest;
+import org.example.bookmarket.chat.dto.ChatResponse;
 import org.example.bookmarket.chat.entity.ChatChannel;
 import org.example.bookmarket.chat.entity.ChatMessage;
 import org.example.bookmarket.chat.repository.ChatChannelRepository;
@@ -27,12 +30,6 @@ public class ChatService {
     private final UserRepository userRepository;
     private final UsedBookRepository usedBookRepository;
 
-    /**
-     * 채팅 채널을 생성하거나, 이미 존재하면 기존 채널을 반환합니다.
-     * @param request 채팅 생성 요청 DTO
-     * @return 생성되거나 조회된 채팅 채널 정보
-     */
-    @Transactional
     public ChatResponse createChannel(ChatRequest request) {
         User user1 = getUserById(request.getUser1Id());
         User user2 = getUserById(request.getUser2Id());
@@ -85,7 +82,28 @@ public class ChatService {
                 .collect(Collectors.toList());
     }
 
-    // 중복 코드를 줄이고 가독성을 높이기 위한 private 헬퍼 메서드
+    public ChatMessageResponse sendMessage(ChatMessageRequest request) {
+        ChatChannel channel = chatChannelRepository.findById(request.getChannelId())
+                .orElseThrow(() -> new IllegalArgumentException("채널 없음"));
+        User sender = getUserById(request.getSenderId());
+
+        ChatMessage message = ChatMessage.builder()
+                .channel(channel)
+                .sender(sender)
+                .messageContent(request.getContent())
+                .isRead(false)
+                .build();
+
+        chatMessageRepository.save(message);
+
+        // 채널에 최신 메시지 시간 갱신
+        channel.updateLastMessageAt(message.getSentAt());
+        chatChannelRepository.save(channel);
+
+        return toChatMessageResponse(message);
+    }
+
+    // 🔧 공통 메서드
     private User getUserById(Long id) {
         return userRepository.findById(id)
                 .orElseThrow(() -> new CustomException(ErrorCode.USER_NOT_FOUND));
