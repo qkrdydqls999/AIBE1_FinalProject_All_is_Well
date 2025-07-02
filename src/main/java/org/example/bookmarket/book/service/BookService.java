@@ -10,5 +10,6 @@ public interface BookService {
     /**
      * ISBN으로 책을 조회하고, 존재하지 않으면 외부 API를 통해 정보를 가져와 저장합니다.
      */
-    BookResponse getOrCreateByIsbn(String isbn);
+
+    Book getOrCreateByIsbn(String isbn);
 }

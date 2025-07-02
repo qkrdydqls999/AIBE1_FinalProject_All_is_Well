@@ -109,4 +109,3 @@ public class UsedBookPostService {
         log.info("새로운 중고책이 등록되었습니다. ID: {}", usedBook.getId());
     }
 }
-}
