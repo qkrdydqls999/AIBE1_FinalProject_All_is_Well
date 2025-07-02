@@ -9,26 +9,26 @@ import org.springframework.web.bind.annotation.*;
 import java.util.List;
 
 @RestController
-@RequestMapping("/wishlist")
+@RequestMapping("/api/wishlist")
 @RequiredArgsConstructor
 public class WishlistController {
 
     private final WishlistService wishlistService;
 
-    @PostMapping("/{usedBookId}")
-    public ResponseEntity<Void> add(@PathVariable Long usedBookId, @RequestParam Long userId) {
-        wishlistService.addToWishlist(userId, usedBookId);
+    @GetMapping
+    public ResponseEntity<List<WishlistItem>> getWishlist() {
+        return ResponseEntity.ok(wishlistService.getItems());
+    }
+
+    @PostMapping
+    public ResponseEntity<Void> addItem(@RequestBody WishlistItem item) {
+        wishlistService.addItem(item);
         return ResponseEntity.ok().build();
     }
 
     @DeleteMapping("/{usedBookId}")
-    public ResponseEntity<Void> remove(@PathVariable Long usedBookId, @RequestParam Long userId) {
-        wishlistService.removeFromWishlist(userId, usedBookId);
-        return ResponseEntity.ok().build();
-    }
-
-    @GetMapping
-    public ResponseEntity<List<WishlistItem>> list(@RequestParam Long userId) {
-        return ResponseEntity.ok(wishlistService.getWishlist(userId));
+    public ResponseEntity<Void> removeItem(@PathVariable Long usedBookId) {
+        wishlistService.removeItem(usedBookId);
+        return ResponseEntity.noContent().build();
     }
 }

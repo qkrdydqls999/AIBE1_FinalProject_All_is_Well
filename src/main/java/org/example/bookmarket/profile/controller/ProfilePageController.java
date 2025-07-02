@@ -7,6 +7,7 @@ import org.example.bookmarket.profile.dto.ProfileResponse;
 import org.example.bookmarket.trade.dto.PurchaseSummary;
 import org.example.bookmarket.usedbook.dto.UsedBookSummary;
 import org.example.bookmarket.wishlist.dto.WishlistItem;
+import org.example.bookmarket.wishlist.service.WishlistService;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -20,6 +21,7 @@ import java.util.List;
 @RequiredArgsConstructor
 public class ProfilePageController {
 
+    private final WishlistService wishlistService;
 
     // 프로필 메인 페이지 (판매 목록이 기본으로 표시)
     @GetMapping("/main")
@@ -79,9 +81,12 @@ public class ProfilePageController {
         addBaseProfileInfo(model);
         model.addAttribute("currentUri", request.getRequestURI());
 
-        List<WishlistItem> wishlist = List.of(
-                new WishlistItem(301L, "이펙티브 자바", "https://images.unsplash.com/photo-1589829085413-56de8ae18c73?q=80&w=1887&auto=format&fit=crop", 25000, "판매자닉네임예시", LocalDateTime.now().minusDays(5))
-        );
+        List<WishlistItem> wishlist = wishlistService.getItems();
+        if (wishlist.isEmpty()) {
+            wishlist = List.of(
+                    new WishlistItem(301L, "이펙티브 자바", "https://images.unsplash.com/photo-1589829085413-56de8ae18c73?q=80&w=1887&auto=format&fit=crop", 25000, "판매자닉네임예시", LocalDateTime.now().minusDays(5))
+            );
+        }
         model.addAttribute("wishlist", wishlist);
         return "profile/wishlist";
     }
