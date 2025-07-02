@@ -1,11 +1,14 @@
 package org.example.bookmarket.usedbook.service;
 
+import io.jsonwebtoken.impl.security.EdwardsCurve;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.example.bookmarket.ai.dto.PriceSuggestResponse;
 import org.example.bookmarket.ai.service.AiService;
 import org.example.bookmarket.book.entity.Book;
 import org.example.bookmarket.book.repository.BookRepository;
+import org.example.bookmarket.category.entity.Category;
+import org.example.bookmarket.category.repository.CategoryRepository;
 import org.example.bookmarket.common.handler.exception.CustomException;
 import org.example.bookmarket.common.handler.exception.ErrorCode;
 import org.example.bookmarket.common.service.S3UploadService;
@@ -13,6 +16,8 @@ import org.example.bookmarket.usedbook.dto.UsedBookPostRequest;
 import org.example.bookmarket.usedbook.entity.UsedBook;
 import org.example.bookmarket.usedbook.entity.UsedBookImage;
 import org.example.bookmarket.usedbook.repository.UsedBookRepository;
+import org.example.bookmarket.user.entity.User;
+import org.example.bookmarket.user.repository.UserRepository;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.multipart.MultipartFile;
@@ -30,6 +35,9 @@ public class UsedBookPostService {
     private final BookRepository bookRepository;
     private final AiService aiService;
     private final S3UploadService s3UploadService;
+    private final CategoryRepository categoryRepository;
+    private final UserRepository userRepository;
+
 
     @Transactional
     public void registerUsedBook(UsedBookPostRequest request) {
@@ -78,11 +86,25 @@ public class UsedBookPostService {
 
         }
 
+        // 판매자와 카테고리 조회
+        User seller = userRepository.findById(request.sellerId())
+                .orElseThrow(() -> new CustomException(ErrorCode.USER_NOT_FOUND));
+
+        Category category = categoryRepository.findById(request.categoryId())
+                .orElseThrow(() -> new CustomException(ErrorCode.CATEGORY_NOT_FOUND));
+
         // 4. 최종 UsedBook 엔티티 생성
         UsedBook usedBook = UsedBook.builder()
                 .seller(null) // TODO: SecurityContext에서 현재 로그인한 사용자 정보 주입 필요
+                .seller(seller)
                 .book(book)
+                .category(category)
                 .conditionGrade(request.conditionGrade())
+                .hasWriting(request.hasWriting())
+                .hasStains(request.hasStains())
+                .hasTears(request.hasTears())
+                .hasWaterDamage(request.hasWaterDamage())
+                .likeNew(request.likeNew())
                 .detailedCondition(request.detailedCondition())
                 .sellingPrice(request.sellingPrice())
                 // AI 분석 결과를 저장합니다.
