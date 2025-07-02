@@ -1,12 +1,11 @@
 package org.example.bookmarket.usedbook.service;
 
-import io.jsonwebtoken.impl.security.EdwardsCurve;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.example.bookmarket.ai.dto.PriceSuggestResponse;
 import org.example.bookmarket.ai.service.AiService;
 import org.example.bookmarket.book.entity.Book;
-import org.example.bookmarket.book.repository.BookRepository;
+import org.example.bookmarket.book.service.BookService;
 import org.example.bookmarket.category.entity.Category;
 import org.example.bookmarket.category.repository.CategoryRepository;
 import org.example.bookmarket.common.handler.exception.CustomException;
@@ -32,7 +31,7 @@ import java.util.List;
 public class UsedBookPostService {
 
     private final UsedBookRepository usedBookRepository;
-    private final BookRepository bookRepository;
+    private final BookService bookService;
     private final AiService aiService;
     private final S3UploadService s3UploadService;
     private final CategoryRepository categoryRepository;
@@ -41,21 +40,7 @@ public class UsedBookPostService {
 
     @Transactional
     public void registerUsedBook(UsedBookPostRequest request) {
-        // 1. ISBN으로 책 정보 조회 또는 신규 생성
-        Book book = bookRepository.findByIsbn(request.isbn())
-                .orElseGet(() -> {
-                    log.info("새로운 책 정보를 등록합니다. ISBN: {}", request.isbn());
-                    return bookRepository.save(
-                            Book.builder()
-                                    .isbn(request.isbn())
-                                    .title(request.title())
-                                    .author(request.author())
-                                    .publisher(request.publisher())
-                                    .publicationYear(request.publicationYear())
-                                    // TODO: 외부 API를 통해 새 책 가격 정보를 가져오는 로직 추가 필요
-                                    .build()
-                    );
-                });
+        Book book = bookService.getOrCreateByIsbn(request.isbn());
 
         // 2. 이미지들을 S3에 업로드하고 URL 리스트를 받아옵니다.
         List<String> imageUrls = new ArrayList<>();
@@ -95,8 +80,7 @@ public class UsedBookPostService {
 
         // 4. 최종 UsedBook 엔티티 생성
         UsedBook usedBook = UsedBook.builder()
-                .seller(null) // TODO: SecurityContext에서 현재 로그인한 사용자 정보 주입 필요
-                .seller(seller)
+                .seller(seller) // TODO: SecurityContext에서 현재 로그인한 사용자 정보 주입 필요
                 .book(book)
                 .category(category)
                 .conditionGrade(request.conditionGrade())
@@ -124,4 +108,5 @@ public class UsedBookPostService {
         usedBookRepository.save(usedBook);
         log.info("새로운 중고책이 등록되었습니다. ID: {}", usedBook.getId());
     }
+}
 }
