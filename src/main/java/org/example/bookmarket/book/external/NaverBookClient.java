@@ -49,7 +49,7 @@ public class NaverBookClient {
                             .author(item.author)
                             .publisher(item.publisher)
                             .publicationYear(parseYear(item.pubdate))
-                            .newPrice(parseInt(item.discount))
+                            .newPrice(resolvePrice(item))
                             .description(item.description)
                             .coverImageUrl(item.image)
                             .build();
@@ -82,7 +82,15 @@ public class NaverBookClient {
         }
     }
 
+    private Integer resolvePrice(Item item) {
+        Integer discount = parseInt(item.discount);
+        if (discount != null && discount > 0) {
+            return discount;
+        }
+        return parseInt(item.price);
+    }
+
     private record NaverBookResponse(List<Item> items) {}
     private record Item(String title, String author, String publisher, String pubdate,
-                        String discount, String image, String description) {}
+                        String price, String discount, String image, String description) {}
 }

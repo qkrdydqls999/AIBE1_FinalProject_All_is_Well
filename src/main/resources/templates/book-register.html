@@ -24,7 +24,10 @@
                     <div class="grid grid-cols-1 md:grid-cols-2 gap-4 p-4">
                         <div>
                             <label class="font-medium text-base">ISBN</label>
-                            <input th:field="*{isbn}" placeholder="ISBN 13자리를 입력하세요" class="form-input w-full h-14 mt-2 rounded-lg border-gray-300" />
+                            <div class="flex gap-2 mt-2">
+                                <input th:field="*{isbn}" placeholder="ISBN 13자리를 입력하세요" class="form-input flex-1 h-14 rounded-lg border-gray-300" />
+                                <button type="button" id="fetch-isbn-btn" class="px-4 h-14 rounded-lg bg-gray-800 text-white font-medium">불러오기</button>
+                            </div>
                         </div>
                         <div>
                             <label class="font-medium text-base">제목</label>
@@ -113,5 +116,39 @@
 
     <div th:replace="~{fragments/footer :: footer}"></div>
 </div>
+<script>
+    document.addEventListener('DOMContentLoaded', function () {
+        const isbnInput = document.querySelector('input[name="isbn"]');
+        const titleInput = document.querySelector('input[name="title"]');
+        const authorInput = document.querySelector('input[name="author"]');
+        const publisherInput = document.querySelector('input[name="publisher"]');
+        const yearInput = document.querySelector('input[name="publicationYear"]');
+        const fetchBtn = document.getElementById('fetch-isbn-btn');
+
+        if (fetchBtn) {
+            fetchBtn.addEventListener('click', function () {
+                const isbn = isbnInput.value.trim();
+                if (!isbn) {
+                    alert('ISBN을 입력해주세요.');
+                    return;
+                }
+                fetch(`/used-books/isbn/${isbn}`)
+                    .then(r => {
+                        if (!r.ok) throw new Error('도서 정보를 불러오지 못했습니다.');
+                        return r.json();
+                    })
+                    .then(data => {
+                        titleInput.value = data.title || '';
+                        authorInput.value = data.author || '';
+                        publisherInput.value = data.publisher || '';
+                        if (data.publicationYear) {
+                            yearInput.value = data.publicationYear;
+                        }
+                    })
+                    .catch(err => alert(err.message));
+            });
+        }
+    });
+</script>
 </body>
 </html>
