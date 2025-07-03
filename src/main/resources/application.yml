@@ -1,6 +1,6 @@
 spring:
   config:
-    import: optional:file:.env
+    import: optional:dotenv:.env
   profiles:
     active: dev
 
@@ -11,8 +11,3 @@ springdoc:
   api-docs:
     enabled: true
     path: /v3/api-docs
-
-naver:
-  api:
-    client-id: ${NAVER_API_CLIENT_ID}
-    client-secret: ${NAVER_API_CLIENT_SECRET}
