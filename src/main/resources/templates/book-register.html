@@ -41,9 +41,13 @@
                             <label class="font-medium text-base">출판사</label>
                             <input th:field="*{publisher}" placeholder="출판사" class="form-input w-full h-14 mt-2 rounded-lg border-gray-300" />
                         </div>
-                        <div class="md:col-span-2">
+                        <div>
                             <label class="font-medium text-base">출판년도</label>
                             <input type="number" th:field="*{publicationYear}" placeholder="예) 2024" class="form-input w-full h-14 mt-2 rounded-lg border-gray-300" />
+                        </div>
+                        <div>
+                            <label class="font-medium text-base">희망 소비자 가격</label>
+                            <input type="number" th:field="*{newPrice}" placeholder="예) 30000" class="form-input w-full h-14 mt-2 rounded-lg border-gray-300" />
                         </div>
                     </div>
                 </section>
@@ -123,6 +127,7 @@
         const authorInput = document.querySelector('input[name="author"]');
         const publisherInput = document.querySelector('input[name="publisher"]');
         const yearInput = document.querySelector('input[name="publicationYear"]');
+        const newPriceInput = document.querySelector('input[name="newPrice"]');
         const fetchBtn = document.getElementById('fetch-isbn-btn');
 
         if (fetchBtn) {
@@ -150,6 +155,9 @@
                         publisherInput.value = data.publisher || '';
                         if (data.publicationYear) {
                             yearInput.value = data.publicationYear;
+                        }
+                        if (data.newPrice) {
+                            newPriceInput.value = data.newPrice;
                         }
                     })
                     .catch(err => {

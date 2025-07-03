@@ -6,6 +6,7 @@ import org.example.bookmarket.ai.dto.PriceSuggestResponse;
 import org.example.bookmarket.ai.service.AiService;
 import org.example.bookmarket.book.entity.Book;
 import org.example.bookmarket.book.service.BookService;
+import org.example.bookmarket.book.repository.BookRepository;
 import org.example.bookmarket.category.entity.Category;
 import org.example.bookmarket.category.repository.CategoryRepository;
 import org.example.bookmarket.common.handler.exception.CustomException;
@@ -32,6 +33,7 @@ public class UsedBookPostService {
 
     private final UsedBookRepository usedBookRepository;
     private final BookService bookService;
+    private final BookRepository bookRepository;
     private final AiService aiService;
     private final S3UploadService s3UploadService;
     private final CategoryRepository categoryRepository;
@@ -41,6 +43,14 @@ public class UsedBookPostService {
     @Transactional
     public void registerUsedBook(UsedBookPostRequest request) {
         Book book = bookService.getOrCreateByIsbn(request.isbn());
+
+        // 입력된 새 책 가격이 있다면 책 정보에 반영합니다.
+        if (request.newPrice() != null) {
+            if (book.getNewPrice() == null || !book.getNewPrice().equals(request.newPrice())) {
+                book.setNewPrice(request.newPrice());
+                bookRepository.save(book);
+            }
+        }
 
         // 2. 이미지들을 S3에 업로드하고 URL 리스트를 받아옵니다.
         List<String> imageUrls = new ArrayList<>();
@@ -63,8 +73,9 @@ public class UsedBookPostService {
         String representativeImageUrl = imageUrls.get(0); // 첫 번째 이미지를 대표 이미지로 사용
         PriceSuggestResponse aiResponse = null;
         try {
-            // TODO: book.getNewPrice() 로 실제 새 책 가격을 가져와야 합니다.
-            aiResponse = aiService.suggestPriceFromImage(representativeImageUrl, 30000);
+            int basePrice = book.getNewPrice() != null ? book.getNewPrice() :
+                    (request.newPrice() != null ? request.newPrice() : 30000);
+            aiResponse = aiService.suggestPriceFromImage(representativeImageUrl, basePrice);
         } catch (IOException e) {
             log.error("AI 이미지 분석 중 오류 발생", e);
             // AI 분석에 실패하더라도 등록은 계속 진행하되, 추천 가격 정보는 비워둡니다.
