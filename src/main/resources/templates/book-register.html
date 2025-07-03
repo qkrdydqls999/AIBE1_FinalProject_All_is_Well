@@ -133,8 +133,15 @@
                     return;
                 }
                 fetch(`/used-books/isbn/${isbn}`)
-                    .then(r => {
-                        if (!r.ok) throw new Error('도서 정보를 불러오지 못했습니다.');
+                    .then(async r => {
+                        if (!r.ok) {
+                            let msg = '도서 정보를 불러오지 못했습니다.';
+                            try {
+                                const err = await r.json();
+                                if (err.message) msg = err.message;
+                            } catch (_) {}
+                            throw new Error(msg);
+                        }
                         return r.json();
                     })
                     .then(data => {
@@ -145,7 +152,13 @@
                             yearInput.value = data.publicationYear;
                         }
                     })
-                    .catch(err => alert(err.message));
+                    .catch(err => {
+                        if (err.name === 'TypeError') {
+                            alert('API 요청에 실패했습니다.');
+                        } else {
+                            alert(err.message);
+                        }
+                    });
             });
         }
     });

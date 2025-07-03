@@ -35,6 +35,7 @@ public class BookServiceImpl implements BookService {
 
     @Override
     public Book getOrCreateByIsbn(String isbn) {
+        validateIsbn(isbn);
         return bookRepository.findByIsbn(isbn)
                 .orElseGet(() -> {
                     Book fetched = naverBookClient.fetchBook(isbn);
@@ -43,5 +44,10 @@ public class BookServiceImpl implements BookService {
                     }
                     return bookRepository.save(fetched);
                 });
+    }
+    private void validateIsbn(String isbn) {
+        if (isbn == null || !(isbn.matches("\\d{10}") || isbn.matches("\\d{13}"))) {
+            throw new CustomException(ErrorCode.INVALID_ISBN);
+        }
     }
 }

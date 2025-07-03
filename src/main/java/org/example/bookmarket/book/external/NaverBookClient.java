@@ -3,6 +3,8 @@ package org.example.bookmarket.book.external;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.example.bookmarket.book.entity.Book;
+import org.example.bookmarket.common.handler.exception.CustomException;
+import org.example.bookmarket.common.handler.exception.ErrorCode;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.http.*;
 import org.springframework.stereotype.Component;
@@ -57,6 +59,7 @@ public class NaverBookClient {
             }
         } catch (Exception e) {
             log.error("Failed to call Naver Book API", e);
+            throw new CustomException(ErrorCode.EXTERNAL_API_ERROR);
         }
         return null;
     }
