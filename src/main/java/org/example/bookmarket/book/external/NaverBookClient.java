@@ -8,6 +8,7 @@ import org.example.bookmarket.common.handler.exception.ErrorCode;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.http.*;
 import org.springframework.stereotype.Component;
+import org.springframework.web.client.RestClientResponseException;
 import org.springframework.web.client.RestTemplate;
 import org.springframework.web.util.UriComponentsBuilder;
 
@@ -44,13 +45,23 @@ public class NaverBookClient {
         headers.set("X-Naver-Client-Id", clientId);
         headers.set("X-Naver-Client-Secret", clientSecret);
 
+        if (clientId == null || clientId.isBlank() || clientSecret == null || clientSecret.isBlank()) {
+            log.error("Naver API credentials are missing. clientId={}, clientSecretPresent={}", clientId, clientSecret != null && !clientSecret.isBlank());
+            throw new CustomException(ErrorCode.EXTERNAL_API_ERROR);
+        }
+
         try {
             ResponseEntity<String> response = restTemplate.exchange(
                     url, HttpMethod.GET, new HttpEntity<>(headers), String.class);
 
             if (response.getStatusCode().is2xxSuccessful() && response.getBody() != null) {
                 return parseXml(response.getBody(), isbnInput);
+            } else {
+                log.error("Naver API call unsuccessful. status={}, body={}", response.getStatusCode(), response.getBody());
             }
+        } catch (RestClientResponseException e) {
+            log.error("Naver API request failed: status={}, body={}", e.getRawStatusCode(), e.getResponseBodyAsString());
+            throw new CustomException(ErrorCode.EXTERNAL_API_ERROR);
         } catch (Exception e) {
             log.error("Failed to call Naver Book API", e);
             throw new CustomException(ErrorCode.EXTERNAL_API_ERROR);

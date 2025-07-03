@@ -35,10 +35,11 @@ public class BookServiceImpl implements BookService {
 
     @Override
     public Book getOrCreateByIsbn(String isbn) {
-        validateIsbn(isbn);
-        return bookRepository.findByIsbn(isbn)
+        String normalized = normalizeIsbn(isbn);
+        validateIsbn(normalized);
+        return bookRepository.findByIsbn(normalized)
                 .orElseGet(() -> {
-                    Book fetched = naverBookClient.fetchBook(isbn);
+                    Book fetched = naverBookClient.fetchBook(normalized);
                     if (fetched == null) {
                         throw new CustomException(ErrorCode.BOOK_NOT_FOUND);
                     }
@@ -49,5 +50,13 @@ public class BookServiceImpl implements BookService {
         if (isbn == null || !(isbn.matches("\\d{10}") || isbn.matches("\\d{13}"))) {
             throw new CustomException(ErrorCode.INVALID_ISBN);
         }
+    }
+
+    /**
+     * Remove hyphens and spaces from the given ISBN string.
+     */
+    private String normalizeIsbn(String isbn) {
+        if (isbn == null) return null;
+        return isbn.replaceAll("[-\\s]", "");
     }
 }
