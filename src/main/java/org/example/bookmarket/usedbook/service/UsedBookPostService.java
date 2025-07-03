@@ -11,6 +11,7 @@ import org.example.bookmarket.category.entity.Category;
 import org.example.bookmarket.category.repository.CategoryRepository;
 import org.example.bookmarket.common.handler.exception.CustomException;
 import org.example.bookmarket.common.handler.exception.ErrorCode;
+import org.example.bookmarket.user.entity.SocialType;
 import org.example.bookmarket.common.service.S3UploadService;
 import org.example.bookmarket.usedbook.dto.UsedBookPostRequest;
 import org.example.bookmarket.usedbook.entity.UsedBook;
@@ -18,6 +19,9 @@ import org.example.bookmarket.usedbook.entity.UsedBookImage;
 import org.example.bookmarket.usedbook.repository.UsedBookRepository;
 import org.example.bookmarket.user.entity.User;
 import org.example.bookmarket.user.repository.UserRepository;
+import org.springframework.security.core.Authentication;
+import org.springframework.security.core.context.SecurityContextHolder;
+import org.springframework.security.oauth2.core.user.OAuth2User;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.multipart.MultipartFile;
@@ -82,16 +86,32 @@ public class UsedBookPostService {
 
         }
 
-        // 판매자와 카테고리 조회
-        User seller = userRepository.findById(request.sellerId())
-                .orElseThrow(() -> new CustomException(ErrorCode.USER_NOT_FOUND));
+        // 판매자 조회 - 현재 로그인한 사용자
+        Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
+        if (authentication == null || !authentication.isAuthenticated()) {
+            throw new CustomException(ErrorCode.LOGIN_REQUIRED);
+        }
+
+        Object principal = authentication.getPrincipal();
+        User seller = null;
+        if (principal instanceof User user) {
+            seller = user;
+        } else if (principal instanceof OAuth2User oauth2User) {
+            String socialId = oauth2User.getAttribute("id").toString();
+            seller = userRepository.findBySocialTypeAndSocialId(SocialType.KAKAO, socialId)
+                    .orElseThrow(() -> new CustomException(ErrorCode.USER_NOT_FOUND));
+        }
+
+        if (seller == null) {
+            throw new CustomException(ErrorCode.AUTHENTICATION_FAILED);
+        }
 
         Category category = categoryRepository.findById(request.categoryId())
                 .orElseThrow(() -> new CustomException(ErrorCode.CATEGORY_NOT_FOUND));
 
         // 4. 최종 UsedBook 엔티티 생성
         UsedBook usedBook = UsedBook.builder()
-                .seller(seller) // TODO: SecurityContext에서 현재 로그인한 사용자 정보 주입 필요
+                .seller(seller)
                 .book(book)
                 .category(category)
                 .conditionGrade(request.conditionGrade())
