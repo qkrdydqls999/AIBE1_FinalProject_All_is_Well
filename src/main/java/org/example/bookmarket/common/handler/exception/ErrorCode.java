@@ -49,9 +49,10 @@ public enum ErrorCode {
 
     // == 외부 시스템 연동 오류 ==
     S3_UPLOAD_FAILED(HttpStatus.INTERNAL_SERVER_ERROR, "S3 이미지 업로드에 실패했습니다."),
-    AI_ANALYSIS_FAILED(HttpStatus.INTERNAL_SERVER_ERROR, "AI 이미지 분석에 실패했습니다.");
+    AI_ANALYSIS_FAILED(HttpStatus.INTERNAL_SERVER_ERROR, "AI 이미지 분석에 실패했습니다."),
 
     // === External API Errors ===
+
     EXTERNAL_API_ERROR(HttpStatus.INTERNAL_SERVER_ERROR, "외부도서 api 호출에 실패했습니다.");
 
     private final HttpStatus statusCode;
