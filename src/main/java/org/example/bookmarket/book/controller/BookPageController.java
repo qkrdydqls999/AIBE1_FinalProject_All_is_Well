@@ -74,7 +74,7 @@ public class BookPageController {
         model.addAttribute("bookRequest", new UsedBookPostRequest(
                 null, null, null, null, null, null, null,
                 false, false, false, false, false,
-                null, null, null, null, null
+                null, null, null, null
         ));
         return "book-register";
     }

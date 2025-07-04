@@ -18,6 +18,8 @@ import org.example.bookmarket.usedbook.entity.UsedBookImage;
 import org.example.bookmarket.usedbook.repository.UsedBookRepository;
 import org.example.bookmarket.user.entity.User;
 import org.example.bookmarket.user.repository.UserRepository;
+import org.springframework.security.core.Authentication;
+import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.multipart.MultipartFile;
@@ -82,8 +84,14 @@ public class UsedBookPostService {
 
         }
 
-        // 판매자와 카테고리 조회
-        User seller = userRepository.findById(request.sellerId())
+        // 판매자 정보는 SecurityContext에서 가져옵니다.
+        Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
+        if (authentication == null || !authentication.isAuthenticated() ||
+                !(authentication.getPrincipal() instanceof User)) {
+            throw new CustomException(ErrorCode.LOGIN_REQUIRED);
+        }
+        Long userId = ((User) authentication.getPrincipal()).getId();
+        User seller = userRepository.findById(userId)
                 .orElseThrow(() -> new CustomException(ErrorCode.USER_NOT_FOUND));
 
         Category category = categoryRepository.findById(request.categoryId())
@@ -91,7 +99,7 @@ public class UsedBookPostService {
 
         // 4. 최종 UsedBook 엔티티 생성
         UsedBook usedBook = UsedBook.builder()
-                .seller(seller) // TODO: SecurityContext에서 현재 로그인한 사용자 정보 주입 필요
+                .seller(seller)
                 .book(book)
                 .category(category)
                 .conditionGrade(request.conditionGrade())
