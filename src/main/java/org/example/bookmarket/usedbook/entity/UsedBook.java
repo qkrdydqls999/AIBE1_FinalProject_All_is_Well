@@ -10,7 +10,7 @@ import org.example.bookmarket.common.TimeEntity;
 import java.util.List;
 
 @Entity
-@Table(name = "used_books")
+@Table(name = "used_book")
 @Getter
 @Setter
 @NoArgsConstructor

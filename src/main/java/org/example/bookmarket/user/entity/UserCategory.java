@@ -5,7 +5,7 @@ import lombok.*;
 import org.example.bookmarket.category.entity.Category;
 
 @Entity
-@Table(name = "user_categories")
+@Table(name = "user_category")
 @IdClass(UserCategoryId.class)
 @Getter
 @Setter

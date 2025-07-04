@@ -7,7 +7,7 @@ import org.example.bookmarket.user.entity.User;
 import org.example.bookmarket.common.TimeEntity;
 
 @Entity
-@Table(name = "transactions")
+@Table(name = "transaction")
 @Getter
 @Setter
 @NoArgsConstructor

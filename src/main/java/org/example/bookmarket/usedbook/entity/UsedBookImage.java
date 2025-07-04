@@ -4,7 +4,7 @@ import jakarta.persistence.*;
 import lombok.*;
 
 @Entity
-@Table(name = "used_book_images")
+@Table(name = "used_book_image")
 @Getter
 @Setter
 @NoArgsConstructor

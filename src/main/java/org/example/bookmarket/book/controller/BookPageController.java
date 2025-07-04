@@ -3,6 +3,7 @@ package org.example.bookmarket.book.controller;
 import lombok.RequiredArgsConstructor;
 import org.example.bookmarket.book.dto.BookResponse;
 import org.example.bookmarket.usedbook.dto.UsedBookPostRequest;
+import org.example.bookmarket.category.service.CategoryService;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -14,6 +15,9 @@ import java.util.List;
 @Controller
 @RequiredArgsConstructor
 public class BookPageController {
+
+
+    private final CategoryService categoryService;
 
     /**
      * 검색 결과 페이지를 보여주는 메소드
@@ -70,12 +74,12 @@ public class BookPageController {
      */
     @GetMapping("/used-books/new")
     public String registerBookForm(Model model) {
-
         model.addAttribute("bookRequest", new UsedBookPostRequest(
                 null, null, null, null, null, null, null,
                 false, false, false, false, false,
                 null, null, null, null
         ));
+        model.addAttribute("categories", categoryService.getAllCategories());
         return "book-register";
     }
 }
