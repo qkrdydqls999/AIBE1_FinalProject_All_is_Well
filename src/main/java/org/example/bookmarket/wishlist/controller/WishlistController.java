@@ -16,19 +16,19 @@ public class WishlistController {
     private final WishlistService wishlistService;
 
     @GetMapping
-    public ResponseEntity<List<WishlistItem>> getWishlist() {
-        return ResponseEntity.ok(wishlistService.getItems());
+    public ResponseEntity<List<WishlistItem>> getWishlist(@RequestParam Long userId) {
+        return ResponseEntity.ok(wishlistService.getItems(userId));
     }
 
     @PostMapping
-    public ResponseEntity<Void> addItem(@RequestBody WishlistItem item) {
-        wishlistService.addItem(item);
+    public ResponseEntity<Void> addItem(@RequestParam Long userId, @RequestParam Long usedBookId) {
+        wishlistService.addItem(userId, usedBookId);
         return ResponseEntity.ok().build();
     }
 
     @DeleteMapping("/{usedBookId}")
-    public ResponseEntity<Void> removeItem(@PathVariable Long usedBookId) {
-        wishlistService.removeItem(usedBookId);
+    public ResponseEntity<Void> removeItem(@RequestParam Long userId, @PathVariable Long usedBookId) {
+        wishlistService.removeItem(userId, usedBookId);
         return ResponseEntity.noContent().build();
     }
 }

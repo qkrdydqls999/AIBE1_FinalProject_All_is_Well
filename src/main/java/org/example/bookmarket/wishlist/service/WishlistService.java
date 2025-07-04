@@ -1,28 +1,23 @@
 package org.example.bookmarket.wishlist.service;
 
 import org.example.bookmarket.wishlist.dto.WishlistItem;
-import org.springframework.stereotype.Service;
 
-import java.util.ArrayList;
-import java.util.Collections;
 import java.util.List;
 
-@Service
-public class WishlistService {
-
-    private final List<WishlistItem> items = new ArrayList<>();
-
-    public List<WishlistItem> getItems() {
-        return Collections.unmodifiableList(items);
-    }
-
-    public void addItem(WishlistItem item) {
-        if (item != null) {
-            items.add(item);
-        }
-    }
-
-    public void removeItem(Long usedBookId) {
-        items.removeIf(i -> i.usedBookId().equals(usedBookId));
-    }
+/**
+ * Service interface for managing wishlist items.
+ */
+public interface WishlistService {
+    /**
+     * Retrieve all wishlist items of a user.
+     */
+    List<WishlistItem> getItems(Long userId);
+    /**
+     * Add a used book to the user's wishlist.
+     */
+    void addItem(Long userId, Long usedBookId);
+    /**
+     * Remove a used book from the user's wishlist.
+     */
+    void removeItem(Long userId, Long usedBookId);
 }

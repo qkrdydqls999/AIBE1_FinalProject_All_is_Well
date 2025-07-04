@@ -12,6 +12,7 @@ import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestParam;
 
 import java.time.LocalDateTime;
 import java.util.List;
@@ -77,11 +78,11 @@ public class ProfilePageController {
 
     // 위시리스트 페이지
     @GetMapping("/wishlist")
-    public String wishlistPage(Model model, HttpServletRequest request) {
+    public String wishlistPage(Model model, HttpServletRequest request, @RequestParam Long userId) {
         addBaseProfileInfo(model);
         model.addAttribute("currentUri", request.getRequestURI());
 
-        List<WishlistItem> wishlist = wishlistService.getItems();
+        List<WishlistItem> wishlist = wishlistService.getItems(userId);
         if (wishlist.isEmpty()) {
             wishlist = List.of(
                     new WishlistItem(301L, "이펙티브 자바", "https://images.unsplash.com/photo-1589829085413-56de8ae18c73?q=80&w=1887&auto=format&fit=crop", 25000, "판매자닉네임예시", LocalDateTime.now().minusDays(5))
