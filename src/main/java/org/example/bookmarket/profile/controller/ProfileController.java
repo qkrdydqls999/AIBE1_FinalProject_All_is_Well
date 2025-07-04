@@ -10,6 +10,7 @@ import org.example.bookmarket.usedbook.dto.UsedBookSummary;
 import org.example.bookmarket.wishlist.dto.WishlistItem;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
+import org.springframework.web.multipart.MultipartFile;
 
 import java.util.List;
 
@@ -30,6 +31,13 @@ public class ProfileController {
         profileService.updateMyProfile(userId, request);
         return ResponseEntity.noContent().build();
     }
+
+    @PostMapping("/me/image")
+    public ResponseEntity<String> uploadProfileImage(@RequestParam Long userId,
+                                                     @RequestPart MultipartFile image) {
+        return ResponseEntity.ok(profileService.uploadProfileImage(userId, image));
+    }
+
 
     @GetMapping("/me/dms")
     public ResponseEntity<List<ChatSummary>> getMyDmList(@RequestParam Long userId) {

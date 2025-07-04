@@ -94,6 +94,8 @@
                                         <p class="pl-1">또는 파일을 끌어다 놓으세요</p>
                                     </div>
                                     <p class="text-xs text-gray-500">PNG, JPG, GIF up to 10MB</p>
+                                    <p id="image-count" class="mt-2 text-sm text-gray-600"></p>
+                                    <div id="image-preview" class="mt-2 flex flex-wrap justify-center gap-2"></div>
                                 </div>
                             </div>
                         </div>
@@ -133,6 +135,31 @@
         const yearInput = document.querySelector('input[name="publicationYear"]');
         const newPriceInput = document.querySelector('input[name="newPrice"]');
         const fetchBtn = document.getElementById('fetch-isbn-btn');
+        const imageInput = document.getElementById('image-upload');
+        const imageCount = document.getElementById('image-count');
+        const imagePreview = document.getElementById('image-preview');
+
+        if (imageInput) {
+            imageInput.addEventListener('change', function () {
+                imagePreview.innerHTML = '';
+                const files = Array.from(imageInput.files || []);
+                if (files.length > 0) {
+                    imageCount.textContent = `${files.length}개 파일이 업로드되었습니다.`;
+                    files.forEach(file => {
+                        const reader = new FileReader();
+                        reader.onload = e => {
+                            const img = document.createElement('img');
+                            img.src = e.target.result;
+                            img.className = 'w-24 h-24 object-cover rounded-md';
+                            imagePreview.appendChild(img);
+                        };
+                        reader.readAsDataURL(file);
+                    });
+                } else {
+                    imageCount.textContent = '';
+                }
+            });
+        }
 
         if (fetchBtn) {
             fetchBtn.addEventListener('click', function () {

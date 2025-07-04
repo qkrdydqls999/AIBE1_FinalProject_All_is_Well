@@ -119,4 +119,33 @@ public class UsedBookPostService {
         usedBookRepository.save(usedBook);
         log.info("새로운 중고책이 등록되었습니다. ID: {}", usedBook.getId());
     }
+
+    @Transactional
+    public List<String> addImages(Long usedBookId, List<MultipartFile> images) {
+        UsedBook usedBook = usedBookRepository.findById(usedBookId)
+                .orElseThrow(() -> new CustomException(ErrorCode.USED_BOOK_NOT_FOUND));
+        if (images == null || images.isEmpty()) {
+            throw new CustomException(ErrorCode.USED_BOOK_IMAGE_REQUIRED);
+        }
+
+        List<String> urls = new ArrayList<>();
+        List<UsedBookImage> newImages = new ArrayList<>();
+        for (MultipartFile file : images) {
+            if (file != null && !file.isEmpty()) {
+                String url = s3UploadService.upload(file, "used-book-images");
+                urls.add(url);
+                newImages.add(UsedBookImage.builder()
+                        .usedBook(usedBook)
+                        .imageUrl(url)
+                        .build());
+            }
+        }
+        if (usedBook.getImages() == null) {
+            usedBook.setImages(newImages);
+        } else {
+            usedBook.getImages().addAll(newImages);
+        }
+        usedBookRepository.save(usedBook);
+        return urls;
+    }
 }

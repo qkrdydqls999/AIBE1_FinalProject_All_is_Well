@@ -7,6 +7,9 @@ import org.example.bookmarket.usedbook.dto.UsedBookPostRequest;
 import org.example.bookmarket.usedbook.service.UsedBookPostService;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
+import org.springframework.web.multipart.MultipartFile;
+import java.util.List;
+
 
 @RestController
 @RequestMapping("/used-books")
@@ -25,5 +28,11 @@ public class UsedBookPostController {
     public ResponseEntity<String> registerUsedBook(@ModelAttribute UsedBookPostRequest request) {
         postService.registerUsedBook(request);
         return ResponseEntity.ok("중고도서가 등록되었습니다.");
+    }
+
+    @PostMapping("/{id}/images")
+    public ResponseEntity<List<String>> uploadImages(@PathVariable Long id,
+                                                     @RequestPart List<MultipartFile> images) {
+        return ResponseEntity.ok(postService.addImages(id, images));
     }
 }

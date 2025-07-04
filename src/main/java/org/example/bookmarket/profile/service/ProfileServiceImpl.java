@@ -8,6 +8,9 @@ import org.example.bookmarket.chat.repository.ChatChannelRepository;
 import org.example.bookmarket.chat.repository.ChatMessageRepository;
 import org.example.bookmarket.profile.dto.ProfileResponse;
 import org.example.bookmarket.profile.dto.ProfileUpdateRequest;
+import org.example.bookmarket.common.service.S3UploadService;
+import org.example.bookmarket.common.handler.exception.CustomException;
+import org.example.bookmarket.common.handler.exception.ErrorCode;
 import org.example.bookmarket.trade.dto.PurchaseSummary;
 import org.example.bookmarket.trade.entity.Trade;
 import org.example.bookmarket.trade.repository.TradeRepository;
@@ -23,6 +26,7 @@ import org.example.bookmarket.category.entity.Category;
 import org.example.bookmarket.category.repository.CategoryRepository;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+import org.springframework.web.multipart.MultipartFile;
 
 import java.util.List;
 import java.util.stream.Collectors;
@@ -38,6 +42,7 @@ public class ProfileServiceImpl implements ProfileService {
     private final TradeRepository tradeRepository;
     private final ChatChannelRepository chatChannelRepository;
     private final ChatMessageRepository chatMessageRepository;
+    private final S3UploadService s3UploadService;
 
     @Override
     @Transactional(readOnly = true)
@@ -78,6 +83,21 @@ public class ProfileServiceImpl implements ProfileService {
         }
         userRepository.save(user);
     }
+
+    @Override
+    @Transactional
+    public String uploadProfileImage(Long userId, MultipartFile image) {
+        User user = userRepository.findById(userId)
+                .orElseThrow(() -> new CustomException(ErrorCode.PROFILE_USER_NOT_FOUND));
+        if (image == null || image.isEmpty()) {
+            throw new CustomException(ErrorCode.INVALID_PROFILE_IMAGE);
+        }
+        String url = s3UploadService.upload(image, "profile-images");
+        user.setProfileImageUrl(url);
+        userRepository.save(user);
+        return url;
+    }
+
     @Override
     @Transactional(readOnly = true)
     public List<ChatSummary> getMyDmList(Long userId) {
