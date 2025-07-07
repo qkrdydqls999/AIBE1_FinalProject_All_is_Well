@@ -43,26 +43,25 @@ public class UsedBookQueryServiceImpl implements UsedBookQueryService {
                 ub.getBook().getPublisher(),
                 ub.getBook().getPublicationYear(),
                 ub.getConditionGrade(),
-                ub.isHasWriting(),
-                ub.isHasStains(),
-                ub.isHasTears(),
-                ub.isHasWaterDamage(),
-                ub.isLikeNew(),
                 ub.getDetailedCondition(),
                 ub.getSellingPrice(),
                 ub.getStatus(),
                 ub.getCategory().getId(),
-                ub.getSeller() != null ? ub.getSeller().getId() : null
+                ub.getSeller() != null ? ub.getSeller().getId() : null,
+                ub.getBook().getCoverImageUrl() // [추가] Book 엔티티에서 표지 이미지 URL을 가져옵니다.
         );
     }
 
     private UsedBookSummary toSummary(UsedBook ub) {
+        // [수정] 첫 번째 이미지 URL을 썸네일로 사용합니다.
+        String thumbnailUrl = ub.getImages().isEmpty() ? null : ub.getImages().get(0).getImageUrl();
+
         return new UsedBookSummary(
                 ub.getId(),
                 ub.getBook().getTitle(),
                 ub.getSellingPrice(),
                 ub.getStatus(),
-                null,
+                thumbnailUrl, // 썸네일 URL 전달
                 ub.getUpdatedAt()
         );
     }
