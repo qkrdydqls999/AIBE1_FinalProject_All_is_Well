@@ -17,9 +17,6 @@ public class AuthService {
 
     private final UserRepository userRepository;
     private final PasswordEncoder passwordEncoder;
-    // [제거] AuthenticationManager, JwtTokenProvider, RedisService 의존성 모두 제거
-
-    // [제거] login 메서드 전체 삭제 (Spring Security가 formLogin으로 자동 처리)
 
     @Transactional
     public void signUp(SignUpRequest request) {

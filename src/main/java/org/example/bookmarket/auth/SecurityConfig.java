@@ -50,7 +50,7 @@ public class SecurityConfig {
                                 "/used-books/register", // 등록 페이지
                                 "/used-books/{bookId}", // 상세 페이지
 
-                                // [수정] API 관련 경로 허용
+                                // API 관련 경로 허용
                                 "/api/used-books",          // 전체 책 목록 조회 API
                                 "/api/used-books/isbn/**"   // ISBN 조회 API (와일드카드 사용)
 
@@ -60,7 +60,6 @@ public class SecurityConfig {
                 .formLogin(form -> form
                         .loginPage("/auth/login")
                         .loginProcessingUrl("/auth/login")
-                        .defaultSuccessUrl("/", true)
                         .failureUrl("/auth/login?error=true")
                 )
                 .oauth2Login(oauth2 -> oauth2

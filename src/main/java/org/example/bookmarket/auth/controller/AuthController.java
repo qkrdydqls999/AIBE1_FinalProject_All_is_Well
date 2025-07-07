@@ -2,54 +2,55 @@ package org.example.bookmarket.auth.controller;
 
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
-// [제거] 더 이상 사용하지 않는 LoginRequest, LoginResponse DTO를 import 목록에서 삭제합니다.
-// import org.example.bookmarket.auth.dto.LoginRequest;
-// import org.example.bookmarket.auth.dto.LoginResponse;
 import org.example.bookmarket.auth.dto.SignUpRequest;
-import org.example.bookmarket.auth.service.AuthService;
-// [제거] ResponseEntity, @ResponseBody, @RequestBody, @PostMapping도 더 이상 필요 없습니다.
-// import org.springframework.http.ResponseEntity;
+import org.example.bookmarket.user.service.UserService;
 import org.springframework.stereotype.Controller;
+import org.springframework.ui.Model;
+import org.springframework.validation.BindingResult;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.ModelAttribute;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 
 @Controller
-@RequestMapping("/auth")
 @RequiredArgsConstructor
+@RequestMapping("/auth")
 public class AuthController {
 
-    private final AuthService authService;
+    private final UserService userService;
 
-    // [제거] JWT 토큰을 반환하던 /api/login 엔드포인트를 완전히 삭제합니다.
-    // 이 역할은 이제 SecurityConfig의 formLogin()이 자동으로 처리합니다.
-    /*
-    @PostMapping("/api/login")
-    @ResponseBody
-    public ResponseEntity<LoginResponse> apiLogin(@Valid @RequestBody LoginRequest request) {
-        LoginResponse tokenInfo = authService.login(request);
-        return ResponseEntity.ok(tokenInfo);
-    }
-    */
-
-    // [페이지 반환] 로그인 페이지를 보여줍니다. (이 코드는 올바르며, 유지해야 합니다.)
+    // 로그인 페이지를 보여주는 메소드
     @GetMapping("/login")
     public String loginPage() {
-        return "login"; // "login.html" 템플릿을 렌더링합니다.
+        return "login"; // templates/login.html
     }
 
-    // [페이지 반환] 회원가입 페이지를 보여줍니다. (이 코드는 올바르며, 유지해야 합니다.)
+    // 회원가입 페이지를 보여주는 메소드
     @GetMapping("/signup")
-    public String signupPage() {
-        return "signup"; // "signup.html" 템플릿을 렌더링합니다.
+    public String signupPage(Model model) {
+        // Thymeleaf 폼에서 사용할 수 있도록 빈 DTO 객체를 모델에 추가
+        model.addAttribute("signUpRequest", new SignUpRequest(null, null, null));
+        return "signup"; // templates/signup.html
     }
 
-    // [기능 처리] 회원가입을 처리합니다. (이 코드는 올바르며, 유지해야 합니다.)
+    // 회원가입 요청을 처리하는 메소드
     @PostMapping("/signup")
-    public String signup(@Valid @ModelAttribute SignUpRequest request) {
-        authService.signUp(request);
-        // 회원가입 성공 후 로그인 페이지로 리다이렉트합니다.
+    public String signup(@Valid @ModelAttribute("signUpRequest") SignUpRequest request, BindingResult bindingResult, Model model) {
+        // 1. 유효성 검사(Validation)에 실패하면 에러와 함께 가입 페이지로 다시 이동
+        if (bindingResult.hasErrors()) {
+            return "signup";
+        }
+
+        try {
+            // 2. 서비스 로직 호출
+            userService.signUp(request);
+        } catch (IllegalArgumentException e) {
+            // 3. 서비스에서 중복 이메일 등 예외가 발생하면 에러 메시지를 모델에 담아 가입 페이지로 이동
+            model.addAttribute("errorMessage", e.getMessage());
+            return "signup";
+        }
+
+        // 4. 회원가입 성공 시 로그인 페이지로 이동
         return "redirect:/auth/login";
     }
 }
