@@ -7,7 +7,6 @@ import org.springframework.web.multipart.MultipartFile;
 
 import java.util.List;
 
-// record를 class로 변경하고, Lombok 애너테이션을 추가합니다.
 @Getter
 @Setter
 @NoArgsConstructor

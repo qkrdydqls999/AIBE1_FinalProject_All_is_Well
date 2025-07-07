@@ -13,7 +13,7 @@ import java.util.List;
 @Entity
 @Table(name = "used_book")
 @Getter
-@NoArgsConstructor(access = AccessLevel.PROTECTED) // [개선] 무분별한 생성을 막습니다.
+@NoArgsConstructor(access = AccessLevel.PROTECTED) // 무분별한 생성을 막습니다.
 public class UsedBook extends TimeEntity {
 
     @Id
@@ -45,11 +45,11 @@ public class UsedBook extends TimeEntity {
 
     private String status;
 
-    // [개선] Setter 대신 연관관계 편의 메서드를 사용하고, NullPointerException 방지를 위해 초기화합니다.
+    // NullPointerException 방지를 위해 초기화합니다.
     @OneToMany(mappedBy = "usedBook", cascade = CascadeType.ALL, orphanRemoval = true)
     private List<UsedBookImage> images = new ArrayList<>();
 
-    // [개선] @Builder를 클래스가 아닌 생성자에 직접 적용하여 안정성을 높입니다.
+    //  @Builder를 클래스가 아닌 생성자에 직접 적용하여 안정성을 높입니다.
     @Builder
     public UsedBook(User seller, Book book, Category category, String conditionGrade, String detailedCondition,
                     Integer sellingPrice, Integer aiSuggestedMinPrice, Integer aiSuggestedMaxPrice,
@@ -66,7 +66,6 @@ public class UsedBook extends TimeEntity {
         this.status = status;
     }
 
-    // [개선] 연관관계의 주인이 직접 상태를 변경하도록 편의 메서드를 제공합니다.
     public void setImages(List<UsedBookImage> images) {
         this.images.clear();
         if (images != null) {

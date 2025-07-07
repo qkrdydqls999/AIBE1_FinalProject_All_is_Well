@@ -43,7 +43,6 @@ public class WishlistServiceImpl implements WishlistService {
             return;
         }
 
-        // orElseThrow에서 직접 정의한 CustomException과 ErrorCode를 사용합니다.
         User user = userRepository.findById(userId)
                 .orElseThrow(() -> new CustomException(ErrorCode.USER_NOT_FOUND));
 
@@ -60,8 +59,8 @@ public class WishlistServiceImpl implements WishlistService {
     @Override
     @Transactional
     public void removeItem(Long userId, Long usedBookId) {
-        // [수정] 삭제할 위시리스트 아이템을 조회하고, 없으면 USED_BOOK_NOT_FOUND를 사용합니다.
-        // "위시리스트에 없는 책"은 결국 "찾을 수 없는 책"의 한 종류로 볼 수 있으므로 기존 코드를 재사용합니다.
+        //  삭제할 위시리스트 아이템을 조회하고, 없으면 USED_BOOK_NOT_FOUND를 사용합니다.
+
         Wishlist wishlistItem = wishlistRepository.findByUserIdAndUsedBookId(userId, usedBookId)
                 .orElseThrow(() -> new CustomException(ErrorCode.USED_BOOK_NOT_FOUND));
 

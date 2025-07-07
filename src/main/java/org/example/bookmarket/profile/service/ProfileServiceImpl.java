@@ -96,8 +96,6 @@ public class ProfileServiceImpl implements ProfileService {
                     .collect(Collectors.toList());
             userCategoryRepository.saveAll(userCategories);
         }
-        // No need to call userRepository.save(user) explicitly,
-        // @Transactional will handle the update on the modified 'user' entity (dirty checking).
     }
 
     @Override
@@ -110,7 +108,6 @@ public class ProfileServiceImpl implements ProfileService {
         }
         String url = s3UploadService.upload(image, "profile-images");
         user.setProfileImageUrl(url);
-        // No need to call save() here either due to @Transactional
         return url;
     }
 
@@ -125,7 +122,6 @@ public class ProfileServiceImpl implements ProfileService {
                     ChatMessage lastMsg = chatMessageRepository
                             .findFirstByChannelOrderBySentAtDesc(ch)
                             .orElse(null);
-                    // [IMPROVEMENT] Get the partner User object to access more info like profile image
                     User partner = ch.getUser1().getId().equals(userId) ? ch.getUser2() : ch.getUser1();
                     String lastContent = (lastMsg != null) ? lastMsg.getMessageContent() : "대화를 시작해보세요.";
                     return new ChatSummary(ch.getId(), lastContent, partner.getNickname(), ch.getLastMessageAt());
@@ -145,7 +141,6 @@ public class ProfileServiceImpl implements ProfileService {
                         ub.getBook().getTitle(),
                         ub.getSellingPrice(),
                         ub.getStatus(),
-                        // [IMPROVEMENT] Safely get the first image URL
                         (ub.getImages() != null && !ub.getImages().isEmpty()) ? ub.getImages().get(0).getImageUrl() : null,
                         ub.getUpdatedAt()))
                 .collect(Collectors.toList());

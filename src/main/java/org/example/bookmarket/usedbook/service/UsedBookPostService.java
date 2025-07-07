@@ -46,10 +46,8 @@ public class UsedBookPostService {
 
     @Transactional
     public void registerUsedBook(UsedBookPostRequest request) {
-        // [개선] 공통 메서드를 사용하여 현재 사용자 정보를 가져옵니다.
         User seller = getCurrentUser();
 
-        // [수정] UsedBookPostRequest가 record에서 class로 변경되었으므로, getter 메서드를 사용합니다.
         Book book = bookService.getOrCreateByIsbn(request.getIsbn());
 
         // 정가 정보 업데이트 로직
@@ -80,11 +78,11 @@ public class UsedBookPostService {
         String representativeImageUrl = imageUrls.get(0);
         PriceSuggestResponse aiResponse = null;
         try {
-            // [개선] AI 분석을 위한 기본 가격 설정 로직을 간소화합니다.
+            //  AI 분석을 위한 기본 가격 설정 로직을 간소화합니다.
             int basePrice = Objects.requireNonNullElse(book.getNewPrice(), 30000);
             aiResponse = aiService.suggestPriceFromImage(representativeImageUrl, basePrice);
         } catch (IOException e) {
-            // [개선] 오류 로깅 시 컨텍스트(ISBN)를 포함하여 추적을 용이하게 합니다.
+            //  오류 로깅 시 컨텍스트(ISBN)를 포함하여 추적을 용이하게 합니다.
             log.error("AI 이미지 분석 중 오류 발생. ISBN: {}", request.getIsbn(), e);
         }
 
@@ -107,7 +105,7 @@ public class UsedBookPostService {
         List<UsedBookImage> usedBookImages = imageUrls.stream()
                 .map(url -> UsedBookImage.builder().imageUrl(url).build())
                 .toList();
-        usedBook.setImages(usedBookImages); // 연관관계 편의 메서드 사용
+        usedBook.setImages(usedBookImages);
 
         usedBookRepository.save(usedBook);
         log.info("새로운 중고책이 등록되었습니다. ID: {}", usedBook.getId());
@@ -125,7 +123,6 @@ public class UsedBookPostService {
 
         Object principal = authentication.getPrincipal();
         if (principal instanceof User user) {
-            // 일반 로그인 사용자 처리
             return user;
         } else if (principal instanceof OAuth2User oauth2User) {
             // OAuth2 로그인 사용자 처리

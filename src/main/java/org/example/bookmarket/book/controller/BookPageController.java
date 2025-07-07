@@ -24,7 +24,7 @@ public class BookPageController {
     private final UsedBookQueryService usedBookQueryService;
     private final CategoryService categoryService;
     private final BookIsbnService bookIsbnService;
-    private final UsedBookPostService usedBookPostService; // [추가] 책 등록 처리를 위해 주입
+    private final UsedBookPostService usedBookPostService; //책 등록 처리를 위해 주입
 
     @GetMapping("/search")
     public String search(@RequestParam(value = "keyword", required = false, defaultValue = "") String keyword, Model model) {

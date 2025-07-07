@@ -48,12 +48,12 @@ public class UsedBookQueryServiceImpl implements UsedBookQueryService {
                 ub.getStatus(),
                 ub.getCategory().getId(),
                 ub.getSeller() != null ? ub.getSeller().getId() : null,
-                ub.getBook().getCoverImageUrl() // [추가] Book 엔티티에서 표지 이미지 URL을 가져옵니다.
+                ub.getBook().getCoverImageUrl() //  Book 엔티티에서 표지 이미지 URL을 가져옵니다.
         );
     }
 
     private UsedBookSummary toSummary(UsedBook ub) {
-        // [수정] 첫 번째 이미지 URL을 썸네일로 사용합니다.
+        //  첫 번째 이미지 URL을 썸네일로 사용합니다.
         String thumbnailUrl = ub.getImages().isEmpty() ? null : ub.getImages().get(0).getImageUrl();
 
         return new UsedBookSummary(
