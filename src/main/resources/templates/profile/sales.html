@@ -41,7 +41,9 @@
                             <td colspan="5" class="text-center p-8 text-gray-500">판매 내역이 없습니다.</td>
                         </tr>
                         <tr th:each="item : ${salesList}" class="border-b hover:bg-gray-50">
-                            <td class="px-6 py-4 font-medium text-gray-900 whitespace-nowrap" th:text="${item.title}">책 제목</td>
+                            <td class="px-6 py-4 font-medium text-gray-900 whitespace-nowrap">
+                                <a th:href="@{/used-books/{id}(id=${item.usedBookId})}" th:text="${item.title}" class="text-blue-600 hover:underline"></a>
+                            </td>
                             <td class="px-6 py-4" th:text="${#numbers.formatInteger(item.price, 3, 'COMMA')} + '원'">10,000원</td>
                             <td class="px-6 py-4">
                   <span th:text="${item.status}"
