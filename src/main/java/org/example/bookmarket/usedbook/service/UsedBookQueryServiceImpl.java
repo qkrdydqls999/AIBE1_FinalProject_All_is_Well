@@ -7,6 +7,8 @@ import org.example.bookmarket.usedbook.entity.UsedBook;
 import org.example.bookmarket.usedbook.repository.UsedBookRepository;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Sort;
 
 import java.util.List;
 import java.util.stream.Collectors;
@@ -30,6 +32,15 @@ public class UsedBookQueryServiceImpl implements UsedBookQueryService {
     public List<UsedBookSummary> getAllUsedBooks() {
         return usedBookRepository.findAll().stream()
                 .map(this::toSummary)
+                .collect(Collectors.toList());
+    }
+
+    @Override
+    @Transactional(readOnly = true)
+    public List<UsedBookResponse> getLatestUsedBooks(int limit) {
+        PageRequest pageRequest = PageRequest.of(0, limit, Sort.by(Sort.Direction.DESC, "id"));
+        return usedBookRepository.findAll(pageRequest).stream()
+                .map(this::toResponse)
                 .collect(Collectors.toList());
     }
 
