@@ -105,6 +105,7 @@
                                         </label>
                                         <p class="pl-1">또는 드래그 앤 드롭</p>
                                     </div>
+                                    <p id="image-list" class="mt-2 text-sm text-gray-600"></p>
                                     <p class="text-xs leading-5 text-gray-600">PNG, JPG, GIF up to 10MB</p>
                                 </div>
                             </div>
@@ -126,7 +127,7 @@
 </div>
 
 <script>
-    document.getElementById('isbn-search-btn').addEventListener('click', function() {
+document.getElementById('isbn-search-btn').addEventListener('click', function() {
         const isbn = document.getElementById('isbn-input').value;
         if (!isbn) {
             alert('ISBN을 입력해주세요.');
@@ -151,8 +152,14 @@
             .catch(error => {
                 alert(error.message);
                 console.error('Error fetching book info:', error);
-            });
     });
+    const fileInput = document.getElementById('images');
+    const listEl = document.getElementById('image-list');
+    fileInput.addEventListener('change', () => {
+        const names = Array.from(fileInput.files).map(f => f.name).join(', ');
+        listEl.textContent = names || '선택된 파일 없음';
+    });
+});
 </script>
 </body>
 </html>
