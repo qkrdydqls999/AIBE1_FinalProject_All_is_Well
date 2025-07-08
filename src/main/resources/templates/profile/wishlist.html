@@ -43,7 +43,9 @@
                             <td colspan="5" class="text-center p-8 text-gray-500">찜한 상품이 없습니다.</td>
                         </tr>
                         <tr th:each="item : ${wishlist}" class="border-b hover:bg-gray-50">
-                            <td class="px-6 py-4 font-medium text-gray-900 whitespace-nowrap" th:text="${item.title}">책 제목</td>
+                            <td class="px-6 py-4 font-medium text-gray-900 whitespace-nowrap">
+                                <a th:href="@{/used-books/{id}(id=${item.usedBookId})}" th:text="${item.title}" class="text-blue-600 hover:underline">책 제목</a>
+                            </td>
                             <td class="px-6 py-4" th:text="${#numbers.formatInteger(item.price, 3, 'COMMA')} + '원'">8,000원</td>
                             <td class="px-6 py-4" th:text="${item.sellerNickname ?: '-'}">판매자</td>
                             <td class="px-6 py-4" th:text="${#temporals.format(item.createdAt, 'yyyy-MM-dd')}">2025-06-26</td>
