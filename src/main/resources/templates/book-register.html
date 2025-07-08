@@ -3,21 +3,19 @@
 <head>
     <meta charset="UTF-8" />
     <title>중고책 판매 등록 - 북적북적</title>
+
+    <meta name="_csrf" th:content="${_csrf.token}"/>
+    <meta name="_csrf_header" th:content="${_csrf.headerName}"/>
+
     <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Noto+Sans:wght@400;500;700;900&family=Plus+Jakarta+Sans:wght@400;500;700;800&display=swap" />
     <script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
 </head>
 <body class="relative flex min-h-screen flex-col bg-white" style="font-family: 'Plus Jakarta Sans', 'Noto Sans', sans-serif;">
 <div class="flex flex-col grow layout-container">
-    <!-- 헤더 프래그먼트 포함 -->
     <div th:replace="~{fragments/header :: header}"></div>
 
     <main class="flex-1 flex justify-center px-6 md:px-40 py-6">
         <div class="w-full max-w-[960px] flex flex-col">
-            <!--
-              [핵심 수정]
-              폼의 제출 경로(action)를 페이지 이동을 처리할 수 있는 BookPageController의 '/used-books'로 설정합니다.
-              enctype="multipart/form-data"는 파일(이미지) 업로드를 위해 반드시 필요합니다.
-            -->
             <form th:action="@{/used-books}" th:object="${bookRequest}" method="post" enctype="multipart/form-data" class="space-y-12">
 
                 <section>
@@ -25,44 +23,42 @@
                     <p class="text-base text-gray-600">판매하실 중고책의 정보를 입력해주세요.</p>
                 </section>
 
-                <!-- ISBN 검색 섹션 -->
                 <div class="border-b border-gray-900/10 pb-12">
                     <h2 class="text-base font-semibold leading-7 text-gray-900">ISBN으로 책 정보 자동 완성</h2>
                     <p class="mt-1 text-sm leading-6 text-gray-600">ISBN을 입력하고 검색 버튼을 누르면 책 정보가 자동으로 입력됩니다.</p>
                     <div class="mt-10 grid grid-cols-1 gap-x-6 gap-y-8 sm:grid-cols-6">
                         <div class="sm:col-span-4">
-                            <label for="isbn" class="block text-sm font-medium leading-6 text-gray-900">ISBN</label>
+                            <label for="isbn-input" class="block text-sm font-medium leading-6 text-gray-900">ISBN</label>
                             <div class="mt-2 flex rounded-md shadow-sm">
-                                <input type="text" id="isbn-input" th:field="*{isbn}" class="block w-full flex-1 rounded-none rounded-l-md border-0 py-1.5 text-gray-900 ring-1 ring-inset ring-gray-300 placeholder:text-gray-400 focus:ring-2 focus:ring-inset focus:ring-indigo-600 sm:text-sm sm:leading-6" placeholder="'-' 없이 숫자만 입력하세요">
+                                <input type="text" id="isbn-input" th:field="*{isbn}" class="block w-full flex-1 rounded-none rounded-l-md border-0 py-1.5 text-gray-900 ring-1 ring-inset ring-gray-300" placeholder="'-' 없이 숫자만 입력하세요">
                                 <button type="button" id="isbn-search-btn" class="relative -ml-px inline-flex items-center gap-x-1.5 rounded-r-md px-3 py-2 text-sm font-semibold text-gray-900 ring-1 ring-inset ring-gray-300 hover:bg-gray-50">ISBN 검색</button>
                             </div>
                         </div>
                     </div>
                 </div>
 
-                <!-- 책 정보 입력 섹션 -->
                 <div class="border-b border-gray-900/10 pb-12">
                     <h2 class="text-base font-semibold leading-7 text-gray-900">책 정보</h2>
                     <div class="mt-10 grid grid-cols-1 gap-x-6 gap-y-8 sm:grid-cols-6">
                         <div class="sm:col-span-4">
                             <label for="title" class="block text-sm font-medium leading-6 text-gray-900">제목</label>
-                            <input type="text" id="title" th:field="*{title}" class="mt-2 block w-full rounded-md border-0 py-1.5 text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 placeholder:text-gray-400 focus:ring-2 focus:ring-inset focus:ring-indigo-600 sm:text-sm sm:leading-6">
+                            <input type="text" id="title" th:field="*{title}" class="mt-2 block w-full rounded-md border-0 py-1.5 text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300">
                         </div>
                         <div class="sm:col-span-3">
                             <label for="author" class="block text-sm font-medium leading-6 text-gray-900">저자</label>
-                            <input type="text" id="author" th:field="*{author}" class="mt-2 block w-full rounded-md border-0 py-1.5 text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 placeholder:text-gray-400 focus:ring-2 focus:ring-inset focus:ring-indigo-600 sm:text-sm sm:leading-6">
+                            <input type="text" id="author" th:field="*{author}" class="mt-2 block w-full rounded-md border-0 py-1.5 text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300">
                         </div>
                         <div class="sm:col-span-3">
                             <label for="publisher" class="block text-sm font-medium leading-6 text-gray-900">출판사</label>
-                            <input type="text" id="publisher" th:field="*{publisher}" class="mt-2 block w-full rounded-md border-0 py-1.5 text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 placeholder:text-gray-400 focus:ring-2 focus:ring-inset focus:ring-indigo-600 sm:text-sm sm:leading-6">
+                            <input type="text" id="publisher" th:field="*{publisher}" class="mt-2 block w-full rounded-md border-0 py-1.5 text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300">
                         </div>
                         <div class="sm:col-span-2">
                             <label for="publicationYear" class="block text-sm font-medium leading-6 text-gray-900">출판년도</label>
-                            <input type="number" id="publicationYear" th:field="*{publicationYear}" class="mt-2 block w-full rounded-md border-0 py-1.5 text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 placeholder:text-gray-400 focus:ring-2 focus:ring-inset focus:ring-indigo-600 sm:text-sm sm:leading-6">
+                            <input type="number" id="publicationYear" th:field="*{publicationYear}" class="mt-2 block w-full rounded-md border-0 py-1.5 text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300">
                         </div>
                         <div class="sm:col-span-4">
                             <label for="categoryId" class="block text-sm font-medium leading-6 text-gray-900">카테고리</label>
-                            <select id="categoryId" th:field="*{categoryId}" class="mt-2 block w-full rounded-md border-0 py-1.5 text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 focus:ring-2 focus:ring-inset focus:ring-indigo-600 sm:max-w-xs sm:text-sm sm:leading-6">
+                            <select id="categoryId" th:field="*{categoryId}" class="mt-2 block w-full rounded-md border-0 py-1.5 text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300">
                                 <option value="">카테고리를 선택하세요</option>
                                 <option th:each="category : ${categories}" th:value="${category.id}" th:text="${category.name}"></option>
                             </select>
@@ -70,17 +66,61 @@
                     </div>
                 </div>
 
-                <!-- 판매 정보 입력 섹션 -->
                 <div class="border-b border-gray-900/10 pb-12">
                     <h2 class="text-base font-semibold leading-7 text-gray-900">판매 정보</h2>
+
+                    <div class="col-span-full mt-10">
+                        <label for="images" class="block text-sm font-medium leading-6 text-gray-900">책 사진 (첫 번째 사진이 AI 분석에 사용됩니다)</label>
+                        <div id="image-upload-box" class="mt-2 flex justify-center items-center rounded-lg border border-dashed border-gray-900/25 px-6 py-10 relative">
+                            <div id="preview-container" class="hidden relative">
+                                <img id="image-preview" src="#" alt="Image preview" class="h-48 rounded-lg" />
+                                <button type="button" id="remove-image-btn" class="absolute top-1 right-1 bg-red-600 text-white rounded-full p-1 leading-none hover:bg-red-700">
+                                    <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12" /></svg>
+                                </button>
+                            </div>
+                            <div id="image-placeholder" class="text-center">
+                                <svg class="mx-auto h-12 w-12 text-gray-300" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"><path fill-rule="evenodd" d="M1.5 6a2.25 2.25 0 012.25-2.25h16.5A2.25 2.25 0 0122.5 6v12a2.25 2.25 0 01-2.25 2.25H3.75A2.25 2.25 0 011.5 18V6zM3 16.06V18c0 .414.336.75.75.75h16.5A.75.75 0 0021 18v-1.94l-2.69-2.689a1.5 1.5 0 00-2.12 0l-.88.879.97.97a.75.75 0 11-1.06 1.06l-5.16-5.159a1.5 1.5 0 00-2.12 0L3 16.061zm10.125-7.81a1.125 1.125 0 112.25 0 1.125 1.125 0 01-2.25 0z" clip-rule="evenodd" /></svg>
+                                <div class="mt-4 flex text-sm leading-6 text-gray-600">
+                                    <label for="images" class="relative cursor-pointer rounded-md bg-white font-semibold text-indigo-600 hover:text-indigo-500">
+                                        <span>파일 업로드</span>
+                                        <input id="images" name="images" type="file" class="sr-only" multiple accept="image/*">
+                                    </label>
+                                    <p class="pl-1">또는 드래그 앤 드롭</p>
+                                </div>
+                                <p class="text-xs leading-5 text-gray-600">PNG, JPG, GIF up to 10MB</p>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="col-span-full mt-8">
+                        <label for="newPrice" class="block text-sm font-medium leading-6 text-gray-900">새 책 정가 (AI 추천에 필요)</label>
+                        <input type="number" id="newPrice" th:field="*{newPrice}" class="mt-2 block w-full rounded-md border-0 py-1.5 text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300" placeholder="정가를 숫자로 입력">
+
+                        <button type="button" id="ai-analyze-btn" class="mt-4 rounded-md bg-blue-600 px-4 py-2 text-sm font-semibold text-white shadow-sm hover:bg-blue-500">
+                            AI로 가격 추천받기 ✨
+                        </button>
+                    </div>
+
+                    <div id="ai-suggestion-box" class="col-span-full pt-6" style="display: none;">
+                        <h3 class="text-base font-semibold leading-7 text-gray-900">AI 분석 결과</h3>
+                        <div class="mt-4 p-4 bg-gray-50 rounded-lg space-y-2">
+                            <p class="text-sm text-gray-600">
+                                <strong>감지된 결함:</strong> <span id="ai-defects" class="font-medium text-gray-900"></span>
+                            </p>
+                            <p class="mt-2 text-sm text-gray-600">
+                                <strong>추천 가격 범위:</strong> <span id="ai-price-range" class="font-medium text-blue-600 text-lg"></span>
+                            </p>
+                        </div>
+                    </div>
+
                     <div class="mt-10 grid grid-cols-1 gap-x-6 gap-y-8 sm:grid-cols-6">
                         <div class="sm:col-span-2">
-                            <label for="sellingPrice" class="block text-sm font-medium leading-6 text-gray-900">판매 가격 (원)</label>
-                            <input type="number" id="sellingPrice" th:field="*{sellingPrice}" class="mt-2 block w-full rounded-md border-0 py-1.5 text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 placeholder:text-gray-400 focus:ring-2 focus:ring-inset focus:ring-indigo-600 sm:text-sm sm:leading-6">
+                            <label for="sellingPrice" class="block text-sm font-medium leading-6 text-gray-900">판매 희망 가격 (원)</label>
+                            <input type="number" id="sellingPrice" th:field="*{sellingPrice}" class="mt-2 block w-full rounded-md border-0 py-1.5 text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300">
                         </div>
                         <div class="sm:col-span-2">
                             <label for="conditionGrade" class="block text-sm font-medium leading-6 text-gray-900">책 상태</label>
-                            <select id="conditionGrade" th:field="*{conditionGrade}" class="mt-2 block w-full rounded-md border-0 py-1.5 text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 focus:ring-2 focus:ring-inset focus:ring-indigo-600 sm:text-sm sm:leading-6">
+                            <select id="conditionGrade" th:field="*{conditionGrade}" class="mt-2 block w-full rounded-md border-0 py-1.5 text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300">
                                 <option value="최상">최상</option>
                                 <option value="상">상</option>
                                 <option value="중">중</option>
@@ -89,70 +129,178 @@
                         </div>
                         <div class="col-span-full">
                             <label for="detailedCondition" class="block text-sm font-medium leading-6 text-gray-900">상세 설명</label>
-                            <textarea id="detailedCondition" th:field="*{detailedCondition}" rows="3" class="mt-2 block w-full rounded-md border-0 py-1.5 text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 placeholder:text-gray-400 focus:ring-2 focus:ring-inset focus:ring-indigo-600 sm:text-sm sm:leading-6" placeholder="책의 상태에 대해 자세히 설명해주세요. (예: 밑줄 흔적, 겉표지 흠집 등)"></textarea>
-                        </div>
-                        <div class="col-span-full">
-                            <label for="images" class="block text-sm font-medium leading-6 text-gray-900">책 사진</label>
-                            <div class="mt-2 flex justify-center rounded-lg border border-dashed border-gray-900/25 px-6 py-10">
-                                <div class="text-center">
-                                    <svg class="mx-auto h-12 w-12 text-gray-300" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true">
-                                        <path fill-rule="evenodd" d="M1.5 6a2.25 2.25 0 012.25-2.25h16.5A2.25 2.25 0 0122.5 6v12a2.25 2.25 0 01-2.25 2.25H3.75A2.25 2.25 0 011.5 18V6zM3 16.06V18c0 .414.336.75.75.75h16.5A.75.75 0 0021 18v-1.94l-2.69-2.689a1.5 1.5 0 00-2.12 0l-.88.879.97.97a.75.75 0 11-1.06 1.06l-5.16-5.159a1.5 1.5 0 00-2.12 0L3 16.061zm10.125-7.81a1.125 1.125 0 112.25 0 1.125 1.125 0 01-2.25 0z" clip-rule="evenodd" />
-                                    </svg>
-                                    <div class="mt-4 flex text-sm leading-6 text-gray-600">
-                                        <label for="images" class="relative cursor-pointer rounded-md bg-white font-semibold text-indigo-600 focus-within:outline-none focus-within:ring-2 focus-within:ring-indigo-600 focus-within:ring-offset-2 hover:text-indigo-500">
-                                            <span>파일 업로드</span>
-                                            <input id="images" name="images" type="file" class="sr-only" multiple>
-                                        </label>
-                                        <p class="pl-1">또는 드래그 앤 드롭</p>
-                                    </div>
-                                    <p class="text-xs leading-5 text-gray-600">PNG, JPG, GIF up to 10MB</p>
-                                </div>
-                            </div>
+                            <textarea id="detailedCondition" th:field="*{detailedCondition}" rows="3" class="mt-2 block w-full rounded-md border-0 py-1.5 text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300" placeholder="책의 상태에 대해 자세히 설명해주세요. (예: 밑줄 흔적, 겉표지 흠집 등)"></textarea>
                         </div>
                     </div>
                 </div>
 
-                <!-- 제출 버튼 -->
                 <div class="mt-6 flex items-center justify-end gap-x-6">
-                    <button type="button" class="text-sm font-semibold leading-6 text-gray-900">취소</button>
-                    <button type="submit" class="rounded-md bg-indigo-600 px-3 py-2 text-sm font-semibold text-white shadow-sm hover:bg-indigo-500 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-indigo-600">판매 등록하기</button>
+                    <button type="button" onclick="history.back()" class="text-sm font-semibold leading-6 text-gray-900">취소</button>
+                    <button type="submit" class="rounded-md bg-indigo-600 px-3 py-2 text-sm font-semibold text-white shadow-sm hover:bg-indigo-500">판매 등록하기</button>
                 </div>
             </form>
         </div>
     </main>
 
-    <!-- 푸터 프래그먼트 포함 -->
     <div th:replace="~{fragments/footer :: footer}"></div>
 </div>
 
 <script>
+    // ## 기능 1: ISBN 검색 스크립트 ##
     document.getElementById('isbn-search-btn').addEventListener('click', function() {
         const isbn = document.getElementById('isbn-input').value;
         if (!isbn) {
             alert('ISBN을 입력해주세요.');
             return;
         }
-
-        // BookPageController에 있는 ISBN 조회 API를 호출합니다.
         fetch(`/used-books/isbn/${isbn}`)
             .then(response => {
-                if (!response.ok) {
-                    throw new Error('해당 ISBN의 책 정보를 찾을 수 없습니다.');
-                }
+                if (!response.ok) throw new Error('해당 ISBN의 책 정보를 찾을 수 없습니다.');
                 return response.json();
             })
             .then(data => {
-                // API 응답으로 받은 데이터로 폼을 채웁니다.
                 document.getElementById('title').value = data.title || '';
                 document.getElementById('author').value = data.author || '';
                 document.getElementById('publisher').value = data.publisher || '';
                 document.getElementById('publicationYear').value = data.publicationYear || '';
+                document.getElementById('newPrice').value = data.newPrice || '';
             })
             .catch(error => {
                 alert(error.message);
                 console.error('Error fetching book info:', error);
             });
     });
+
+    // ## 기능 2: AI 가격 추천 요청 스크립트 ##
+    document.getElementById('ai-analyze-btn').addEventListener('click', function() {
+        const imageInput = document.getElementById('images');
+        const newPriceInput = document.getElementById('newPrice');
+        if (imageInput.files.length === 0) {
+            alert('가격을 추천받으려면 먼저 책 사진을 1장 이상 업로드해주세요.');
+            return;
+        }
+        if (!newPriceInput.value || newPriceInput.value <= 0) {
+            alert('AI 추천의 정확도를 높이기 위해 새 책 정가를 입력해주세요.');
+            newPriceInput.focus();
+            return;
+        }
+        const imageFile = imageInput.files[0];
+        const newPrice = newPriceInput.value;
+        const formData = new FormData();
+        formData.append('image', imageFile);
+        formData.append('newPrice', newPrice);
+
+        const analyzeBtn = document.getElementById('ai-analyze-btn');
+        const suggestionBox = document.getElementById('ai-suggestion-box');
+
+        analyzeBtn.disabled = true;
+        analyzeBtn.innerHTML = `<svg class="animate-spin -ml-1 mr-3 h-5 w-5 text-white inline" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24"><circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"></circle><path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path></svg>분석 중...`;
+
+        const token = document.querySelector('meta[name="_csrf"]').getAttribute('content');
+        const header = document.querySelector('meta[name="_csrf_header"]').getAttribute('content');
+
+        const headers = new Headers();
+        headers.append(header, token);
+
+        fetch('/api/ai/suggest-price-from-upload', {
+            method: 'POST',
+            headers: headers,
+            body: formData
+        })
+            .then(response => {
+                if (!response.ok) return response.json().then(err => { throw new Error(err.message || 'AI 분석 중 오류가 발생했습니다.'); });
+                return response.json();
+            })
+            .then(data => {
+                // AI 분석 결과 표시
+                const defects = data.detectedDefects && data.detectedDefects.length > 0 ? data.detectedDefects.join(', ') : '특별한 결함 없음';
+                document.getElementById('ai-defects').textContent = defects;
+                document.getElementById('ai-price-range').textContent = `${data.suggestedMinPrice.toLocaleString()}원 ~ ${data.suggestedMaxPrice.toLocaleString()}원`;
+                suggestionBox.style.display = 'block';
+
+                // 추천 최고가를 판매 가격에 자동 입력
+                const sellingPriceInput = document.getElementById('sellingPrice');
+                if (!sellingPriceInput.value) {
+                    sellingPriceInput.value = data.suggestedMaxPrice;
+                }
+
+                // 책 상태 자동 선택 및 잠금
+                const conditionGradeSelect = document.getElementById('conditionGrade');
+                conditionGradeSelect.value = mapDefectsToCondition(data.detectedDefects);
+                conditionGradeSelect.disabled = true;
+
+                // 상세 설명 자동 생성
+                const detailedConditionTextarea = document.getElementById('detailedCondition');
+                detailedConditionTextarea.value = generateAiDescription(data);
+            })
+            .catch(error => {
+                alert(error.message);
+                console.error('AI 분석 중 오류 발생:', error);
+                // 오류 발생 시 잠금 해제
+                document.getElementById('conditionGrade').disabled = false;
+            })
+            .finally(() => {
+                analyzeBtn.disabled = false;
+                analyzeBtn.textContent = 'AI로 가격 추천받기 ✨';
+            });
+    });
+
+    // ## 기능 3: 이미지 미리보기 및 삭제 기능 스크립트 ##
+    const imageInput = document.getElementById('images');
+    const imagePlaceholder = document.getElementById('image-placeholder');
+    const previewContainer = document.getElementById('preview-container');
+    const imagePreview = document.getElementById('image-preview');
+    const removeImageBtn = document.getElementById('remove-image-btn');
+
+    imageInput.addEventListener('change', function(event) {
+        if (event.target.files && event.target.files[0]) {
+            const file = event.target.files[0];
+            const reader = new FileReader();
+
+            reader.onload = function(e) {
+                imagePlaceholder.classList.add('hidden');
+                imagePreview.src = e.target.result;
+                previewContainer.classList.remove('hidden');
+            };
+
+            reader.readAsDataURL(file);
+        }
+    });
+
+    removeImageBtn.addEventListener('click', function() {
+        imageInput.value = '';
+
+        previewContainer.classList.add('hidden');
+        imagePlaceholder.classList.remove('hidden');
+
+        // 이미지 삭제 시, 책 상태 선택 잠금 해제
+        document.getElementById('conditionGrade').disabled = false;
+    });
+
+    // ## 기능 4: 헬퍼 함수들 ##
+    function mapDefectsToCondition(defects) {
+        const defectCount = defects ? defects.length : 0;
+        if (defectCount === 0) return "최상";
+        if (defectCount <= 2) return "상";
+        if (defectCount <= 4) return "중";
+        return "하";
+    }
+
+    function generateAiDescription(aiData) {
+        const defects = aiData.detectedDefects;
+        let description = `[AI 자동 분석 결과]\n`;
+
+        if (defects && defects.length > 0 && !defects.includes("결함 정보 없음")) {
+            description += `AI가 다음과 같은 결함을 감지했습니다: ${defects.join(', ')}.\n`;
+        } else {
+            description += `AI 분석 결과, 특별한 시각적 결함이 발견되지 않았습니다. 책 상태가 매우 좋습니다.\n`;
+        }
+
+        description += `이를 바탕으로 추천되는 중고 판매 가격은 ${aiData.suggestedMinPrice.toLocaleString()}원 ~ ${aiData.suggestedMaxPrice.toLocaleString()}원 입니다.\n`;
+        description += `(이 내용은 AI가 자동으로 작성했으며, 판매자가 직접 수정할 수 있습니다.)`;
+
+        return description;
+    }
 </script>
 </body>
 </html>

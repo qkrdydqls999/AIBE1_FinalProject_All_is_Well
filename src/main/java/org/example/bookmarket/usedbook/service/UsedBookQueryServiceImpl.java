@@ -8,6 +8,7 @@ import org.example.bookmarket.usedbook.repository.UsedBookRepository;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.util.Collections;
 import java.util.List;
 import java.util.stream.Collectors;
 
@@ -32,6 +33,21 @@ public class UsedBookQueryServiceImpl implements UsedBookQueryService {
                 .map(this::toSummary)
                 .collect(Collectors.toList());
     }
+
+    /**
+     * [신규 기능 구현] Custom Repository를 호출하여 키워드 기반 검색을 수행합니다.
+     */
+    @Override
+    @Transactional(readOnly = true)
+    public List<UsedBookResponse> getUsedBooksByKeywords(List<String> keywords) {
+        if (keywords == null || keywords.isEmpty()) {
+            return Collections.emptyList();
+        }
+        return usedBookRepository.findByKeywords(keywords).stream()
+                .map(this::toResponse) // 기존 toResponse 메소드 재활용
+                .collect(Collectors.toList());
+    }
+
 
     private UsedBookResponse toResponse(UsedBook ub) {
         return new UsedBookResponse(

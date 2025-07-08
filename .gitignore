@@ -41,3 +41,6 @@ out/
 
 ### env
 .env
+
+# Google Cloud Service Account Key
+/src/main/resources/secure/
