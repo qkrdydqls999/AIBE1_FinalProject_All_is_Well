@@ -64,6 +64,8 @@ public class UsedBookQueryServiceImpl implements UsedBookQueryService {
                 ub.getStatus(),
                 ub.getCategory().getId(),
                 ub.getSeller() != null ? ub.getSeller().getId() : null,
+                ub.getSeller() != null ? ub.getSeller().getNickname() : null,
+                ub.getSeller() != null ? ub.getSeller().getProfileImageUrl() : null,
                 ub.getBook().getCoverImageUrl() //  Book 엔티티에서 표지 이미지 URL을 가져옵니다.
         );
     }

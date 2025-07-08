@@ -14,5 +14,7 @@ public record UsedBookResponse(
         String status,
         Long categoryId,
         Long sellerId,
+        String sellerNickname,
+        String sellerProfileImageUrl,
         String coverImageUrl // [추가] 표지 이미지 URL 필드
 ) {}
