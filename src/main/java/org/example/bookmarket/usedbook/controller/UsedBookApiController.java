@@ -60,4 +60,4 @@ public class UsedBookApiController {
         usedBookPurchaseService.purchase(bookId);
         return ResponseEntity.ok("책 구매에 성공했습니다. ID: " + bookId);
     }
-    }
+}

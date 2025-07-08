@@ -40,7 +40,7 @@ public class WishlistServiceImpl implements WishlistService {
     @Transactional
     public void addItem(Long userId, Long usedBookId) {
         if (wishlistRepository.existsByUserIdAndUsedBookId(userId, usedBookId)) {
-            return;
+            throw new CustomException(ErrorCode.WISHLIST_DUPLICATED);
         }
 
         User user = userRepository.findById(userId)

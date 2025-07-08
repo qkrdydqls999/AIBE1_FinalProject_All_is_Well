@@ -53,8 +53,8 @@ public class UsedBookPurchaseService {
         UsedBook usedBook = usedBookRepository.findById(usedBookId)
                 .orElseThrow(() -> new CustomException(ErrorCode.USED_BOOK_NOT_FOUND));
 
-        // "판매중" 상태일 때만 구매 가능
-        if (!"판매중".equals(usedBook.getStatus())) {
+        // "FOR_SALE" 상태일 때만 구매 가능
+        if (!"FOR_SALE".equals(usedBook.getStatus())) {
             throw new CustomException(ErrorCode.BOOK_ALREADY_SOLD);
         }
 
