@@ -4,6 +4,7 @@ import com.fasterxml.jackson.annotation.JsonProperty;
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
 import lombok.Setter;
+import lombok.extern.slf4j.Slf4j;
 import org.example.bookmarket.common.handler.exception.CustomException;
 import org.example.bookmarket.common.handler.exception.ErrorCode;
 import org.example.bookmarket.usedbook.dto.BookIsbnResponse;
@@ -13,10 +14,12 @@ import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpMethod;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
+import org.springframework.web.client.RestClientException;
 import org.springframework.web.client.RestTemplate;
 
 import java.util.List;
 
+@Slf4j
 @Service
 @RequiredArgsConstructor
 public class NaverBookIsbnService implements BookIsbnService {
@@ -54,28 +57,25 @@ public class NaverBookIsbnService implements BookIsbnService {
 
             NaverBookItem bookItem = apiResponse.getItems().get(0);
 
-            // API 응답을 BookIsbnResponse DTO로 변환
             return BookIsbnResponse.builder()
                     .title(removeHtmlTags(bookItem.getTitle()))
                     .author(removeHtmlTags(bookItem.getAuthor()))
                     .publisher(removeHtmlTags(bookItem.getPublisher()))
-                    .publicationYear(bookItem.getPubdate()) // YYYYMMDD 형식의 문자열
-                    .newPrice(parsePrice(bookItem.getDiscount())) // API에서는 discount가 정가
+                    .publicationYear(bookItem.getPubdate())
+                    .newPrice(parsePrice(bookItem.getDiscount()))
                     .imageUrl(bookItem.getImage())
                     .build();
 
-        } catch (Exception e) {
-            // API 호출 실패 또는 책 정보 없음
-            throw new CustomException(ErrorCode.BOOK_NOT_FOUND, "해당 ISBN의 도서 정보를 찾을 수 없습니다.");
+        } catch (RestClientException e) {
+            log.error("Naver Book API 호출 중 오류 발생. ISBN: {}", isbn, e);
+            throw new CustomException(ErrorCode.EXTERNAL_API_ERROR, "외부 도서 API 호출에 실패했습니다.");
         }
     }
 
-    // 네이버 API 응답에 포함된 HTML 태그 제거 유틸리티
     private String removeHtmlTags(String text) {
         return text != null ? text.replaceAll("<[^>]*>", "") : "";
     }
 
-    // 가격 문자열을 정수로 변환
     private Integer parsePrice(String price) {
         try {
             return Integer.parseInt(price);
@@ -84,7 +84,7 @@ public class NaverBookIsbnService implements BookIsbnService {
         }
     }
 
-    // --- 네이버 API 응답을 매핑하기 위한 내부 DTO 클래스들 ---
+    // --- 네이버 API 응답 매핑용 DTO 클래스들 ---
     @Getter
     @Setter
     private static class NaverApiResponse {
@@ -97,8 +97,8 @@ public class NaverBookIsbnService implements BookIsbnService {
         private String title;
         private String author;
         private String publisher;
-        private String pubdate; // 출판일 (YYYYMMDD)
-        private String discount; // 네이버 API에서는 discount 필드가 정가 정보
+        private String pubdate;
+        private String discount;
         private String image;
     }
 }

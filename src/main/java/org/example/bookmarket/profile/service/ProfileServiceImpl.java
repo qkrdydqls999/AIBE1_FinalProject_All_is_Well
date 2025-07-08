@@ -17,13 +17,12 @@ import org.example.bookmarket.trade.dto.PurchaseSummary;
 import org.example.bookmarket.trade.entity.Trade;
 import org.example.bookmarket.trade.repository.TradeRepository;
 import org.example.bookmarket.usedbook.dto.UsedBookSummary;
-import org.example.bookmarket.usedbook.entity.UsedBook;
-import org.example.bookmarket.usedbook.repository.UsedBookRepository;
 import org.example.bookmarket.user.dto.UserCategoryResponse;
 import org.example.bookmarket.user.entity.User;
 import org.example.bookmarket.user.entity.UserCategory;
 import org.example.bookmarket.user.repository.UserCategoryRepository;
 import org.example.bookmarket.user.repository.UserRepository;
+import org.example.bookmarket.usedbook.repository.UsedBookRepository;
 import org.example.bookmarket.wishlist.dto.WishlistItem;
 import org.example.bookmarket.wishlist.service.WishlistService;
 import org.springframework.stereotype.Service;
@@ -45,12 +44,11 @@ public class ProfileServiceImpl implements ProfileService {
     private final ChatChannelRepository chatChannelRepository;
     private final ChatMessageRepository chatMessageRepository;
     private final S3UploadService s3UploadService;
-    private final WishlistService wishlistService; // Wishlist 기능 추가
+    private final WishlistService wishlistService;
 
     @Override
     @Transactional(readOnly = true)
     public ProfileResponse getMyProfile(Long userId) {
-        // [FIX] Use CustomException for consistency
         User user = userRepository.findById(userId)
                 .orElseThrow(() -> new CustomException(ErrorCode.USER_NOT_FOUND));
 
@@ -75,7 +73,6 @@ public class ProfileServiceImpl implements ProfileService {
         User user = userRepository.findById(userId)
                 .orElseThrow(() -> new CustomException(ErrorCode.USER_NOT_FOUND));
 
-        // [IMPROVEMENT] Add nickname duplication check
         if (request.nickname() != null && !request.nickname().equals(user.getNickname())) {
             userRepository.findByNickname(request.nickname()).ifPresent(u -> {
                 throw new CustomException(ErrorCode.DUPLICATE_NICKNAME);
@@ -87,7 +84,6 @@ public class ProfileServiceImpl implements ProfileService {
             user.setProfileImageUrl(request.profileImageUrl());
         }
 
-        // Update interest categories
         if (request.interestCategoryIds() != null) {
             userCategoryRepository.deleteByUser(user);
             List<Category> categories = categoryRepository.findAllById(request.interestCategoryIds());
@@ -102,7 +98,7 @@ public class ProfileServiceImpl implements ProfileService {
     @Transactional
     public String uploadProfileImage(Long userId, MultipartFile image) {
         User user = userRepository.findById(userId)
-                .orElseThrow(() -> new CustomException(ErrorCode.USER_NOT_FOUND)); // Use USER_NOT_FOUND for consistency
+                .orElseThrow(() -> new CustomException(ErrorCode.USER_NOT_FOUND));
         if (image == null || image.isEmpty()) {
             throw new CustomException(ErrorCode.INVALID_PROFILE_IMAGE);
         }
@@ -129,6 +125,9 @@ public class ProfileServiceImpl implements ProfileService {
                 .collect(Collectors.toList());
     }
 
+    /**
+     * 판매 완료된 책의 경우, 거래 내역에서 구매자 닉네임을 찾아 함께 반환합니다.
+     */
     @Override
     @Transactional(readOnly = true)
     public List<UsedBookSummary> getMySellBooks(Long userId) {
@@ -136,13 +135,26 @@ public class ProfileServiceImpl implements ProfileService {
             throw new CustomException(ErrorCode.USER_NOT_FOUND);
         }
         return usedBookRepository.findBySellerId(userId).stream()
-                .map(ub -> new UsedBookSummary(
-                        ub.getId(),
-                        ub.getBook().getTitle(),
-                        ub.getSellingPrice(),
-                        ub.getStatus(),
-                        (ub.getImages() != null && !ub.getImages().isEmpty()) ? ub.getImages().get(0).getImageUrl() : null,
-                        ub.getUpdatedAt()))
+                .map(ub -> {
+                    String buyerNickname = null;
+                    if ("판매 완료".equalsIgnoreCase(ub.getStatus()) || "SOLD".equalsIgnoreCase(ub.getStatus())) {
+                        List<Trade> trades = tradeRepository.findBySellerId(userId);
+                        for (Trade trade : trades) {
+                            if (trade.getUsedBook().getId().equals(ub.getId())) {
+                                buyerNickname = trade.getBuyer().getNickname();
+                                break;
+                            }
+                        }
+                    }
+                    return new UsedBookSummary(
+                            ub.getId(),               // 1. 중고책 ID
+                            ub.getBook().getTitle(),  // 2. 책 제목
+                            ub.getSellingPrice(),     // 3. 판매 가격
+                            ub.getStatus(),           // 4. 판매 상태
+                            buyerNickname,            // 5. 구매자 닉네임
+                            ub.getUpdatedAt()         // 6. 최종 수정일
+                    );
+                })
                 .collect(Collectors.toList());
     }
 
@@ -166,7 +178,6 @@ public class ProfileServiceImpl implements ProfileService {
     @Override
     @Transactional(readOnly = true)
     public List<WishlistItem> getMyWishlist(Long userId) {
-        // [FIX] Implement the actual logic by calling WishlistService
         return wishlistService.getItems(userId);
     }
 }

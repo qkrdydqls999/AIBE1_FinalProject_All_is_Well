@@ -46,11 +46,10 @@ public class UsedBookPostService {
 
     @Transactional
     public void registerUsedBook(UsedBookPostRequest request) {
-        User seller = getCurrentUser();
+        User seller = getCurrentUser(); // 현재 로그인한 사용자 정보를 가져옵니다.
 
         Book book = bookService.getOrCreateByIsbn(request.getIsbn());
 
-        // 정가 정보 업데이트 로직
         if (request.getNewPrice() != null) {
             if (book.getNewPrice() == null || !book.getNewPrice().equals(request.getNewPrice())) {
                 book.setNewPrice(request.getNewPrice());
@@ -58,11 +57,9 @@ public class UsedBookPostService {
             }
         }
 
-        // 이미지 업로드 로직
         List<String> imageUrls = new ArrayList<>();
         if (request.getImages() != null && !request.getImages().isEmpty()) {
             for (MultipartFile imageFile : request.getImages()) {
-                // 파일이 null이 아니고 비어있지 않은 경우에만 업로드
                 if (imageFile != null && !imageFile.isEmpty()) {
                     String imageUrl = s3UploadService.upload(imageFile, "used-book-images");
                     imageUrls.add(imageUrl);
@@ -74,16 +71,14 @@ public class UsedBookPostService {
             throw new CustomException(ErrorCode.USED_BOOK_IMAGE_REQUIRED);
         }
 
-        // AI 가격 제안 로직
-        String representativeImageUrl = imageUrls.get(0);
         PriceSuggestResponse aiResponse = null;
+        String representativeImageUrl = imageUrls.get(0);
         try {
-            //  AI 분석을 위한 기본 가격 설정 로직을 간소화합니다.
             int basePrice = Objects.requireNonNullElse(book.getNewPrice(), 30000);
             aiResponse = aiService.suggestPriceFromImage(representativeImageUrl, basePrice);
         } catch (IOException e) {
-            //  오류 로깅 시 컨텍스트(ISBN)를 포함하여 추적을 용이하게 합니다.
-            log.error("AI 이미지 분석 중 오류 발생. ISBN: {}", request.getIsbn(), e);
+            log.error("책 등록 중 AI 이미지 분석에 실패했습니다. ISBN: {}", request.getIsbn(), e);
+            throw new CustomException(ErrorCode.AI_ANALYSIS_FAILED);
         }
 
         Category category = categoryRepository.findById(request.getCategoryId())
@@ -112,7 +107,8 @@ public class UsedBookPostService {
     }
 
     /**
-     * [리팩토링] SecurityContext에서 현재 인증된 사용자 정보를 조회하는 로직을 공통 메서드로 추출합니다.
+     * Spring Security의 SecurityContextHolder에서 현재 인증된 사용자 정보를 조회하여 반환하는 메소드입니다.
+     * 이메일/비밀번호 로그인과 소셜 로그인(KAKAO) 사용자를 모두 처리할 수 있습니다.
      * @return 현재 로그인된 User 엔티티
      */
     private User getCurrentUser() {
@@ -123,16 +119,14 @@ public class UsedBookPostService {
 
         Object principal = authentication.getPrincipal();
         if (principal instanceof User user) {
-            return user;
+            return user; // 일반 로그인 사용자 처리
         } else if (principal instanceof OAuth2User oauth2User) {
-            // OAuth2 로그인 사용자 처리
-            // TODO: SocialType을 동적으로 결정하는 로직이 필요할 수 있습니다. 현재는 KAKAO로 고정.
+            // OAuth2 소셜 로그인 사용자 처리
             String socialId = oauth2User.getAttribute("id").toString();
             return userRepository.findBySocialTypeAndSocialId(SocialType.KAKAO, socialId)
-                    .orElseThrow(() -> new CustomException(ErrorCode.USER_NOT_FOUND));
+                    .orElseThrow(() -> new CustomException(ErrorCode.USER_NOT_FOUND, "소셜 로그인 사용자를 DB에서 찾을 수 없습니다."));
         }
 
-        // 그 외의 인증 타입은 지원하지 않음
-        throw new CustomException(ErrorCode.AUTHENTICATION_FAILED);
+        throw new CustomException(ErrorCode.AUTHENTICATION_FAILED, "지원하지 않는 인증 방식입니다.");
     }
 }

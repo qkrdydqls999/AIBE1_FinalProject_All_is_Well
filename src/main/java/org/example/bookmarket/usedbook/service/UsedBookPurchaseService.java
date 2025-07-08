@@ -26,21 +26,23 @@ public class UsedBookPurchaseService {
         final RLock lock = redissonClient.getLock(lockKey);
 
         try {
+            // 락을 획득하기 위해 10초간 대기하고, 락을 점유하는 시간은 5초로 설정
             boolean isLocked = lock.tryLock(10, 5, TimeUnit.SECONDS);
 
             if (!isLocked) {
                 log.error("책 구매 락 획득 실패. lockKey={}", lockKey);
-                throw new CustomException(ErrorCode.PURCHASE_LOCK_FAILED, "락 획득 실패: " + lockKey);
+                throw new CustomException(ErrorCode.PURCHASE_LOCK_FAILED);
             }
 
             log.info("락 획득 성공! lockKey={}", lockKey);
             processPurchase(usedBookId);
 
         } catch (InterruptedException e) {
-            Thread.currentThread().interrupt();
+            Thread.currentThread().interrupt(); // 현재 스레드의 interrupt 상태를 다시 설정
             log.error("락 대기 중 인터럽트 발생. lockKey={}", lockKey, e);
-            throw new CustomException(ErrorCode.INTERNAL_SERVER_ERROR, "락을 기다리는 중 문제가 발생했습니다: " + e.getMessage());
+            throw new CustomException(ErrorCode.INTERNAL_SERVER_ERROR, "락을 기다리는 중 문제가 발생했습니다.");
         } finally {
+            // 현재 스레드가 락을 점유하고 있을 경우에만 락 해제
             if (lock.isHeldByCurrentThread()) {
                 lock.unlock();
                 log.info("락 해제. lockKey={}", lockKey);
@@ -53,13 +55,12 @@ public class UsedBookPurchaseService {
         UsedBook usedBook = usedBookRepository.findById(usedBookId)
                 .orElseThrow(() -> new CustomException(ErrorCode.USED_BOOK_NOT_FOUND));
 
-        // "판매중" 상태일 때만 구매 가능
-        if (!"판매중".equals(usedBook.getStatus())) {
+        if (!"FOR_SALE".equalsIgnoreCase(usedBook.getStatus())) {
             throw new CustomException(ErrorCode.BOOK_ALREADY_SOLD);
         }
 
         log.info("책 구매 처리 시작. 책 ID: {}, 현재 상태: {}", usedBookId, usedBook.getStatus());
-        usedBook.markAsSold();
+        usedBook.markAsSold(); // 상태를 "판매 완료"로 변경
         log.info("책 구매 처리 완료. 책 ID: {}, 변경된 상태: {}", usedBookId, usedBook.getStatus());
     }
 }
