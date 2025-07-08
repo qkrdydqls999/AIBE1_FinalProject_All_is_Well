@@ -1,16 +1,15 @@
 <!DOCTYPE html>
+<!-- [수정] Spring Security 6 버전에 맞는 네임스페이스로 변경합니다. -->
 <html xmlns:th="http://www.thymeleaf.org"
-      xmlns:sec="http://www.thymeleaf.org/extras/spring-security">
+      xmlns:sec="http://www.thymeleaf.org/extras/spring-security6">
 
 <header th:fragment="header" class="flex items-center justify-between whitespace-nowrap border-b border-solid border-b-[#f0f2f5] px-10 py-3">
 
+    <!-- 좌측 메뉴 (로고, Home, Browse, Sell) - 기존 구조 유지 -->
     <div class="flex items-center gap-8">
         <a th:href="@{/}" class="flex items-center gap-4 text-[#111418]">
             <div class="size-4">
-                <svg viewBox="0 0 48 48" fill="none" xmlns="http://www.w3.org/2000/svg">
-                    <g clip-path="url(#clip0_6_330)"><path fill-rule="evenodd" clip-rule="evenodd" d="M24 0.757355L47.2426 24L24 47.2426L0.757355 24L24 0.757355ZM21 35.7574V12.2426L9.24264 24L21 35.7574Z" fill="currentColor"></path></g>
-                    <defs><clipPath id="clip0_6_330"><rect width="48" height="48" fill="white"></rect></clipPath></defs>
-                </svg>
+                <svg viewBox="0 0 48 48" fill="none" xmlns="http://www.w3.org/2000/svg"><g clip-path="url(#clip0_6_330)"><path fill-rule="evenodd" clip-rule="evenodd" d="M24 0.757355L47.2426 24L24 47.2426L0.757355 24L24 0.757355ZM21 35.7574V12.2426L9.24264 24L21 35.7574Z" fill="currentColor"></path></g><defs><clipPath id="clip0_6_330"><rect width="48" height="48" fill="white"></rect></clipPath></defs></svg>
             </div>
             <h2 class="text-[#111418] text-lg font-bold leading-tight tracking-[-0.015em]">북적북적</h2>
         </a>
@@ -21,7 +20,9 @@
         </nav>
     </div>
 
+    <!-- 우측 메뉴 (검색, 프로필, 로그인/로그아웃) -->
     <div class="flex items-center gap-8">
+        <!-- 검색창 - 기존 구조 유지 -->
         <form th:action="@{/search}" method="get">
             <label class="flex flex-col min-w-40 !h-10 max-w-64">
                 <div class="flex w-full flex-1 items-stretch rounded-lg h-full">
@@ -33,24 +34,32 @@
             </label>
         </form>
 
+        <!-- [수정] 로그인 안 한 사용자(Anonymous) 영역 -->
         <div sec:authorize="isAnonymous()" class="flex items-center gap-4">
             <a th:href="@{/auth/login}" class="flex max-w-[480px] cursor-pointer items-center justify-center overflow-hidden rounded-lg h-10 bg-gray-800 text-white px-4 text-sm font-bold hover:bg-gray-700">로그인</a>
+            <!-- [추가] 회원가입 버튼 추가 -->
+            <a th:href="@{/auth/signup}" class="flex max-w-[480px] cursor-pointer items-center justify-center overflow-hidden rounded-lg h-10 bg-blue-600 text-white px-4 text-sm font-bold hover:bg-blue-500">회원가입</a>
         </div>
 
+        <!-- [수정] 로그인 한 사용자(Authenticated) 영역 -->
         <div sec:authorize="isAuthenticated()" class="flex items-center gap-8 relative">
-            <a th:href="@{/profile/dm}" class="flex max-w-[480px] cursor-pointer items-center justify-center overflow-hidden rounded-lg h-10 bg-[#f0f2f5] text-[#111418] gap-2 text-sm font-bold px-2.5">
+            <!-- 알림 아이콘 - 기존 구조 유지 -->
+            <a th:href="@{/profile/me/dms}" class="flex max-w-[480px] cursor-pointer items-center justify-center overflow-hidden rounded-lg h-10 bg-[#f0f2f5] text-[#111418] gap-2 text-sm font-bold px-2.5">
                 <svg xmlns="http://www.w3.org/2000/svg" width="20px" height="20px" fill="currentColor" viewBox="0 0 256 256"><path d="M221.8,175.94C216.25,166.38,208,139.33,208,104a80,80,0,1,0-160,0c0,35.34-8.26,62.38-13.81,71.94A16,16,0,0,0,48,200H88.81a40,40,0,0,0,78.38,0H208a16,16,0,0,0,13.8-24.06ZM128,216a24,24,0,0,1-22.62-16h45.24A24,24,0,0,1,128,216ZM48,184c7.7-13.24,16-43.92,16-80a64,64,0,1,1,128,0c0,36.05,8.28,66.73,16,80Z"></path></svg>
             </a>
 
+            <!-- 프로필 드롭다운 메뉴 - 기존 구조 유지 -->
             <div class="relative group pb-3">
-                <a th:href="@{/profile/main}">
+                <a th:href="@{/profile/me}">
+                    <!-- [개선] 프로필 이미지가 없을 경우를 대비해 기본 이미지를 설정합니다. -->
                     <div class="bg-center bg-no-repeat aspect-square bg-cover rounded-full size-10 cursor-pointer"
-                         th:style="'background-image: url(' + ${profileImageUrl} + ')'">
+                         th:style="'background-image: url(' + (${profileImageUrl} ?: '/images/default-profile.png') + ')'">
                     </div>
                 </a>
                 <div class="absolute hidden group-hover:block right-0 mt-2 w-40 bg-white rounded-md shadow-lg border z-50">
-                    <a th:href="@{/profile/main}" class="block px-4 py-2 text-sm hover:bg-gray-100">내 프로필</a>
+                    <a th:href="@{/profile/me}" class="block px-4 py-2 text-sm hover:bg-gray-100">내 프로필</a>
 
+                    <!-- [핵심 수정] 로그아웃 버튼을 form으로 감싸서 안전한 POST 요청을 보냅니다. -->
                     <form th:action="@{/auth/logout}" method="post" class="w-full">
                         <button type="submit" class="block w-full text-left px-4 py-2 text-sm hover:bg-gray-100 cursor-pointer">
                             로그아웃
@@ -61,5 +70,7 @@
         </div>
     </div>
 </header>
+
+<!-- [핵심 수정] JWT 토큰을 처리하던 JavaScript 코드를 완전히 삭제합니다. 세션 방식에서는 불필요합니다. -->
 
 </html>

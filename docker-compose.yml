@@ -12,7 +12,7 @@ services:
     depends_on:
       - redis-cache
     env_file:
-      - .env  # ✅ 환경 변수 파일 등록
+      - ..env  # ✅ 환경 변수 파일 등록
     networks:
       - backend
 

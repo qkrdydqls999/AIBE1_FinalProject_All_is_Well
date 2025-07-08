@@ -1,81 +1,72 @@
 package org.example.bookmarket.book.controller;
 
 import lombok.RequiredArgsConstructor;
-import org.example.bookmarket.book.dto.BookResponse;
+import org.example.bookmarket.category.dto.CategoryResponse;
+import org.example.bookmarket.category.service.CategoryService;
+import org.example.bookmarket.usedbook.dto.BookIsbnResponse;
+import org.example.bookmarket.usedbook.service.BookIsbnService;
 import org.example.bookmarket.usedbook.dto.UsedBookPostRequest;
+import org.example.bookmarket.usedbook.dto.UsedBookResponse;
+import org.example.bookmarket.usedbook.service.UsedBookPostService; // [추가] 책 등록 로직을 위한 서비스
+import org.example.bookmarket.usedbook.service.UsedBookQueryService;
+import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.PathVariable;
-import org.springframework.web.bind.annotation.RequestParam;
+import org.springframework.web.bind.annotation.*; // [수정] PostMapping, ModelAttribute 등을 사용하기 위해 와일드카드로 변경
 
+import java.util.Collections;
 import java.util.List;
 
 @Controller
 @RequiredArgsConstructor
 public class BookPageController {
 
-    /**
-     * 검색 결과 페이지를 보여주는 메소드
-     * @param keyword 검색어
-     * @param model 뷰에 데이터를 전달하기 위한 객체
-     * @return 보여줄 템플릿 파일의 이름
-     */
+    private final UsedBookQueryService usedBookQueryService;
+    private final CategoryService categoryService;
+    private final BookIsbnService bookIsbnService;
+    private final UsedBookPostService usedBookPostService; //책 등록 처리를 위해 주입
+
     @GetMapping("/search")
     public String search(@RequestParam(value = "keyword", required = false, defaultValue = "") String keyword, Model model) {
-
-        List<BookResponse> searchResults = List.of(
-                new BookResponse(1L, "979-11-6224-484-9", "The Great Gatsby", "F. Scott Fitzgerald", "Scribner", 1925, 15000, "설명...", "https://images.unsplash.com/photo-1608649699552-e31d5a4a5a0d?q=80&w=1887&auto=format&fit=crop"),
-                new BookResponse(2L, "978-0-7432-7356-5", "To Kill a Mockingbird", "Harper Lee", "J. B. Lippincott & Co.", 1960, 18000, "설명...", "https://images.unsplash.com/photo-1544716278-ca5e3ac4030e?q=80&w=1887&auto=format&fit=crop"),
-                new BookResponse(3L, "978-0-452-28423-4", "1984", "George Orwell", "Secker & Warburg", 1949, 16000, "설명...", "https://images.unsplash.com/photo-1529566275382-203a95441a14?q=80&w=1887&auto=format&fit=crop"),
-                new BookResponse(4L, "978-0-679-78326-8", "Pride and Prejudice", "Jane Austen", "T. Egerton", 1813, 14000, "설명...", "https://images.unsplash.com/photo-1583995831614-3818b857702f?q=80&w=1887&auto=format&fit=crop")
-        );
-
+        List<UsedBookResponse> searchResults = Collections.emptyList();
         model.addAttribute("keyword", keyword);
         model.addAttribute("searchResults", searchResults);
-
         return "search-results";
     }
 
-    /**
-     * 책 상세 페이지를 보여주는 메소드
-     * @param bookId URL 경로에서 넘어온 책 ID
-     * @param model 뷰에 데이터를 전달하기 위한 객체
-     * @return 보여줄 템플릿 파일의 이름
-     */
     @GetMapping("/used-books/{bookId}")
     public String bookDetail(@PathVariable Long bookId, Model model) {
-
-        BookResponse book = new BookResponse(
-                bookId,
-                "978-0321765723",
-                "The Great Gatsby",
-                "F. Scott Fitzgerald",
-                "Scribner",
-                1925,
-                15000,
-                "This book is in excellent condition, with minimal signs of wear. The pages are clean and unmarked, and the binding is tight. It's perfect for collectors or readers who appreciate a pristine copy.",
-                "https://images.unsplash.com/photo-1621827942598-95392157c698?q=80&w=1887&auto=format&fit=crop"
-        );
-
+        UsedBookResponse book = usedBookQueryService.getUsedBookById(bookId);
         model.addAttribute("book", book);
-
         return "book-detail";
     }
 
-    /**
-     * 책 등록 페이지를 보여주는 메소드
-     * @param model 뷰에 데이터를 전달하기 위한 객체
-     * @return 보여줄 템플릿 파일의 이름
-     */
+    @GetMapping("/used-books/isbn/{isbn}")
+    @ResponseBody
+    public ResponseEntity<BookIsbnResponse> getBookInfoByIsbn(@PathVariable String isbn) {
+        BookIsbnResponse bookInfo = bookIsbnService.fetchBookInfo(isbn);
+        return ResponseEntity.ok(bookInfo);
+    }
+
     @GetMapping("/used-books/new")
     public String registerBookForm(Model model) {
-
-        model.addAttribute("bookRequest", new UsedBookPostRequest(
-                null, null, null, null, null, null, null,
-                false, false, false, false, false,
-                null, null, null, null, null
-        ));
+        List<CategoryResponse> categories = categoryService.getAllCategories();
+        model.addAttribute("categories", categories);
+        model.addAttribute("bookRequest", new UsedBookPostRequest());
         return "book-register";
+    }
+
+    /**
+     * [신규 추가]
+     * 책 등록 폼(book-register.html)에서 'POST' 방식으로 전송된 데이터를 처리합니다.
+     * 성공적으로 책을 등록한 후, '/profile/me' 경로로 리다이렉트하여 사용자를 마이페이지로 이동시킵니다.
+     * 이 메소드가 'No static resource profile/main' 오류를 해결합니다.
+     */
+    @PostMapping("/used-books")
+    public String registerUsedBook(@ModelAttribute UsedBookPostRequest request) {
+        // 서비스에 책 등록 로직을 위임
+        usedBookPostService.registerUsedBook(request);
+        // 성공 후, 올바른 주소인 /profile/me로 리다이렉트
+        return "redirect:/profile/me";
     }
 }

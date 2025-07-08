@@ -16,11 +16,6 @@ public enum ErrorCode {
     LOGIN_REQUIRED(HttpStatus.UNAUTHORIZED, "로그인이 필요합니다."),
     AUTHENTICATION_FAILED(HttpStatus.UNAUTHORIZED, "인증에 실패했습니다."),
 
-    // == JWT Errors == //
-    INVALID_TOKEN(HttpStatus.UNAUTHORIZED, "유효하지 않은 토큰입니다."),
-    EXPIRED_TOKEN(HttpStatus.UNAUTHORIZED, "만료된 토큰입니다."),
-    TOKEN_NOT_FOUND(HttpStatus.UNAUTHORIZED, "토큰을 찾을 수 없습니다."),
-
     // == Common Errors == //
     INVALID_REQUEST(HttpStatus.BAD_REQUEST, "잘못된 요청입니다."),
     INTERNAL_SERVER_ERROR(HttpStatus.INTERNAL_SERVER_ERROR, "서버에 오류가 발생했습니다."),
@@ -39,6 +34,9 @@ public enum ErrorCode {
     USED_BOOK_IMAGE_REQUIRED(HttpStatus.BAD_REQUEST, "중고도서 등록 시 이미지는 최소 1장 이상 필요합니다."),
     INVALID_BOOK_CONDITION(HttpStatus.BAD_REQUEST, "잘못된 도서 상태 정보입니다."),
 
+    // [추가] === Chat Errors ===
+    CHAT_CHANNEL_NOT_FOUND(HttpStatus.NOT_FOUND, "해당 채팅 채널을 찾을 수 없습니다."),
+
     // == Book Errors == //
     INVALID_ISBN(HttpStatus.BAD_REQUEST, "올바른 ISBN 형식이 아닙니다."),
     BOOK_NOT_FOUND(HttpStatus.NOT_FOUND, "해당 도서를 찾을 수 없습니다."),
@@ -48,9 +46,15 @@ public enum ErrorCode {
     AI_ANALYSIS_FAILED(HttpStatus.INTERNAL_SERVER_ERROR, "AI 이미지 분석에 실패했습니다."),
 
     // === External API Errors ===
+    EXTERNAL_API_ERROR(HttpStatus.INTERNAL_SERVER_ERROR, "외부도서 api 호출에 실패했습니다."),
+    NOT_FOUND(HttpStatus.NOT_FOUND, "요청한 리소스를 찾을 수 없습니다."),
 
-    EXTERNAL_API_ERROR(HttpStatus.INTERNAL_SERVER_ERROR, "외부도서 api 호출에 실패했습니다.");
+    // Common Errors
+    INVALID_INPUT_VALUE(HttpStatus.BAD_REQUEST, "입력값이 올바르지 않습니다."),
+    PURCHASE_LOCK_FAILED(HttpStatus.CONFLICT, "현재 다른 사용자가 구매 중입니다. 잠시 후 다시 시도해주세요."),
+    BOOK_ALREADY_SOLD(HttpStatus.CONFLICT, "이미 판매 완료된 상품입니다.");
 
-    private final HttpStatus statusCode;
+
+    private final HttpStatus status;
     private final String message;
 }

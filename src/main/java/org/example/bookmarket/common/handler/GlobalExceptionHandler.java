@@ -31,7 +31,8 @@ public class GlobalExceptionHandler {
         log.error("Unhandled Exception: {}", e.getMessage(), e); // 스택 트레이스도 함께 로깅
         ErrorCode internalServerError = ErrorCode.INTERNAL_SERVER_ERROR;
         return ResponseEntity
-                .status(internalServerError.getStatusCode())
+                // [수정] getStatusCode() -> getStatus()로 메서드 이름을 올바르게 변경합니다.
+                .status(internalServerError.getStatus())
                 .body(ErrorResponse.of(internalServerError.getMessage()));
     }
 }

@@ -1,25 +1,25 @@
 package org.example.bookmarket.usedbook.dto;
 
+import lombok.Getter;
+import lombok.NoArgsConstructor;
+import lombok.Setter;
 import org.springframework.web.multipart.MultipartFile;
 
 import java.util.List;
 
-public record UsedBookPostRequest(
-        String isbn,
-        String title,
-        String author,
-        String publisher,
-        Integer publicationYear,
-        Integer newPrice,
-        String conditionGrade,
-        boolean hasWriting,
-        boolean hasStains,
-        boolean hasTears,
-        boolean hasWaterDamage,
-        boolean likeNew,
-        String detailedCondition,
-        Integer sellingPrice,
-        Long categoryId,
-        Long sellerId,
-        List<MultipartFile> images
-) {}
+@Getter
+@Setter
+@NoArgsConstructor
+public class UsedBookPostRequest {
+    private String isbn;
+    private String title;
+    private String author;
+    private String publisher;
+    private Integer publicationYear;
+    private Integer newPrice;
+    private String conditionGrade;
+    private String detailedCondition;
+    private Integer sellingPrice;
+    private Long categoryId;
+    private List<MultipartFile> images;
+}

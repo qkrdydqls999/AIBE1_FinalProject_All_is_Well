@@ -6,6 +6,7 @@ import org.example.bookmarket.usedbook.dto.UsedBookSummary;
 import org.example.bookmarket.wishlist.dto.WishlistItem;
 import org.example.bookmarket.profile.dto.ProfileResponse;
 import org.example.bookmarket.profile.dto.ProfileUpdateRequest;
+import org.springframework.web.multipart.MultipartFile;
 
 import java.util.List;
 
@@ -14,6 +15,8 @@ public interface ProfileService {
     ProfileResponse getMyProfile(Long userId);
 
     void updateMyProfile(Long userId, ProfileUpdateRequest request);
+
+    String uploadProfileImage(Long userId, MultipartFile image);
 
     List<ChatSummary> getMyDmList(Long userId);
 

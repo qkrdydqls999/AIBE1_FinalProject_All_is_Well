@@ -1,10 +1,7 @@
 package org.example.bookmarket.user.entity;
 
 import jakarta.persistence.*;
-import lombok.AccessLevel;
-import lombok.Builder;
-import lombok.Getter;
-import lombok.NoArgsConstructor;
+import lombok.*;
 import org.example.bookmarket.common.TimeEntity;
 import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.authority.SimpleGrantedAuthority;
@@ -16,6 +13,7 @@ import java.util.Collections;
 @Entity
 @Table(name = "user")
 @Getter
+@Setter
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
 public class User extends TimeEntity implements UserDetails {
 
@@ -26,7 +24,7 @@ public class User extends TimeEntity implements UserDetails {
     @Column(nullable = false, unique = true)
     private String email;
 
-    @Column(nullable = false)
+    // 소셜 로그인 사용자는 비밀번호가 없을 수 있으므로 nullable=false 제거
     private String password;
 
     @Column(nullable = false, unique = true)
@@ -43,10 +41,11 @@ public class User extends TimeEntity implements UserDetails {
     private SocialType socialType;
 
     @Column(name = "social_id", unique = true)
-    private String socialId; // 소셜 서비스에서 제공하는 고유 ID
+    private String socialId;
+    private String provider;
 
     @Builder
-    public User(String email, String password, String nickname, Role role, String profileImageUrl, SocialType socialType, String socialId) {
+    public User(String email, String password, String nickname, Role role, String profileImageUrl, SocialType socialType, String socialId, String provider) {
         this.email = email;
         this.password = password;
         this.nickname = nickname;
@@ -54,11 +53,13 @@ public class User extends TimeEntity implements UserDetails {
         this.profileImageUrl = profileImageUrl;
         this.socialType = socialType;
         this.socialId = socialId;
+        this.provider = provider; // [추가] 생성자에 provider 초기화 로직 추가
     }
+
 
     @Override
     public Collection<? extends GrantedAuthority> getAuthorities() {
-        return Collections.singleton(new SimpleGrantedAuthority("ROLE_" + this.role.name()));
+        return Collections.singleton(new SimpleGrantedAuthority(this.role.getKey()));
     }
 
     @Override

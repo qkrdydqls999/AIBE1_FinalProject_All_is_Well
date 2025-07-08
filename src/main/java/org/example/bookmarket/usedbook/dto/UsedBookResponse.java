@@ -9,14 +9,10 @@ public record UsedBookResponse(
         String publisher,
         Integer publicationYear,
         String conditionGrade,
-        boolean hasWriting,
-        boolean hasStains,
-        boolean hasTears,
-        boolean hasWaterDamage,
-        boolean likeNew,
         String detailedCondition,
         Integer sellingPrice,
         String status,
         Long categoryId,
-        Long sellerId
+        Long sellerId,
+        String coverImageUrl // [추가] 표지 이미지 URL 필드
 ) {}
