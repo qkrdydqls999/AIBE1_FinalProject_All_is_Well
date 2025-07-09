@@ -1,0 +1,44 @@
+package org.example.bookmarket.common.controller;
+
+import lombok.RequiredArgsConstructor;
+import org.example.bookmarket.user.entity.SocialType;
+import org.example.bookmarket.user.entity.User;
+import org.example.bookmarket.user.repository.UserRepository;
+import org.springframework.security.core.Authentication;
+import org.springframework.security.core.userdetails.UserDetails;
+import org.springframework.security.oauth2.core.user.OAuth2User;
+import org.springframework.web.bind.annotation.ControllerAdvice;
+import org.springframework.web.bind.annotation.ModelAttribute;
+import org.springframework.ui.Model;
+
+@ControllerAdvice
+@RequiredArgsConstructor
+public class GlobalModelAttributeAdvice {
+
+    private final UserRepository userRepository;
+
+    @ModelAttribute
+    public void addUserInfo(Model model, Authentication authentication) {
+        if (authentication == null || !authentication.isAuthenticated()) {
+            return;
+        }
+
+        Object principal = authentication.getPrincipal();
+        User user = null;
+        if (principal instanceof UserDetails u) {
+            user = (User) u;
+        } else if (principal instanceof OAuth2User oauth2User) {
+            Object idAttr = oauth2User.getAttribute("id");
+            if (idAttr != null) {
+                user = userRepository
+                        .findBySocialTypeAndSocialId(SocialType.KAKAO, idAttr.toString())
+                        .orElse(null);
+            }
+        }
+
+        if (user != null) {
+            model.addAttribute("nickname", user.getNickname());
+            model.addAttribute("profileImageUrl", user.getProfileImageUrl());
+        }
+    }
+}
