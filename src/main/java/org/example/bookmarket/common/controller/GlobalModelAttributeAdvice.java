@@ -28,6 +28,8 @@ public class GlobalModelAttributeAdvice {
         User user = null;
         if (principal instanceof UserDetails u) {
             user = (User) u;
+            // fetch the latest user info to reflect profile updates immediately
+            user = userRepository.findById(user.getId()).orElse(user);
         } else if (principal instanceof OAuth2User oauth2User) {
             Object idAttr = oauth2User.getAttribute("id");
             if (idAttr != null) {

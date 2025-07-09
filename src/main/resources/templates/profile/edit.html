@@ -15,10 +15,30 @@
         <div class="w-full max-w-[600px] flex flex-col gap-6">
             <h1 class="text-2xl font-bold">프로필 수정</h1>
             <form id="profile-form" class="space-y-4">
-                <label class="block">
-                    <span class="text-sm font-medium">프로필 이미지</span>
-                    <input id="image" type="file" accept="image/*" class="mt-1" />
-                </label>
+                <label for="image" class="block text-sm font-medium leading-6 text-gray-900">프로필 이미지</label>
+                <div id="image-upload-box" class="mt-2 flex justify-center items-center rounded-lg border border-dashed border-gray-900/25 px-6 py-10 relative">
+                    <div id="preview-container" class="hidden relative">
+                        <img id="image-preview" src="#" alt="Image preview" class="h-48 rounded-lg" />
+                        <button type="button" id="remove-image-btn" class="absolute top-1 right-1 bg-red-600 text-white rounded-full p-1 leading-none hover:bg-red-700">
+                            <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12" />
+                            </svg>
+                        </button>
+                    </div>
+                    <div id="image-placeholder" class="text-center">
+                        <svg class="mx-auto h-12 w-12 text-gray-300" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true">
+                            <path fill-rule="evenodd" d="M1.5 6a2.25 2.25 0 012.25-2.25h16.5A2.25 2.25 0 0122.5 6v12a2.25 2.25 0 01-2.25 2.25H3.75A2.25 2.25 0 011.5 18V6zM3 16.06V18c0 .414.336.75.75.75h16.5A.75.75 0 0021 18v-1.94l-2.69-2.689a1.5 1.5 0 00-2.12 0l-.88.879.97.97a.75.75 0 11-1.06 1.06l-5.16-5.159a1.5 1.5 0 00-2.12 0L3 16.061zm10.125-7.81a1.125 1.125 0 112.25 0 1.125 1.125 0 01-2.25 0z" clip-rule="evenodd" />
+                        </svg>
+                        <div class="mt-4 flex text-sm leading-6 text-gray-600">
+                            <label for="image" class="relative cursor-pointer rounded-md bg-white font-semibold text-indigo-600 hover:text-indigo-500">
+                                <span>파일 업로드</span>
+                                <input id="image" name="image" type="file" class="sr-only" accept="image/*">
+                            </label>
+                            <p class="pl-1">또는 드래그 앤 드롭</p>
+                        </div>
+                        <p class="text-xs leading-5 text-gray-600">PNG, JPG, GIF up to 10MB</p>
+                    </div>
+                </div>
                 <fieldset class="block">
                     <span class="text-sm font-medium">관심 카테고리</span>
                     <div class="mt-2 grid grid-cols-2 gap-2">
@@ -42,6 +62,64 @@
     const csrfToken = document.querySelector('meta[name="_csrf"]').getAttribute('content');
     const csrfHeader = document.querySelector('meta[name="_csrf_header"]').getAttribute('content');
 
+    const imageInput = document.getElementById('image');
+    const imageUploadBox = document.getElementById('image-upload-box');
+    const imagePlaceholder = document.getElementById('image-placeholder');
+    const previewContainer = document.getElementById('preview-container');
+    const imagePreview = document.getElementById('image-preview');
+    const removeImageBtn = document.getElementById('remove-image-btn');
+
+    imageInput.addEventListener('change', (event) => {
+        if (event.target.files && event.target.files[0]) {
+            const file = event.target.files[0];
+            const reader = new FileReader();
+
+            reader.onload = (e) => {
+                imagePlaceholder.classList.add('hidden');
+                imagePreview.src = e.target.result;
+                previewContainer.classList.remove('hidden');
+            };
+
+            reader.readAsDataURL(file);
+        }
+    });
+
+    ['dragenter', 'dragover'].forEach(evt => {
+        imageUploadBox.addEventListener(evt, (e) => {
+            e.preventDefault();
+            imageUploadBox.classList.add('bg-gray-100');
+        });
+    });
+
+    imageUploadBox.addEventListener('dragleave', () => {
+        imageUploadBox.classList.remove('bg-gray-100');
+    });
+
+    imageUploadBox.addEventListener('drop', (e) => {
+        e.preventDefault();
+        imageUploadBox.classList.remove('bg-gray-100');
+        if (e.dataTransfer.files && e.dataTransfer.files[0]) {
+            const file = e.dataTransfer.files[0];
+            const dt = new DataTransfer();
+            dt.items.add(file);
+            imageInput.files = dt.files;
+
+            const reader = new FileReader();
+            reader.onload = (ev) => {
+                imagePlaceholder.classList.add('hidden');
+                imagePreview.src = ev.target.result;
+                previewContainer.classList.remove('hidden');
+            };
+            reader.readAsDataURL(file);
+        }
+    });
+
+    removeImageBtn.addEventListener('click', () => {
+        imageInput.value = '';
+        previewContainer.classList.add('hidden');
+        imagePlaceholder.classList.remove('hidden');
+    });
+
     const form = document.getElementById('profile-form');
     form.addEventListener('submit', async (e) => {
         e.preventDefault();
@@ -52,7 +130,7 @@
             fd.append('image', imageFile);
             const uploadRes = await fetch('/api/profile/me/image', {
                 method: 'POST',
-                headers: { [csrfHeader]: csrfToken },
+                headers: {[csrfHeader]: csrfToken},
                 body: fd
             });
             if (uploadRes.ok) {
@@ -64,10 +142,10 @@
         }
         const categoryIds = Array.from(document.querySelectorAll('input[name="categories"]:checked'))
             .map(cb => parseInt(cb.value));
-        const payload = { profileImageUrl: imageUrl, interestCategoryIds: categoryIds };
+        const payload = {profileImageUrl: imageUrl, interestCategoryIds: categoryIds};
         const res = await fetch('/api/profile/me', {
             method: 'PATCH',
-            headers: { 'Content-Type': 'application/json', [csrfHeader]: csrfToken },
+            headers: {'Content-Type': 'application/json', [csrfHeader]: csrfToken},
             body: JSON.stringify(payload)
         });
         if (res.ok) {
