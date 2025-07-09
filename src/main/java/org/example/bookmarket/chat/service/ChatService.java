@@ -1,10 +1,7 @@
 package org.example.bookmarket.chat.service;
 
 import lombok.RequiredArgsConstructor;
-import org.example.bookmarket.chat.dto.ChatMessageRequest;
-import org.example.bookmarket.chat.dto.ChatMessageResponse;
-import org.example.bookmarket.chat.dto.ChatRequest;
-import org.example.bookmarket.chat.dto.ChatResponse;
+import org.example.bookmarket.chat.dto.*;
 import org.example.bookmarket.chat.entity.ChatChannel;
 import org.example.bookmarket.chat.entity.ChatMessage;
 import org.example.bookmarket.chat.repository.ChatChannelRepository;
@@ -30,6 +27,13 @@ public class ChatService {
     private final UserRepository userRepository;
     private final UsedBookRepository usedBookRepository;
 
+    /**
+     * 채팅 채널을 생성하거나, 이미 존재하면 기존 채널을 반환합니다.
+     * 이 메서드는 구매자(user1Id), 판매자(user2Id), 책(usedBookId) 기준으로 채널을 찾거나 생성합니다.
+     * @param request 채팅 생성 요청 DTO (user1Id는 컨트롤러에서 설정됨)
+     * @return 생성되거나 조회된 채팅 채널 정보
+     */
+    @Transactional
     public ChatResponse createChannel(ChatRequest request) {
         User user1 = getUserById(request.getUser1Id());
         User user2 = getUserById(request.getUser2Id());
@@ -84,7 +88,7 @@ public class ChatService {
 
     public ChatMessageResponse sendMessage(ChatMessageRequest request) {
         ChatChannel channel = chatChannelRepository.findById(request.getChannelId())
-                .orElseThrow(() -> new IllegalArgumentException("채널 없음"));
+                .orElseThrow(() -> new CustomException(ErrorCode.CHAT_CHANNEL_NOT_FOUND));
         User sender = getUserById(request.getSenderId());
 
         ChatMessage message = ChatMessage.builder()
@@ -103,7 +107,44 @@ public class ChatService {
         return toChatMessageResponse(message);
     }
 
-    // 🔧 공통 메서드
+    /**
+     * ✅ [새로 추가] 채팅방 페이지에 필요한 정보를 조회합니다.
+     * @param channelId 조회할 채널 ID
+     * @param currentUserId 현재 로그인한 사용자 ID
+     * @return 채팅방 정보 DTO
+     */
+    @Transactional(readOnly = true)
+    public ChatRoomInfo getChatRoomInfo(Long channelId, Long currentUserId) {
+        ChatChannel channel = chatChannelRepository.findById(channelId)
+                .orElseThrow(() -> new CustomException(ErrorCode.CHAT_CHANNEL_NOT_FOUND));
+
+        // 상대방 닉네임 찾기: 채널의 user1, user2 중 현재 로그인한 user가 아닌 다른 user를 찾습니다.
+        User user1 = channel.getUser1();
+        User user2 = channel.getUser2();
+        String partnerNickname;
+
+        if (user1.getId().equals(currentUserId)) {
+            partnerNickname = user2.getNickname(); // 현재 사용자가 user1이면 상대방은 user2
+        } else if (user2.getId().equals(currentUserId)) {
+            partnerNickname = user1.getNickname(); // 현재 사용자가 user2이면 상대방은 user1
+        } else {
+            // 현재 로그인한 사용자가 이 채널의 참여자가 아닌 경우 (보안상 중요한 에러 처리)
+            throw new CustomException(ErrorCode.UNAUTHORIZED_CHAT_ACCESS); // 예시 에러 코드
+        }
+
+        // 책 제목 가져오기
+        String bookTitle = channel.getRelatedUsedBook().getBook().getTitle();
+        Long bookId = channel.getRelatedUsedBook().getId(); // UsedBook의 ID는 그대로 사용
+
+        return ChatRoomInfo.builder()
+                .partnerNickname(partnerNickname)
+                .bookTitle(bookTitle)
+                .bookId(bookId)
+                .build();
+    }
+
+
+    // 중복 코드를 줄이고 가독성을 높이기 위한 private 헬퍼 메서드
     private User getUserById(Long id) {
         return userRepository.findById(id)
                 .orElseThrow(() -> new CustomException(ErrorCode.USER_NOT_FOUND));

@@ -35,6 +35,7 @@
             </section>
 
             <section class="px-4 pt-6">
+                <h2 class="text-lg font-bold text-[#111418] pb-2">책 상태</h2>
                 <div class="flex items-center gap-4 py-2">
                     <div class="shrink-0 size-12 flex items-center justify-center rounded-lg bg-[#f0f2f5]">
                         <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" fill="currentColor" viewBox="0 0 256 256">
@@ -69,6 +70,7 @@
                         </div>
                     </div>
                 </div>
+                <p class="text-base text-[#111418] py-2" th:text="${book.detailedCondition}">This book is in excellent condition...</p>
             </section>
 
             <section class="px-4 pt-6 pb-4">
@@ -158,23 +160,66 @@
             return;
         }
 
-        fetch(`/api/used-books/${bookId}/purchase`, {
-            method: 'POST',
-        })
-            .then(response => {
-                if (response.ok) {
-                    return response.text();
-                }
-                throw new Error('구매 처리 중 문제가 발생했습니다.');
-            })
-            .then(message => {
-                alert(message);
-                window.location.reload();
-            })
-            .catch(error => {
-                alert(error.message);
+
+        // 채팅하기 / 구매 요청 버튼 로직
+        const purchaseButton = document.getElementById('purchase-button');
+        if (purchaseButton) { // 📌 [추가] 요소가 존재하는지 확인하는 방어 코드 추가
+            purchaseButton.addEventListener('click', function() {
+                console.log("Purchase button clicked!"); // 디버깅용 로그
+                const csrfToken = document.querySelector('meta[name="_csrf"]').getAttribute('content');
+                const csrfHeader = document.querySelector('meta[name="_csrf_header"]').getAttribute('content');
+
+                console.log("bookId:", bookId, "sellerId:", sellerId); // 값 확인
+
+                const chatRequest = {
+                    usedBookId: bookId,
+                    user1Id: 0, // 백엔드에서 덮어씌워짐
+                    user2Id: sellerId
+                };
+                console.log("Chat request payload:", chatRequest); // 보내는 데이터 확인
+
+                fetch(`/api/chat/channel`, {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                        [csrfHeader]: csrfToken
+                    },
+                    body: JSON.stringify(chatRequest)
+                })
+                    .then(response => {
+                        console.log("Fetch response received:", response); // 응답이 오는지 확인
+                        if (response.ok) {
+                            return response.json();
+                        } else if (response.status === 401) {
+                            alert('로그인이 필요합니다.');
+                            window.location.href = '/login';
+                            throw new Error('Unauthorized');
+                        } else if (response.status === 403) {
+                            alert('권한이 없습니다. (CSRF 토큰 불일치 등)');
+                            throw new Error('Forbidden');
+                        } else {
+                            return response.json().then(err => {
+                                console.error("Error from backend:", err);
+                                throw new Error(err.message || '채팅 채널 생성/조회 중 오류가 발생했습니다.');
+                            }).catch(() => {
+                                throw new Error('알 수 없는 오류가 발생했습니다.');
+                            });
+                        }
+                    })
+                    .then(chatResponse => {
+                        console.log("Chat response data:", chatResponse);
+                        const channelId = chatResponse.channelId;
+                        window.location.href = `/api/chat/room/${channelId}`;
+                    })
+                    .catch(error => {
+                        console.error('Error in fetch process:', error);
+                        if (error.message !== 'Unauthorized' && error.message !== 'Forbidden') {
+                            alert(error.message);
+                        }
+                    });
             });
-    });
+        }
+    }); // 📌 [수정] DOMContentLoaded 이벤트 리스너 닫힘
     /*]]>*/
 </script>
 </body>
