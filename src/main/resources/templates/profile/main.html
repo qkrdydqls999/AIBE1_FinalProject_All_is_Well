@@ -20,6 +20,11 @@
             <div>
                 <h2 class="text-xl font-bold" th:text="'안녕하세요, ' + ${profile.nickname} + '님!'">안녕하세요, John Doe님!</h2>
                 <p class="text-sm text-gray-500">프로필을 업데이트하고 상품을 판매 및 구매하세요.</p>
+                <div class="flex flex-wrap gap-1 mt-1 justify-center">
+                    <span class="px-2 py-1 text-xs bg-gray-100 rounded"
+                          th:each="cat : ${profile.interestCategories}"
+                          th:text="${cat.categoryName}">문학</span>
+                </div>
             </div>
             <a href="/profile/me/edit" class="px-4 py-2 mt-2 rounded-full border font-medium text-sm bg-gray-100 hover:bg-gray-200 transition">프로필 수정</a>
         </div>

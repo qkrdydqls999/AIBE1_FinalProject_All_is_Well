@@ -16,10 +16,6 @@
             <h1 class="text-2xl font-bold">프로필 수정</h1>
             <form id="profile-form" class="space-y-4">
                 <label class="block">
-                    <span class="text-sm font-medium">닉네임</span>
-                    <input id="nickname" type="text" th:value="${profile.nickname}" class="form-input mt-1 w-full" />
-                </label>
-                <label class="block">
                     <span class="text-sm font-medium">프로필 이미지</span>
                     <input id="image" type="file" accept="image/*" class="mt-1" />
                 </label>
@@ -29,7 +25,7 @@
                         <div th:each="cat : ${categories}">
                             <label class="inline-flex items-center gap-1">
                                 <input type="checkbox" name="categories" th:value="${cat.id}"
-                                       th:checked="${profile.interestCategories.?[categoryId == cat.id].size() > 0}"/>
+                                       th:checked="${#lists.contains(profile.interestCategories.![categoryId], cat.id)}"/>
                                 <span th:text="${cat.name}">문학</span>
                             </label>
                         </div>
@@ -49,7 +45,6 @@
     const form = document.getElementById('profile-form');
     form.addEventListener('submit', async (e) => {
         e.preventDefault();
-        const nickname = document.getElementById('nickname').value;
         const imageFile = document.getElementById('image').files[0];
         let imageUrl = null;
         if (imageFile) {
@@ -69,7 +64,7 @@
         }
         const categoryIds = Array.from(document.querySelectorAll('input[name="categories"]:checked'))
             .map(cb => parseInt(cb.value));
-        const payload = { nickname: nickname, profileImageUrl: imageUrl, interestCategoryIds: categoryIds };
+        const payload = { profileImageUrl: imageUrl, interestCategoryIds: categoryIds };
         const res = await fetch('/api/profile/me', {
             method: 'PATCH',
             headers: { 'Content-Type': 'application/json', [csrfHeader]: csrfToken },
