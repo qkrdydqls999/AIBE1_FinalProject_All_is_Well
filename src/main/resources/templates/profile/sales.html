@@ -46,8 +46,8 @@
                             </td>
                             <td class="px-6 py-4" th:text="${#numbers.formatInteger(item.price, 3, 'COMMA')} + '원'">10,000원</td>
                             <td class="px-6 py-4">
-                  <span th:text="${item.status}"
-                        th:classappend="${item.status == '판매 완료'} ? ' bg-green-100 text-green-800' : ' bg-yellow-100 text-yellow-800'"
+                   <span th:text="${item.status == 'FOR_SALE' ? '판매중' : (item.status == 'SOLD' || item.status == '판매 완료' ? '판매 완료' : item.status)}"
+                         th:classappend="${item.status == '판매 완료' || item.status == 'SOLD'} ? ' bg-green-100 text-green-800' : ' bg-yellow-100 text-yellow-800'"
                         class="px-2 py-1 text-xs font-medium rounded-full">
                     판매중
                   </span>

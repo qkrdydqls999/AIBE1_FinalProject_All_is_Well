@@ -30,7 +30,7 @@ public class User extends TimeEntity implements UserDetails {
     @Column(nullable = false, unique = true)
     private String nickname;
 
-    @Column(name = "profile_image_url")
+    @Column(name = "profile_image_url", length = 512)
     private String profileImageUrl;
 
     @Enumerated(EnumType.STRING)

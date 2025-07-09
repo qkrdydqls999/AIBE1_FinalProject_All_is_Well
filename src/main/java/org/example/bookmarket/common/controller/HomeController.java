@@ -1,19 +1,23 @@
 package org.example.bookmarket.common.controller;
 
 import org.example.bookmarket.book.dto.BookResponse;
+import lombok.RequiredArgsConstructor;
 import org.example.bookmarket.user.entity.User;
+import org.example.bookmarket.user.entity.SocialType;
+import org.example.bookmarket.user.repository.UserRepository;
 import org.springframework.security.core.Authentication;
-import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.oauth2.core.user.OAuth2User;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.GetMapping;
 
 import java.util.List;
-import java.util.Map;
 
 @Controller
+@RequiredArgsConstructor
 public class HomeController {
+
+    private final UserRepository userRepository;
 
     @GetMapping("/")
     public String root(Model model, Authentication authentication) {
@@ -40,25 +44,19 @@ public class HomeController {
         // 로그인 상태 확인 로직
         if (authentication != null && authentication.isAuthenticated()) {
             Object principal = authentication.getPrincipal();
-            String nickname = "게스트";
-            String profileImageUrl = "https://images.unsplash.com/photo-1532074205216-d0e1f4b87368?q=80&w=1941&auto=format&fit=crop";
-
-            if (principal instanceof UserDetails) {
-                User user = (User) principal;
-                nickname = user.getNickname();
-                profileImageUrl = user.getProfileImageUrl();
-            } else if (principal instanceof OAuth2User) {
-                OAuth2User oauth2User = (OAuth2User) principal;
-                Map<String, Object> attributes = oauth2User.getAttributes();
-                Map<String, Object> kakaoAccount = (Map<String, Object>) attributes.get("kakao_account");
-                Map<String, Object> profile = (Map<String, Object>) kakaoAccount.get("profile");
-                if (profile != null) {
-                    nickname = (String) profile.get("nickname");
-                    profileImageUrl = (String) profile.get("profile_image_url");
+            if (principal instanceof User user) {
+                model.addAttribute("nickname", user.getNickname());
+                model.addAttribute("profileImageUrl", user.getProfileImageUrl());
+            } else if (principal instanceof OAuth2User oauth2User) {
+                Object idAttr = oauth2User.getAttribute("id");
+                if (idAttr != null) {
+                    userRepository.findBySocialTypeAndSocialId(SocialType.KAKAO, idAttr.toString())
+                            .ifPresent(u -> {
+                                model.addAttribute("nickname", u.getNickname());
+                                model.addAttribute("profileImageUrl", u.getProfileImageUrl());
+                            });
                 }
             }
-            model.addAttribute("nickname", nickname);
-            model.addAttribute("profileImageUrl", profileImageUrl);
         }
 
         return "home";
