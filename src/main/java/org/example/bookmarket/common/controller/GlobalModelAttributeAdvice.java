@@ -19,6 +19,7 @@ public class GlobalModelAttributeAdvice {
 
     @ModelAttribute
     public void addUserInfo(Model model, Authentication authentication) {
+        model.addAttribute("userId", null);
         if (authentication == null || !authentication.isAuthenticated()) {
             return;
         }
@@ -37,6 +38,7 @@ public class GlobalModelAttributeAdvice {
         }
 
         if (user != null) {
+            model.addAttribute("userId", user.getId());
             model.addAttribute("nickname", user.getNickname());
             model.addAttribute("profileImageUrl", user.getProfileImageUrl());
         }
