@@ -16,6 +16,7 @@ import org.springframework.security.core.Authentication;
 import org.springframework.security.oauth2.core.user.OAuth2User;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
+import org.springframework.http.MediaType;
 
 import java.util.List;
 
@@ -39,12 +40,13 @@ public class ProfileController {
     public ResponseEntity<Void> updateMyProfile(Authentication authentication,
                                                 @RequestBody ProfileUpdateRequest request) {
         User user = resolveCurrentUser(authentication);
+        profileService.updateMyProfile(user.getId(), request);
         return ResponseEntity.noContent().build();
     }
 
-    @PostMapping("/me/image")
+    @PostMapping(value = "/me/image", consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
     public ResponseEntity<String> uploadProfileImage(Authentication authentication,
-                                                     @RequestPart MultipartFile image) {
+                                                     @RequestPart("image") MultipartFile image){
         User user = resolveCurrentUser(authentication);
         return ResponseEntity.ok(profileService.uploadProfileImage(user.getId(), image));
     }

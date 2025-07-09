@@ -73,13 +73,6 @@ public class ProfileServiceImpl implements ProfileService {
         User user = userRepository.findById(userId)
                 .orElseThrow(() -> new CustomException(ErrorCode.USER_NOT_FOUND));
 
-        if (request.nickname() != null && !request.nickname().equals(user.getNickname())) {
-            userRepository.findByNickname(request.nickname()).ifPresent(u -> {
-                throw new CustomException(ErrorCode.DUPLICATE_NICKNAME);
-            });
-            user.setNickname(request.nickname());
-        }
-
         if (request.profileImageUrl() != null) {
             user.setProfileImageUrl(request.profileImageUrl());
         }

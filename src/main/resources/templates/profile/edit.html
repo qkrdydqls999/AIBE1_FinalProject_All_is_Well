@@ -1,0 +1,91 @@
+<!DOCTYPE html>
+<html lang="ko" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8" />
+    <title>프로필 수정 - 북적북적</title>
+    <meta name="_csrf" th:content="${_csrf.token}" />
+    <meta name="_csrf_header" th:content="${_csrf.headerName}" />
+    <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Noto+Sans:wght@400;500;700;900&family=Plus+Jakarta+Sans:wght@400;500;700;800&display=swap" />
+    <script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+</head>
+<body class="relative flex min-h-screen flex-col bg-white" style="font-family: 'Plus Jakarta Sans', 'Noto Sans', sans-serif;">
+<div class="flex flex-col grow layout-container">
+    <div th:replace="~{fragments/header :: header}"></div>
+    <main class="flex-1 flex justify-center px-6 md:px-40 py-6">
+        <div class="w-full max-w-[600px] flex flex-col gap-6">
+            <h1 class="text-2xl font-bold">프로필 수정</h1>
+            <form id="profile-form" class="space-y-4">
+                <label class="block">
+                    <span class="text-sm font-medium">닉네임</span>
+                    <input id="nickname" type="text" th:value="${profile.nickname}" class="form-input mt-1 w-full" />
+                </label>
+                <label class="block">
+                    <span class="text-sm font-medium">프로필 이미지</span>
+                    <input id="image" type="file" accept="image/*" class="mt-1" />
+                </label>
+                <fieldset class="block">
+                    <span class="text-sm font-medium">관심 카테고리</span>
+                    <div class="mt-2 grid grid-cols-2 gap-2">
+                        <div th:each="cat : ${categories}">
+                            <label class="inline-flex items-center gap-1">
+                                <input type="checkbox" name="categories" th:value="${cat.id}"
+                                       th:checked="${profile.interestCategories.?[categoryId == cat.id].size() > 0}"/>
+                                <span th:text="${cat.name}">문학</span>
+                            </label>
+                        </div>
+                    </div>
+                </fieldset>
+                <button type="submit" class="w-full h-12 bg-gray-800 hover:bg-gray-700 text-white font-bold rounded-lg">저장</button>
+            </form>
+        </div>
+    </main>
+    <div th:replace="~{fragments/footer :: footer}"></div>
+</div>
+<script th:inline="javascript">
+    /*<![CDATA[*/
+    const csrfToken = document.querySelector('meta[name="_csrf"]').getAttribute('content');
+    const csrfHeader = document.querySelector('meta[name="_csrf_header"]').getAttribute('content');
+
+    const form = document.getElementById('profile-form');
+    form.addEventListener('submit', async (e) => {
+        e.preventDefault();
+        const nickname = document.getElementById('nickname').value;
+        const imageFile = document.getElementById('image').files[0];
+        let imageUrl = null;
+        if (imageFile) {
+            const fd = new FormData();
+            fd.append('image', imageFile);
+            const uploadRes = await fetch('/api/profile/me/image', {
+                method: 'POST',
+                headers: { [csrfHeader]: csrfToken },
+                body: fd
+            });
+            if (uploadRes.ok) {
+                imageUrl = await uploadRes.text();
+            } else {
+                alert('이미지 업로드에 실패했습니다.');
+                return;
+            }
+        }
+        const categoryIds = Array.from(document.querySelectorAll('input[name="categories"]:checked'))
+            .map(cb => parseInt(cb.value));
+        const payload = { nickname: nickname, profileImageUrl: imageUrl, interestCategoryIds: categoryIds };
+        const res = await fetch('/api/profile/me', {
+            method: 'PATCH',
+            headers: { 'Content-Type': 'application/json', [csrfHeader]: csrfToken },
+            body: JSON.stringify(payload)
+        });
+        if (res.ok) {
+            alert('프로필이 수정되었습니다.');
+            window.location.href = '/profile/me';
+        } else if (res.status === 401) {
+            alert('로그인이 필요합니다.');
+        } else {
+            const data = await res.json().catch(() => ({}));
+            alert(data.message || '수정 중 오류가 발생했습니다.');
+        }
+    });
+    /*]]>*/
+</script>
+</body>
+</html>

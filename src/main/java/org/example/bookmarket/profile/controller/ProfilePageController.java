@@ -5,6 +5,7 @@ import org.example.bookmarket.profile.service.ProfileService;
 import org.example.bookmarket.user.entity.User;
 import org.example.bookmarket.user.entity.SocialType;
 import org.example.bookmarket.user.repository.UserRepository;
+import org.example.bookmarket.category.service.CategoryService;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.oauth2.core.user.OAuth2User;
 import org.springframework.stereotype.Controller;
@@ -23,6 +24,7 @@ public class ProfilePageController {
 
     private final ProfileService profileService;
     private final UserRepository userRepository;
+    private final CategoryService categoryService;
 
     /**
      * 내 프로필 메인 페이지를 보여줍니다. (판매 목록이 기본)
@@ -41,6 +43,20 @@ public class ProfilePageController {
         model.addAttribute("activeTab", "sell-books"); // View에서 활성화된 탭을 표시하기 위한 값
 
         return "profile/main"; // templates/profile/main.html
+    }
+
+    /**
+     * 프로필 수정 폼을 보여줍니다.
+     */
+    @GetMapping("/me/edit")
+    public String getEditProfilePage(Model model, Authentication authentication) {
+        User user = resolveCurrentUser(authentication);
+        if (user == null) {
+            return "redirect:/auth/login";
+        }
+        model.addAttribute("profile", profileService.getMyProfile(user.getId()));
+        model.addAttribute("categories", categoryService.getAllCategories());
+        return "profile/edit";
     }
 
     /**
