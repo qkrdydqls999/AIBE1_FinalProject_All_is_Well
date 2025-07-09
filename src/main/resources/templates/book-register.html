@@ -247,6 +247,7 @@
 
     // ## 기능 3: 이미지 미리보기 및 삭제 기능 스크립트 ##
     const imageInput = document.getElementById('images');
+    const imageUploadBox = document.getElementById('image-upload-box');
     const imagePlaceholder = document.getElementById('image-placeholder');
     const previewContainer = document.getElementById('preview-container');
     const imagePreview = document.getElementById('image-preview');
@@ -263,6 +264,36 @@
                 previewContainer.classList.remove('hidden');
             };
 
+            reader.readAsDataURL(file);
+        }
+    });
+
+    ['dragenter', 'dragover'].forEach(evt => {
+        imageUploadBox.addEventListener(evt, function(e) {
+            e.preventDefault();
+            imageUploadBox.classList.add('bg-gray-100');
+        });
+    });
+
+    imageUploadBox.addEventListener('dragleave', function() {
+        imageUploadBox.classList.remove('bg-gray-100');
+    });
+
+    imageUploadBox.addEventListener('drop', function(e) {
+        e.preventDefault();
+        imageUploadBox.classList.remove('bg-gray-100');
+        if (e.dataTransfer.files && e.dataTransfer.files[0]) {
+            const file = e.dataTransfer.files[0];
+            const dt = new DataTransfer();
+            dt.items.add(file);
+            imageInput.files = dt.files;
+
+            const reader = new FileReader();
+            reader.onload = function(ev) {
+                imagePlaceholder.classList.add('hidden');
+                imagePreview.src = ev.target.result;
+                previewContainer.classList.remove('hidden');
+            };
             reader.readAsDataURL(file);
         }
     });

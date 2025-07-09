@@ -1,7 +1,10 @@
 package org.example.bookmarket.common.controller;
 
+import lombok.RequiredArgsConstructor;
 import org.example.bookmarket.book.dto.BookResponse;
 import lombok.RequiredArgsConstructor;
+import org.example.bookmarket.usedbook.dto.UsedBookResponse;
+import org.example.bookmarket.usedbook.service.UsedBookQueryService;
 import org.example.bookmarket.user.entity.User;
 import org.example.bookmarket.user.entity.SocialType;
 import org.example.bookmarket.user.repository.UserRepository;
@@ -18,6 +21,7 @@ import java.util.List;
 public class HomeController {
 
     private final UserRepository userRepository;
+    private final UsedBookQueryService usedBookQueryService;
 
     @GetMapping("/")
     public String root(Model model, Authentication authentication) {
@@ -29,11 +33,8 @@ public class HomeController {
         );
         model.addAttribute("recommendedBooks", recommendedBooks);
 
-        // 2. 방금 올라온 따끈한 책 데이터
-        List<BookResponse> newlyAddedBooks = List.of(
-                new BookResponse(5L, "978-89-6848-198-7", "운영체제", "A. Silberschatz", "교보문고", 2018, 32000, "설명...", "https://images.unsplash.com/photo-1512820790803-83ca734da794?q=80&w=1798&auto=format&fit=crop"),
-                new BookResponse(6L, "979-11-85890-57-0", "데이터베이스 시스템", "Korth", "한빛아카데미", 2021, 35000, "설명...", "https://images.unsplash.com/photo-1495446815901-a7297e633e8d?q=80&w=1770&auto=format&fit=crop")
-        );
+        // 2. 방금 올라온 따끈한 책 데이터 - 최신순 4권
+        List<UsedBookResponse> newlyAddedBooks = usedBookQueryService.getLatestUsedBooks(4);
         model.addAttribute("newlyAddedBooks", newlyAddedBooks);
 
         // 3. 지금 많이 찾는 책 (태그) 데이터

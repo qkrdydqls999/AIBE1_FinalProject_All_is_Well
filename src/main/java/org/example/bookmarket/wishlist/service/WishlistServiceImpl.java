@@ -49,6 +49,10 @@ public class WishlistServiceImpl implements WishlistService {
         UsedBook usedBook = usedBookRepository.findById(usedBookId)
                 .orElseThrow(() -> new CustomException(ErrorCode.USED_BOOK_NOT_FOUND));
 
+        if (usedBook.getSeller() != null && usedBook.getSeller().getId().equals(userId)) {
+            throw new CustomException(ErrorCode.WISHLIST_OWN_BOOK);
+        }
+
         Wishlist wishlist = Wishlist.builder()
                 .user(user)
                 .usedBook(usedBook)

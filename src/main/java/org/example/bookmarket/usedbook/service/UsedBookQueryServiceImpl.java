@@ -7,6 +7,8 @@ import org.example.bookmarket.usedbook.entity.UsedBook;
 import org.example.bookmarket.usedbook.repository.UsedBookRepository;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Sort;
 
 import java.util.Collections;
 import java.util.List;
@@ -34,6 +36,15 @@ public class UsedBookQueryServiceImpl implements UsedBookQueryService {
                 .collect(Collectors.toList());
     }
 
+
+    @Override
+    @Transactional(readOnly = true)
+    public List<UsedBookResponse> getLatestUsedBooks(int limit) {
+        PageRequest pageRequest = PageRequest.of(0, limit, Sort.by(Sort.Direction.DESC, "id"));
+        return usedBookRepository.findAll(pageRequest).stream()
+                .map(this::toResponse)
+                .collect(Collectors.toList());
+    }
     /**
      * [신규 기능 구현] Custom Repository를 호출하여 키워드 기반 검색을 수행합니다.
      */

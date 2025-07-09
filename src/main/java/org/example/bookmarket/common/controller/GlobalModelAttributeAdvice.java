@@ -19,6 +19,7 @@ public class GlobalModelAttributeAdvice {
 
     @ModelAttribute
     public void addUserInfo(Model model, Authentication authentication) {
+        model.addAttribute("userId", null);
         if (authentication == null || !authentication.isAuthenticated()) {
             return;
         }
@@ -27,6 +28,8 @@ public class GlobalModelAttributeAdvice {
         User user = null;
         if (principal instanceof UserDetails u) {
             user = (User) u;
+            // fetch the latest user info to reflect profile updates immediately
+            user = userRepository.findById(user.getId()).orElse(user);
         } else if (principal instanceof OAuth2User oauth2User) {
             Object idAttr = oauth2User.getAttribute("id");
             if (idAttr != null) {
@@ -37,6 +40,7 @@ public class GlobalModelAttributeAdvice {
         }
 
         if (user != null) {
+            model.addAttribute("userId", user.getId());
             model.addAttribute("nickname", user.getNickname());
             model.addAttribute("profileImageUrl", user.getProfileImageUrl());
         }
