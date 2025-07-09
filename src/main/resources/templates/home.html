@@ -34,7 +34,7 @@
 
             <!-- AI 추천 도서 -->
             <section class="mt-6">
-                <h2 class="text-[#111418] text-[22px] font-bold leading-tight px-4 pb-3">AI 맞춤 추천 도서</h2>
+                <h2 class="text-[#111418] text-[22px] font-bold leading-tight px-4 pb-3">맞춤 추천 도서</h2>
                 <div class="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 gap-4 px-4">
                     <a th:each="book : ${recommendedBooks}" th:href="@{/used-books/{id}(id=${book.id})}" class="flex flex-col gap-2 hover:scale-105 hover:shadow-lg transition duration-300 cursor-pointer">
                         <div class="w-full aspect-[3/4] rounded-lg bg-cover bg-center" th:style="'background-image: url(' + ${book.coverImageUrl} + ')'">
