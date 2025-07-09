@@ -52,7 +52,8 @@ public enum ErrorCode {
     // Common Errors
     INVALID_INPUT_VALUE(HttpStatus.BAD_REQUEST, "입력값이 올바르지 않습니다."),
     PURCHASE_LOCK_FAILED(HttpStatus.CONFLICT, "현재 다른 사용자가 구매 중입니다. 잠시 후 다시 시도해주세요."),
-    BOOK_ALREADY_SOLD(HttpStatus.CONFLICT, "이미 판매 완료된 상품입니다.");
+    BOOK_ALREADY_SOLD(HttpStatus.CONFLICT, "이미 판매 완료된 상품입니다."),
+    WISHLIST_DUPLICATED(HttpStatus.CONFLICT, "이미 찜한 책입니다.");
 
 
     private final HttpStatus status;
