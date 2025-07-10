@@ -7,6 +7,7 @@ import org.example.bookmarket.usedbook.dto.UsedBookResponse;
 import org.example.bookmarket.usedbook.dto.UsedBookSummary;
 import org.example.bookmarket.usedbook.service.UsedBookPurchaseService;
 import org.example.bookmarket.usedbook.service.UsedBookQueryService;
+import org.example.bookmarket.usedbook.service.UsedBookPostService;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
@@ -23,6 +24,7 @@ public class UsedBookApiController {
 
     private final UsedBookQueryService usedBookQueryService;
     private final UsedBookPurchaseService usedBookPurchaseService;
+    private final UsedBookPostService usedBookPostService;
     private final BookService bookService;
 
     /**
@@ -59,5 +61,11 @@ public class UsedBookApiController {
         // try-catch를 제거하고, 예외가 발생하면 GlobalExceptionHandler가 처리하도록 위임합니다.
         usedBookPurchaseService.purchase(bookId);
         return ResponseEntity.ok("책 구매에 성공했습니다. ID: " + bookId);
+    }
+
+    @DeleteMapping("/{id}")
+    public ResponseEntity<Void> deleteUsedBook(@PathVariable Long id) {
+        usedBookPostService.deleteUsedBook(id);
+        return ResponseEntity.noContent().build();
     }
 }
