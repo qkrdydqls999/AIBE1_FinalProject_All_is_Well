@@ -2,6 +2,7 @@ package org.example.bookmarket.common.controller;
 
 import lombok.RequiredArgsConstructor;
 import org.example.bookmarket.recommendation.service.RecommendationService;
+import org.example.bookmarket.banner.service.BannerService;
 import org.example.bookmarket.usedbook.dto.UsedBookResponse;
 import org.example.bookmarket.usedbook.service.UsedBookQueryService;
 import org.example.bookmarket.user.entity.User;
@@ -22,6 +23,7 @@ public class HomeController {
     private final UserRepository userRepository;
     private final UsedBookQueryService usedBookQueryService;
     private final RecommendationService recommendationService;
+    private final BannerService bannerService;
 
     @GetMapping("/")
     public String root(Model model, Authentication authentication) {
@@ -38,6 +40,9 @@ public class HomeController {
                 }
             }
         }
+
+        // 배너 데이터
+        model.addAttribute("banners", bannerService.getBanners());
 
         // 1. AI 맞춤 추천 도서 데이터
         Long userId = (currentUser != null) ? currentUser.getId() : null;
@@ -58,5 +63,13 @@ public class HomeController {
         }
 
         return "home";
+    }
+
+    /**
+     * 간단한 프로모션 페이지를 보여줍니다.
+     */
+    @GetMapping("/promo")
+    public String promoPage() {
+        return "promo";
     }
 }

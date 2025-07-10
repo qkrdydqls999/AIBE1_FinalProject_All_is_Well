@@ -1,0 +1,19 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<section th:fragment="banner" class="relative min-h-[218px] rounded-lg overflow-hidden">
+    <div class="swiper hero-swiper h-full">
+        <div class="swiper-wrapper">
+            <a th:each="banner : ${banners}" th:href="${banner.link}" class="swiper-slide relative block">
+                <img class="absolute inset-0 w-full h-full object-cover" th:src="${banner.imageUrl}" />
+                <div class="absolute inset-0 bg-black/40"></div>
+                <div class="absolute inset-0 z-20 flex justify-center items-center p-4 text-center">
+                    <h1 class="text-white text-[28px] font-bold leading-tight" th:text="${banner.title}"></h1>
+                </div>
+            </a>
+        </div>
+        <div class="swiper-button-prev text-white"></div>
+        <div class="swiper-button-next text-white"></div>
+        <div class="swiper-pagination absolute bottom-2 right-2 text-sm text-white z-20"></div>
+    </div>
+</section>
+</html>
