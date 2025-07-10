@@ -5,6 +5,8 @@
     <title>판매 목록 - 북적북적</title>
     <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Noto+Sans:wght@400;500;700;900&family=Plus+Jakarta+Sans:wght@400;500;700;800&display=swap" />
     <script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+    <meta name="_csrf" th:content="${_csrf.token}" />
+    <meta name="_csrf_header" th:content="${_csrf.headerName}" />
 </head>
 <body class="relative flex min-h-screen flex-col bg-white" style="font-family: 'Plus Jakarta Sans', 'Noto Sans', sans-serif;">
 <div class="flex flex-col grow layout-container">
@@ -34,6 +36,7 @@
                             <th class="px-6 py-3">상태</th>
                             <th class="px-6 py-3">구매자</th>
                             <th class="px-6 py-3">최종 수정일</th>
+                            <th class="px-6 py-3">삭제</th>
                         </tr>
                         </thead>
                         <tbody>
@@ -54,6 +57,7 @@
                             </td>
                             <td class="px-6 py-4" th:text="${item.buyerNickname ?: '-'}">-</td>
                             <td class="px-6 py-4" th:text="${#temporals.format(item.updatedAt, 'yyyy-MM-dd')}">2025-06-25</td>
+                            <td class="px-6 py-4"><button type="button" class="sales-delete text-red-600" th:data-id="${item.usedBookId}">삭제</button></td>
                         </tr>
                         </tbody>
                     </table>
@@ -65,5 +69,33 @@
 
     <div th:replace="~{fragments/footer :: footer}"></div>
 </div>
+<script th:inline="javascript">
+    /*<![CDATA[*/
+    document.querySelectorAll('.sales-delete').forEach(btn => {
+        btn.addEventListener('click', function() {
+            if (!confirm('정말 삭제하시겠습니까?')) return;
+            const id = this.dataset.id;
+            const token = document.querySelector('meta[name="_csrf"]').getAttribute('content');
+            const header = document.querySelector('meta[name="_csrf_header"]').getAttribute('content');
+            fetch(`/api/used-books/${id}`, {
+                method: 'DELETE',
+                headers: { [header]: token }
+            }).then(async res => {
+                if (res.ok) {
+                    alert('삭제되었습니다.');
+                    location.reload();
+                } else if (res.status === 401) {
+                    alert('로그인이 필요합니다.');
+                } else if (res.status === 403) {
+                    alert('삭제 권한이 없습니다.');
+                } else {
+                    const data = await res.json().catch(() => ({}));
+                    alert(data.message || '삭제 중 오류가 발생했습니다.');
+                }
+            }).catch(err => alert(err.message));
+        });
+    });
+    /*]]>*/
+</script>
 </body>
 </html>

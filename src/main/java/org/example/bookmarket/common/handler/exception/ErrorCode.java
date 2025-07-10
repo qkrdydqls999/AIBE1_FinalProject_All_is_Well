@@ -54,7 +54,9 @@ public enum ErrorCode {
     PURCHASE_LOCK_FAILED(HttpStatus.CONFLICT, "현재 다른 사용자가 구매 중입니다. 잠시 후 다시 시도해주세요."),
     BOOK_ALREADY_SOLD(HttpStatus.CONFLICT, "이미 판매 완료된 상품입니다."),
     WISHLIST_DUPLICATED(HttpStatus.CONFLICT, "이미 찜한 책입니다."),
-    WISHLIST_OWN_BOOK(HttpStatus.CONFLICT, "자신의 판매글은 찜할 수 없습니다.");
+    WISHLIST_OWN_BOOK(HttpStatus.CONFLICT, "자신의 판매글은 찜할 수 없습니다."),
+
+    USED_BOOK_DELETE_FORBIDDEN(HttpStatus.FORBIDDEN, "판매글을 삭제할 권한이 없습니다.");
 
     private final HttpStatus status;
     private final String message;
