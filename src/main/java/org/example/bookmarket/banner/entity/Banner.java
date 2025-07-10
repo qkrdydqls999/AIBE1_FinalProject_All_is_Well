@@ -13,6 +13,7 @@ import org.example.bookmarket.banner.entity.BannerStatus;
 @Entity
 @Table(name = "banner")
 @Getter
+@Setter
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
 public class Banner extends TimeEntity {
     @Id

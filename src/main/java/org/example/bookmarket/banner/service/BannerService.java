@@ -1,6 +1,7 @@
 package org.example.bookmarket.banner.service;
 
 import lombok.RequiredArgsConstructor;
+import org.example.bookmarket.banner.dto.BannerRequest;
 import org.example.bookmarket.banner.entity.Banner;
 import org.example.bookmarket.banner.entity.BannerStatus;
 import org.example.bookmarket.banner.repository.BannerRepository;
@@ -28,27 +29,40 @@ public class BannerService {
     }
 
     @Transactional
-    public void saveBanner(Banner banner) {
-        bannerRepository.save(banner);
-    }
+        public void saveBanner(BannerRequest request) {
+            Banner banner;
+            if (request.id() != null) {
+                banner = getBanner(request.id());
+            } else {
+                banner = Banner.builder().build();
+            }
 
-    @Transactional
-    public void deleteBanner(Long id) {
-        bannerRepository.deleteById(id);
-    }
+            banner.setImageUrl(request.imageUrl());
+            banner.setLink(request.link());
+            banner.setTitle(request.title());
+            banner.setSortOrder(request.sortOrder());
+            banner.setStatus(request.status() != null ? request.status() : BannerStatus.ACTIVE);
 
-    @Transactional
-    public void toggleBannerStatus(Long id) {
-        Banner banner = getBanner(id);
-        if (banner.getStatus() == BannerStatus.ACTIVE) {
-            banner.changeStatus(BannerStatus.INACTIVE);
-        } else {
-            banner.changeStatus(BannerStatus.ACTIVE);
+            bannerRepository.save(banner);
+        }
+
+        @Transactional
+        public void deleteBanner(Long id) {
+            bannerRepository.deleteById(id);
+        }
+
+        @Transactional
+        public void toggleBannerStatus(Long id) {
+            Banner banner = getBanner(id);
+            if (banner.getStatus() == BannerStatus.ACTIVE) {
+                banner.changeStatus(BannerStatus.INACTIVE);
+            } else {
+                banner.changeStatus(BannerStatus.ACTIVE);
+            }
+        }
+
+        @Transactional(readOnly = true)
+        public Banner getBanner(Long id) {
+            return bannerRepository.findById(id).orElseThrow();
         }
     }
-
-    @Transactional(readOnly = true)
-    public Banner getBanner(Long id) {
-        return bannerRepository.findById(id).orElseThrow();
-    }
-}
