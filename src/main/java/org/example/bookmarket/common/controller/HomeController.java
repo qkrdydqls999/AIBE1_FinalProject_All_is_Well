@@ -59,4 +59,12 @@ public class HomeController {
 
         return "home";
     }
+
+    /**
+     * 간단한 프로모션 페이지를 보여줍니다.
+     */
+    @GetMapping("/promo")
+    public String promoPage() {
+        return "promo";
+    }
 }
