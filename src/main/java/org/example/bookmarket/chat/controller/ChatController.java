@@ -33,8 +33,9 @@ public class ChatController {
             @AuthenticationPrincipal CustomUserDetails userDetails // 현재 로그인한 사용자 (구매자)
     ) {
         // 로그인되지 않은 사용자 처리
+        // [수정] 로그인되지 않은 사용자에 대한 예외 처리를 명확하게 변경합니다.
         if (userDetails == null || userDetails.getUser() == null) {
-            throw new CustomException(ErrorCode.CHAT_CHANNEL_NOT_FOUND); // 적절한 예외 처리
+            throw new CustomException(ErrorCode.UNAUTHORIZED_CHAT_ACCESS);
         }
         // ChatRequest에 user1Id (구매자 ID)를 설정합니다.
         // 프론트에서 넘어온 user1Id는 무시하고, 로그인된 사용자 ID를 사용합니다.

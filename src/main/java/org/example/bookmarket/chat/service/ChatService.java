@@ -14,7 +14,8 @@ import org.example.bookmarket.user.entity.User;
 import org.example.bookmarket.user.repository.UserRepository;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
-
+import org.example.bookmarket.chat.dto.ChatMessageRequest;
+import org.example.bookmarket.chat.dto.ChatMessageResponse;
 import java.util.List;
 import java.util.stream.Collectors;
 

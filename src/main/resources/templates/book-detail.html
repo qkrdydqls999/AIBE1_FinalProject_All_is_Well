@@ -61,13 +61,8 @@
                     <hr/>
 
                     <div>
-                        <h3 class="text-lg font-bold text-[#111418] pb-2 flex items-center gap-2">
-                            <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" fill="currentColor" viewBox="0 0 256 256"><path d="M128,24A104,104,0,1,0,232,128,104.11,104.11,0,0,0,128,24Zm0,192a88,88,0,1,1,88-88A88.1,88.1,0,0,1,128,216Zm-32-88a12,12,0,1,1,12,12A12,12,0,0,1,96,128Zm64,0a12,12,0,1,1,12,12A12,12,0,0,1,160,128Zm-21.84,41.42a8,8,0,0,1-11.32,1.13,47.81,47.81,0,0,0-53.68,0,8,8,0,0,1-12.45-10.1A64,64,0,0,1,128,136a63.81,63.81,0,0,1,49,22.32A8,8,0,0,1,169.84,169.42Z"></path></svg>
-                            아이유의 리뷰
-                        </h3>
-                        <div class="text-base text-gray-700 leading-relaxed" th:utext="${#strings.replace(book.personaReview, '\n', '<br/>')}">
-                            AI가 생성한 페르소나 리뷰가 여기에 표시됩니다.
-                        </div>
+                        <p class="text-base font-medium text-[#111418]" th:text="${book.conditionGrade}">최상</p>
+                        <p class="text-sm text-[#60748a]">Excellent</p>
                     </div>
                 </div>
                 <p class="text-base text-[#111418] py-2" th:text="${book.detailedCondition}">This book is in excellent condition...</p>
@@ -104,76 +99,69 @@
     /*<![CDATA[*/
     const bookId = /*[[${book.id}]]*/ 'default';
 
-    const wishlistBtn = document.getElementById('wishlist-button');
-    if (wishlistBtn) wishlistBtn.addEventListener('click', function() {
-        const csrfToken = document.querySelector('meta[name="_csrf"]').getAttribute('content');
-        const csrfHeader = document.querySelector('meta[name="_csrf_header"]').getAttribute('content');
+    document.addEventListener('DOMContentLoaded', function() {
+        // ----------------------------------------------------------------
+        // 1. 공통 변수 및 CSRF 토큰을 스크립트 상단에서 한 번만 조회합니다.
+        // ----------------------------------------------------------------
+        const bookId = /*[[${book.id}]]*/ 0;
+        const sellerId = /*[[${book.sellerId}]]*/ 0;
+        const csrfToken = document.querySelector("meta[name='_csrf']")?.getAttribute("content");
+        const csrfHeader = document.querySelector("meta[name='_csrf_header']")?.getAttribute("content");
 
-        fetch(`/api/wishlist?usedBookId=${bookId}`, {
-            method: 'POST',
-            headers: { [csrfHeader]: csrfToken }
-        })
-            .then(async response => {
-                if (response.ok) {
-                    alert('위시리스트에 추가되었습니다.');
-                } else if (response.status === 401) {
-                    alert('로그인이 필요합니다.');
-                } else if (response.status === 403) {
-                    alert('보안 토큰이 유효하지 않습니다.');
-                } else if (response.status === 409) {
-                    alert('이미 찜한 책입니다.');
-                } else {
-                    const data = await response.json().catch(() => ({}));
-                    throw new Error(data.message || '찜하기 중 오류가 발생했습니다.');
-                }
-            })
-            .catch(error => {
-                alert(error.message);
-            });
-    });
+        const wishlistButton = document.getElementById('wishlist-button');
+        const purchaseButton = document.getElementById('purchase-button');
 
-    const deleteBtn = document.getElementById('delete-button');
-    if (deleteBtn) deleteBtn.addEventListener('click', function() {
-        if (!confirm('정말 삭제하시겠습니까?')) return;
-        const token = document.querySelector('meta[name="_csrf"]').getAttribute('content');
-        const header = document.querySelector('meta[name="_csrf_header"]').getAttribute('content');
-        fetch(`/api/used-books/${bookId}`, {
-            method: 'DELETE',
-            headers: { [header]: token }
-        }).then(async res => {
-            if (res.ok) {
-                alert('삭제되었습니다.');
-                location.href = '/profile/sales';
-            } else if (res.status === 401) {
-                alert('로그인이 필요합니다.');
-            } else if (res.status === 403) {
-                alert('삭제 권한이 없습니다.');
-            } else {
-                const data = await res.json().catch(() => ({}));
-                alert(data.message || '삭제 중 오류가 발생했습니다.');
+        // CSRF 토큰이 없는 경우(예: CSRF 비활성화) 함수를 실행하지 않도록 방어
+        if (!csrfToken || !csrfHeader) {
+            console.error('CSRF token not found. Make sure you are logged in and CSRF is enabled.');
+            // 사용자에게 로그인 유도
+            if(purchaseButton) {
+                purchaseButton.addEventListener('click', () => alert('오류가 발생했습니다. 먼저 로그인을 시도해 주세요.'));
             }
-        }).catch(err => alert(err.message));
-    });
-
-    document.getElementById('purchase-button').addEventListener('click', function() {
-        if (!confirm('정말로 이 책을 구매하시겠습니까?')) {
+            if(wishlistButton) {
+                wishlistButton.addEventListener('click', () => alert('오류가 발생했습니다. 먼저 로그인을 시도해 주세요.'));
+            }
             return;
         }
 
+        // ----------------------------------------------------------------
+        // 2. 찜하기 버튼 이벤트 리스너
+        // ----------------------------------------------------------------
+        if (wishlistButton) {
+            wishlistButton.addEventListener('click', function() {
+                fetch(`/api/wishlist?usedBookId=${bookId}`, {
+                    method: 'POST',
+                    headers: { [csrfHeader]: csrfToken } // 미리 조회한 토큰 사용
+                })
+                    .then(async response => {
+                        if (response.ok) {
+                            alert('위시리스트에 추가되었습니다.');
+                        } else if (response.status === 401) {
+                            alert('로그인이 필요합니다.');
+                            window.location.href = '/login';
+                        } else if (response.status === 409) {
+                            alert('이미 찜한 책입니다.');
+                        } else {
+                            const data = await response.json().catch(() => ({}));
+                            throw new Error(data.message || '찜하기 중 오류가 발생했습니다.');
+                        }
+                    })
+                    .catch(error => {
+                        alert(error.message);
+                    });
+            });
+        }
 
-        // 채팅하기 / 구매 요청 버튼 로직
-        const purchaseButton = document.getElementById('purchase-button');
-        if (purchaseButton) { // 📌 [추가] 요소가 존재하는지 확인하는 방어 코드 추가
+        // ----------------------------------------------------------------
+        // 3. 채팅하기 / 구매 요청 버튼 이벤트 리스너
+        // ----------------------------------------------------------------
+        if (purchaseButton) {
             purchaseButton.addEventListener('click', function() {
-                console.log("Purchase button clicked!"); // 디버깅용 로그
-                const csrfToken = document.querySelector('meta[name="_csrf"]').getAttribute('content');
-                const csrfHeader = document.querySelector('meta[name="_csrf_header"]').getAttribute('content');
-
-                console.log("bookId:", bookId, "sellerId:", sellerId); // 값 확인
+                console.log("Purchase button clicked!");
 
                 const chatRequest = {
                     usedBookId: bookId,
-                    user1Id: 0, // 백엔드에서 덮어씌워짐
+                    user1Id: 0, // 서버에서 덮어씌워짐
                     user2Id: sellerId
                 };
                 console.log("Chat request payload:", chatRequest); // 보내는 데이터 확인
@@ -187,33 +175,26 @@
                     body: JSON.stringify(chatRequest)
                 })
                     .then(response => {
-                        console.log("Fetch response received:", response); // 응답이 오는지 확인
-                        if (response.ok) {
-                            return response.json();
-                        } else if (response.status === 401) {
+                        if (response.ok) return response.json();
+                        if (response.status === 401) {
                             alert('로그인이 필요합니다.');
                             window.location.href = '/login';
                             throw new Error('Unauthorized');
-                        } else if (response.status === 403) {
-                            alert('권한이 없습니다. (CSRF 토큰 불일치 등)');
-                            throw new Error('Forbidden');
-                        } else {
-                            return response.json().then(err => {
-                                console.error("Error from backend:", err);
-                                throw new Error(err.message || '채팅 채널 생성/조회 중 오류가 발생했습니다.');
-                            }).catch(() => {
-                                throw new Error('알 수 없는 오류가 발생했습니다.');
-                            });
                         }
+                        // 그 외 오류는 백엔드 메시지를 파싱하여 표시
+                        return response.json().then(err => {
+                            console.error("Error from backend:", err);
+                            throw new Error(err.message || '알 수 없는 오류가 발생했습니다.');
+                        });
                     })
                     .then(chatResponse => {
                         console.log("Chat response data:", chatResponse);
-                        const channelId = chatResponse.channelId;
-                        window.location.href = `/api/chat/room/${channelId}`;
+                        window.location.href = `/api/chat/room/${chatResponse.channelId}`;
                     })
                     .catch(error => {
-                        console.error('Error in fetch process:', error);
-                        if (error.message !== 'Unauthorized' && error.message !== 'Forbidden') {
+                        // 'Unauthorized' 오류는 이미 alert 처리했으므로 중복 표시 방지
+                        if (error.message !== 'Unauthorized') {
+                            console.error('Error in fetch process:', error);
                             alert(error.message);
                         }
                     });

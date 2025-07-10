@@ -41,7 +41,7 @@
     const channelId = /*[[${channelId}]]*/ 0;
     const currentUserId = /*[[${userId}]]*/ 0;
 
-    const socket = new SockJS("/ws-stomp");
+    const socket = new SockJS("/ws-chat");
     const stompClient = Stomp.over(socket);
 
     stompClient.connect({}, function () {
