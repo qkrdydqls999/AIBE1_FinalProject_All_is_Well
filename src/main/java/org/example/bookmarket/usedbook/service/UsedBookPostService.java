@@ -106,6 +106,18 @@ public class UsedBookPostService {
         log.info("새로운 중고책이 등록되었습니다. ID: {}", usedBook.getId());
     }
 
+    @Transactional
+    public void deleteUsedBook(Long usedBookId) {
+        User currentUser = getCurrentUser();
+        UsedBook usedBook = usedBookRepository.findById(usedBookId)
+                .orElseThrow(() -> new CustomException(ErrorCode.USED_BOOK_NOT_FOUND));
+        if (!usedBook.getSeller().getId().equals(currentUser.getId())) {
+            throw new CustomException(ErrorCode.USED_BOOK_DELETE_FORBIDDEN);
+        }
+        usedBookRepository.delete(usedBook);
+        log.info("중고책이 삭제되었습니다. ID: {}", usedBookId);
+    }
+
     /**
      * Spring Security의 SecurityContextHolder에서 현재 인증된 사용자 정보를 조회하여 반환하는 메소드입니다.
      * 이메일/비밀번호 로그인과 소셜 로그인(KAKAO) 사용자를 모두 처리할 수 있습니다.
@@ -129,4 +141,6 @@ public class UsedBookPostService {
 
         throw new CustomException(ErrorCode.AUTHENTICATION_FAILED, "지원하지 않는 인증 방식입니다.");
     }
+
+
 }

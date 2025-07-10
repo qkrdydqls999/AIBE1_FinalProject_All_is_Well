@@ -16,7 +16,7 @@
             <section class="pb-4">
                 <h1 class="text-2xl font-bold text-[#111418] px-4 pt-4">
                     '<span th:text="${keyword}" class="text-blue-600"></span>' 검색 결과
-                    <span class="text-blue-600" th:text="'(' + ${searchResults.size()} + '건)'">(0건)</span>
+                    <span class="text-blue-600" th:text="'(' + ${totalResults} + '건)'">(0건)</span>
                 </h1>
             </section>
 
@@ -25,7 +25,7 @@
                     <p>검색 결과가 없습니다.</p>
                 </div>
 
-                <div th:if="${!searchResults.isEmpty()}" class="grid grid-cols-[repeat(auto-fit,minmax(158px,1fr))] gap-4 p-4">
+                <div th:if="${!searchResults.isEmpty()}" class="grid grid-cols-4 gap-4 p-4 max-h-[720px] overflow-y-auto">
                     <a th:each="book : ${searchResults}" th:href="@{/used-books/{id}(id=${book.id})}"
                        class="flex flex-col gap-2 pb-3 transition duration-300 ease-in-out hover:shadow-lg rounded-lg cursor-pointer">
                         <div class="w-full bg-center bg-cover aspect-[3/4] rounded-lg"
@@ -33,9 +33,18 @@
                         </div>
                         <div>
                             <p class="text-base font-medium text-[#111418] truncate" th:text="${book.title}"></p>
-                            <p class="text-sm font-normal text-[#60748a] truncate" th:text="${book.author}"></p>
+                            <p class="text-sm font-normal text-[#60748a] truncate" th:text="${book.sellerNickname}"></p>
+                            <p class="text-sm font-semibold text-[#111418]" th:text="${#numbers.formatInteger(book.sellingPrice,3,'COMMA')} + '원'"></p>
                         </div>
                     </a>
+                </div>
+                <div th:if="${totalPages > 1}" class="flex justify-between px-4 pb-4">
+                    <a th:if="${currentPage > 0}"
+                       th:href="@{/search(keyword=${keyword}, page=${currentPage - 1})}"
+                       class="px-4 py-2 border rounded">이전</a>
+                    <a th:if="${currentPage + 1 < totalPages}"
+                       th:href="@{/search(keyword=${keyword}, page=${currentPage + 1})}"
+                       class="ml-auto px-4 py-2 border rounded">다음</a>
                 </div>
             </section>
 

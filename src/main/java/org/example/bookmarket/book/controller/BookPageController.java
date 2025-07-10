@@ -35,7 +35,9 @@ public class BookPageController {
 
 
     @GetMapping("/search")
-    public String search(@RequestParam(value = "keyword", required = false, defaultValue = "") String keyword, Model model) {
+    public String search(@RequestParam(value = "keyword", required = false, defaultValue = "") String keyword,
+                         @RequestParam(value = "page", defaultValue = "0") int page,
+                         Model model) {
         if (keyword.isBlank()) {
             model.addAttribute("keyword", keyword);
             model.addAttribute("searchResults", Collections.emptyList());
@@ -48,8 +50,16 @@ public class BookPageController {
             log.info("사용자 검색어 '{}'에서 AI가 추출한 키워드: {}", keyword, extractedKeywords);
 
             // 2. 추출된 키워드로 DB에서 중고책 검색
-            List<UsedBookResponse> searchResults = usedBookQueryService.getUsedBooksByKeywords(extractedKeywords);
+            List<UsedBookResponse> allResults = usedBookQueryService.getUsedBooksByKeywords(extractedKeywords);
+            int pageSize = 16;
+            int fromIndex = Math.min(page * pageSize, allResults.size());
+            int toIndex = Math.min(fromIndex + pageSize, allResults.size());
+            List<UsedBookResponse> searchResults = allResults.subList(fromIndex, toIndex);
+
             model.addAttribute("searchResults", searchResults);
+            model.addAttribute("currentPage", page);
+            model.addAttribute("totalPages", (int) Math.ceil(allResults.size() / (double) pageSize));
+            model.addAttribute("totalResults", allResults.size());
 
         } catch (IOException e) {
             // 3. AI 서비스에서 (네트워크 등) 오류 발생 시
