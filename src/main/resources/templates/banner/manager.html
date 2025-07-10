@@ -1,0 +1,62 @@
+<!DOCTYPE html>
+<html lang="ko" xmlns:th="http://www.thymeleaf.org">
+<head>
+  <meta charset="UTF-8" />
+  <title>배너 관리</title>
+  <script src="https://cdn.tailwindcss.com?plugins=forms"></script>
+</head>
+<body class="flex flex-col min-h-screen">
+<div class="flex grow flex-col">
+  <div th:replace="~{fragments/header :: header}"></div>
+  <main class="flex-1 p-6 max-w-3xl mx-auto w-full">
+    <h1 class="text-xl font-bold mb-4">배너 관리</h1>
+    <form th:action="@{/admin/banners}" method="post" class="space-y-2 mb-6" th:object="${bannerForm}">
+      <input type="hidden" th:field="*{id}" />
+      <div>
+        <label class="block text-sm">이미지 URL</label>
+        <input type="text" th:field="*{imageUrl}" class="border w-full" />
+      </div>
+      <div>
+        <label class="block text-sm">링크</label>
+        <input type="text" th:field="*{link}" class="border w-full" />
+      </div>
+      <div>
+        <label class="block text-sm">타이틀</label>
+        <input type="text" th:field="*{title}" class="border w-full" />
+      </div>
+      <div>
+        <label class="block text-sm">정렬 순서</label>
+        <input type="number" th:field="*{sortOrder}" class="border w-full" />
+      </div>
+      <button type="submit" class="bg-blue-600 text-white px-4 py-2 rounded">저장</button>
+    </form>
+
+    <table class="w-full text-left border">
+      <thead>
+      <tr class="bg-gray-100">
+        <th class="p-2">ID</th>
+        <th class="p-2">타이틀</th>
+        <th class="p-2">링크</th>
+        <th class="p-2">순서</th>
+        <th class="p-2">삭제</th>
+      </tr>
+      </thead>
+      <tbody>
+      <tr th:each="b : ${banners}">
+        <td class="p-2" th:text="${b.id}"></td>
+        <td class="p-2" th:text="${b.title}"></td>
+        <td class="p-2" th:text="${b.link}"></td>
+        <td class="p-2" th:text="${b.sortOrder}"></td>
+        <td class="p-2">
+          <form th:action="@{/admin/banners/{id}/delete(id=${b.id})}" method="post">
+            <button type="submit" class="text-red-600">삭제</button>
+          </form>
+        </td>
+      </tr>
+      </tbody>
+    </table>
+  </main>
+  <div th:replace="~{fragments/footer :: footer}"></div>
+</div>
+</body>
+</html>
