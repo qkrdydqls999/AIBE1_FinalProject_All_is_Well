@@ -29,7 +29,7 @@
                     </div>
                     <div>
                         <p class="text-base font-medium text-[#111418] line-clamp-1"
-                            th:text="${book.sellerNickname}">판매자 닉네임</p>
+                           th:text="${book.sellerNickname}">판매자 닉네임</p>
                     </div>
                 </div>
             </section>
@@ -42,6 +42,32 @@
                         </svg>
                     </div>
                     <p class="text-base text-[#111418]" th:text="${book.detailedCondition}">This book is in excellent condition...</p>
+                </div>
+            </section>
+
+            <section class="px-4 pt-8">
+                <div class="p-6 rounded-lg bg-gray-50 border space-y-6">
+                    <div>
+                        <h3 class="text-lg font-bold text-[#111418] pb-2 flex items-center gap-2">
+                            <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" fill="currentColor" viewBox="0 0 256 256"><path d="M224,48H160a40,40,0,0,0-32,16A40,40,0,0,0,96,48H32A16,16,0,0,0,16,64V192a16,16,0,0,0,16,16H96a24,24,0,0,1,24,24,8,8,0,0,0,16,0,24,24,0,0,1,24-24h64a16,16,0,0,0,16-16V64A16,16,0,0,0,224,48ZM96,192H32V64H96a24,24,0,0,1,24,24V200A39.81,39.81,0,0,0,96,192Zm128,0H160a39.81,39.81,0,0,0-24,8V88a24,24,0,0,1,24-24h64Z"></path></svg>
+                            AI가 요약한 책 정보
+                        </h3>
+                        <p class="text-base text-gray-700 leading-relaxed" th:text="${book.summary}">
+                            AI가 생성한 책 요약이 여기에 표시됩니다.
+                        </p>
+                    </div>
+
+                    <hr/>
+
+                    <div>
+                        <h3 class="text-lg font-bold text-[#111418] pb-2 flex items-center gap-2">
+                            <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" fill="currentColor" viewBox="0 0 256 256"><path d="M128,24A104,104,0,1,0,232,128,104.11,104.11,0,0,0,128,24Zm0,192a88,88,0,1,1,88-88A88.1,88.1,0,0,1,128,216Zm-32-88a12,12,0,1,1,12,12A12,12,0,0,1,96,128Zm64,0a12,12,0,1,1,12,12A12,12,0,0,1,160,128Zm-21.84,41.42a8,8,0,0,1-11.32,1.13,47.81,47.81,0,0,0-53.68,0,8,8,0,0,1-12.45-10.1A64,64,0,0,1,128,136a63.81,63.81,0,0,1,49,22.32A8,8,0,0,1,169.84,169.42Z"></path></svg>
+                            책 애호가의 리뷰
+                        </h3>
+                        <div class="text-base text-gray-700 leading-relaxed" th:utext="${#strings.replace(book.personaReview, '\n', '<br/>')}">
+                            AI가 생성한 페르소나 리뷰가 여기에 표시됩니다.
+                        </div>
+                    </div>
                 </div>
             </section>
 

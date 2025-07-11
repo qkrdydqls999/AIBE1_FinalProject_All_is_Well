@@ -112,6 +112,7 @@ public class RecommendationServiceImpl implements RecommendationService {
 
     /**
      * UsedBook 엔티티를 홈 화면에 필요한 UsedBookResponse DTO로 변환합니다.
+     * [수정] 생성자 인자 개수 불일치 오류를 해결하기 위해 마지막 두 인자에 null을 추가합니다.
      */
     private UsedBookResponse toResponse(UsedBook ub) {
         // 중고책 이미지가 있으면 첫 번째 이미지를, 없으면 원본 새 책의 표지를 사용합니다.
@@ -135,7 +136,9 @@ public class RecommendationServiceImpl implements RecommendationService {
                 ub.getSeller().getId(),
                 ub.getSeller().getNickname(),
                 ub.getSeller().getProfileImageUrl(),
-                coverImageUrl
+                coverImageUrl,
+                null, // [수정] summary 필드에 null 전달
+                null  // [수정] personaReview 필드에 null 전달
         );
     }
 }
