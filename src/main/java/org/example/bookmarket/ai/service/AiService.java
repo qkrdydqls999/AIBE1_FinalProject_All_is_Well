@@ -11,6 +11,7 @@ import org.springframework.beans.factory.annotation.Value;
 import org.springframework.http.HttpEntity;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.MediaType;
+import org.springframework.scheduling.annotation.Async;
 import org.springframework.stereotype.Service;
 import org.springframework.web.client.RestClientException;
 import org.springframework.web.client.RestTemplate;
@@ -21,6 +22,7 @@ import java.net.URL;
 import java.util.Base64;
 import java.util.Collections;
 import java.util.List;
+import java.util.concurrent.CompletableFuture;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 import java.util.stream.Collectors;
@@ -74,13 +76,7 @@ public class AiService {
 
     public List<String> extractKeywordsFromQuery(String userQuery) throws IOException {
         String prompt = String.format("다음 사용자 검색어에서 도서 검색에 사용할 핵심 키워드를 1~3개 추출해서 쉼표로 구분된 목록 형태로만 반환해줘. 다른 부가적인 설명은 절대로 추가하지 마. 사용자 검색어: \\\"%s\\\"", userQuery);
-
-        String requestBody = String.format("""
-            {
-              "contents": [ { "parts": [ { "text": "%s" } ] } ]
-            }
-            """, prompt);
-
+        String requestBody = createTextOnlyRequestBody(prompt);
         String resultText = callGeminiApi(requestBody);
 
         if (resultText.isEmpty()) {
@@ -90,6 +86,62 @@ public class AiService {
                 .map(String::trim)
                 .filter(s -> !s.isEmpty())
                 .collect(Collectors.toList());
+    }
+
+    private String summarizeBook(String bookInfo) throws IOException {
+        String prompt = String.format(
+                "다음 책 정보를 바탕으로, 이 책이 어떤 내용을 다루고 있는지 핵심만 간결하게 3~4문장으로 요약해줘. " +
+                        "친절하고 상냥한 서점 주인의 말투로 설명해줘. 정보: \\\"%s\\\"",
+                bookInfo
+        );
+        String requestBody = createTextOnlyRequestBody(prompt);
+        return callGeminiApi(requestBody);
+    }
+
+    @Async
+    public CompletableFuture<String> summarizeBookAsync(String bookInfo) {
+        try {
+            return CompletableFuture.completedFuture(summarizeBook(bookInfo));
+        } catch (IOException e) {
+            log.error("비동기 책 요약 중 오류 발생", e);
+            return CompletableFuture.completedFuture("");
+        }
+    }
+
+    /**
+     * [수정] AI가 생성한 제목 마크다운을 제거하는 로직 추가
+     */
+    private String reviewWithPersona(String bookInfo) throws IOException {
+        String prompt = String.format(
+                "당신은 가수이자 배우 '아이유' 페르소나야. " +
+                        "다음 책 정보를 보고, 아이유 특유의 차분하고 진솔한 감성으로 이 책을 읽은 소감과 어떤 분들께 추천하고 싶은지 이야기해줘. " +
+                        "**전체 내용은 3~4문장으로 짧고 간결하게 작성해줘.** " +
+                        "결과는 '### 아이유의 한마디\\n...'와 '### 이런 분들께 추천해요\\n...' 형식으로 구분해줘. 정보: \\\"%s\\\"",
+                bookInfo
+        );
+        String requestBody = createTextOnlyRequestBody(prompt);
+        String rawResponse = callGeminiApi(requestBody);
+
+        // AI가 생성한 응답에서 ###으로 시작하는 제목 줄을 제거합니다.
+        return rawResponse.replaceAll("### .+\\n", "").trim();
+    }
+
+    @Async
+    public CompletableFuture<String> reviewWithPersonaAsync(String bookInfo) {
+        try {
+            return CompletableFuture.completedFuture(reviewWithPersona(bookInfo));
+        } catch (IOException e) {
+            log.error("비동기 페르소나 리뷰 중 오류 발생", e);
+            return CompletableFuture.completedFuture("");
+        }
+    }
+
+    private String createTextOnlyRequestBody(String prompt) {
+        return String.format("""
+            {
+              "contents": [ { "parts": [ { "text": "%s" } ] } ]
+            }
+            """, prompt);
     }
 
     private String callGeminiApi(String requestBody) throws IOException {
@@ -111,12 +163,8 @@ public class AiService {
         }
     }
 
-    /**
-     * [수정] AI 응답 파싱 로직을 더 안정적으로 변경합니다.
-     * AI 응답에 다른 텍스트가 포함되어 있어도 '결함:' 키워드가 있는 줄을 찾아 처리합니다.
-     */
     private List<String> parseDefects(String text) {
-        String[] lines = text.split("\\R"); // 응답 텍스트를 줄 단위로 분리
+        String[] lines = text.split("\\R");
         for (String line : lines) {
             if (line.trim().startsWith("결함:")) {
                 Pattern pattern = Pattern.compile("\\[(.*?)\\]");
@@ -132,7 +180,6 @@ public class AiService {
                 }
             }
         }
-        // '결함:' 키워드를 포함한 줄을 찾지 못한 경우
         log.warn("AI 응답에서 '결함:' 키워드를 찾지 못했습니다. 전체 응답: {}", text);
         return List.of("결함 정보 없음");
     }
