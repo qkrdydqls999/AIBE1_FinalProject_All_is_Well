@@ -88,9 +88,6 @@ public class AiService {
                 .collect(Collectors.toList());
     }
 
-    /**
-     * [수정] 기존 동기 방식 메소드는 private으로 변경하여 내부적으로만 사용합니다.
-     */
     private String summarizeBook(String bookInfo) throws IOException {
         String prompt = String.format(
                 "다음 책 정보를 바탕으로, 이 책이 어떤 내용을 다루고 있는지 핵심만 간결하게 3~4문장으로 요약해줘. " +
@@ -101,43 +98,41 @@ public class AiService {
         return callGeminiApi(requestBody);
     }
 
-    /**
-     * [신규] @Async를 사용하여 책 요약 기능을 비동기적으로 호출하는 메소드
-     */
     @Async
     public CompletableFuture<String> summarizeBookAsync(String bookInfo) {
         try {
             return CompletableFuture.completedFuture(summarizeBook(bookInfo));
         } catch (IOException e) {
             log.error("비동기 책 요약 중 오류 발생", e);
-            return CompletableFuture.completedFuture(""); // 오류 발생 시 빈 문자열 반환
+            return CompletableFuture.completedFuture("");
         }
     }
 
     /**
-     * [수정] 기존 동기 방식 메소드는 private으로 변경
+     * [수정] AI가 생성한 제목 마크다운을 제거하는 로직 추가
      */
     private String reviewWithPersona(String bookInfo) throws IOException {
         String prompt = String.format(
-                "당신은 '긍정적이고 통찰력 있는 책 애호가'라는 페르소나를 가지고 있어. " +
-                        "다음 책 정보를 바탕으로, 이 책에 대한 당신의 감상과 어떤 사람들에게 이 책을 추천하고 싶은지 리뷰를 작성해줘. " +
-                        "결과는 '### 리뷰\\n...'와 '### 이런 분들께 추천해요\\n...' 형식으로 구분해서 작성해줘. 정보: \\\"%s\\\"",
+                "당신은 가수이자 배우 '아이유' 페르소나야. " +
+                        "다음 책 정보를 보고, 아이유 특유의 차분하고 진솔한 감성으로 이 책을 읽은 소감과 어떤 분들께 추천하고 싶은지 이야기해줘. " +
+                        "**전체 내용은 3~4문장으로 짧고 간결하게 작성해줘.** " +
+                        "결과는 '### 아이유의 한마디\\n...'와 '### 이런 분들께 추천해요\\n...' 형식으로 구분해줘. 정보: \\\"%s\\\"",
                 bookInfo
         );
         String requestBody = createTextOnlyRequestBody(prompt);
-        return callGeminiApi(requestBody);
+        String rawResponse = callGeminiApi(requestBody);
+
+        // AI가 생성한 응답에서 ###으로 시작하는 제목 줄을 제거합니다.
+        return rawResponse.replaceAll("### .+\\n", "").trim();
     }
 
-    /**
-     * [신규] @Async를 사용하여 페르소나 리뷰 기능을 비동기적으로 호출하는 메소드
-     */
     @Async
     public CompletableFuture<String> reviewWithPersonaAsync(String bookInfo) {
         try {
             return CompletableFuture.completedFuture(reviewWithPersona(bookInfo));
         } catch (IOException e) {
             log.error("비동기 페르소나 리뷰 중 오류 발생", e);
-            return CompletableFuture.completedFuture(""); // 오류 발생 시 빈 문자열 반환
+            return CompletableFuture.completedFuture("");
         }
     }
 
