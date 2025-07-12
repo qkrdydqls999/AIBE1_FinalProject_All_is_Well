@@ -49,13 +49,8 @@ public class UsedBookQueryServiceImpl implements UsedBookQueryService {
     @Transactional(readOnly = true)
     public List<UsedBookResponse> getLatestUsedBooks(int limit) {
         PageRequest pageRequest = PageRequest.of(0, limit, Sort.by(Sort.Direction.DESC, "id"));
-        List<String> special = specialAccountService.getActiveNicknames();
-        List<UsedBook> books;
-        if (special.isEmpty()) {
-            books = usedBookRepository.findAll(pageRequest).getContent();
-        } else {
-            books = usedBookRepository.findBySellerNicknamesNotIn(special, pageRequest);
-        }
+        // 특수 계정 판매글도 함께 노출하기 위해 별도의 제외 처리 없이 전체 조회합니다.
+        List<UsedBook> books = usedBookRepository.findAll(pageRequest).getContent();
         return books.stream()
         .map(this::toResponse)
                 .collect(Collectors.toList());
