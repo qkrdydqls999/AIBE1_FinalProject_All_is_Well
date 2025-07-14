@@ -1,8 +1,8 @@
-package org.example.bookmarket.banner.controller;
+package org.example.bookmarket.admin.banner.controller;
 
 import lombok.RequiredArgsConstructor;
-import org.example.bookmarket.banner.entity.Banner;
-import org.example.bookmarket.banner.service.BannerService;
+import org.example.bookmarket.admin.banner.entity.Banner;
+import org.example.bookmarket.admin.banner.service.BannerService;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RequestMapping;

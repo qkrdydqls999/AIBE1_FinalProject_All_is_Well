@@ -1,9 +1,9 @@
-package org.example.bookmarket.banner.controller;
+package org.example.bookmarket.admin.banner.controller;
 
 import lombok.RequiredArgsConstructor;
-import org.example.bookmarket.banner.entity.Banner;
-import org.example.bookmarket.banner.dto.BannerRequest;
-import org.example.bookmarket.banner.service.BannerService;
+import org.example.bookmarket.admin.banner.entity.Banner;
+import org.example.bookmarket.admin.banner.dto.BannerRequest;
+import org.example.bookmarket.admin.banner.service.BannerService;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.*;
@@ -19,7 +19,7 @@ public class BannerPageController {
         model.addAttribute("banners", bannerService.getBanners(all));
         model.addAttribute("bannerForm", new BannerRequest());
         model.addAttribute("showAll", all);
-        return "banner/manager";
+        return "admin/banner-manager";
     }
 
     @GetMapping("/{id}")
@@ -36,7 +36,7 @@ public class BannerPageController {
         );
         model.addAttribute("bannerForm", req);
         model.addAttribute("showAll", all);
-        return "banner/manager";
+        return "admin/banner-manager";
     }
 
     @PostMapping

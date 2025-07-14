@@ -1,7 +1,7 @@
-package org.example.bookmarket.banner.repository;
+package org.example.bookmarket.admin.banner.repository;
 
-import org.example.bookmarket.banner.entity.Banner;
-import org.example.bookmarket.banner.entity.BannerStatus;
+import org.example.bookmarket.admin.banner.entity.Banner;
+import org.example.bookmarket.admin.banner.entity.BannerStatus;
 import org.springframework.data.jpa.repository.JpaRepository;
 
 import java.util.List;

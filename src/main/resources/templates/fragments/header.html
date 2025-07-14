@@ -14,6 +14,7 @@
             <h2 class="text-[#111418] text-lg font-bold leading-tight tracking-[-0.015em]">북적북적</h2>
         </a>
         <nav class="flex items-center gap-9">
+            <a sec:authorize="authentication != null and authentication.name == 'admin@gmail.com'" th:href="@{/admin}" class="text-[#111418] text-sm font-medium leading-normal hover:text-blue-600">관리자</a>
             <a th:href="@{/}" class="text-[#111418] text-sm font-medium leading-normal hover:text-blue-600">메인</a>
             <a sec:authorize="isAuthenticated()" th:href="@{/used-books/new}" class="text-blue-600 font-bold text-sm leading-normal hover:underline">판매등록</a>
         </nav>

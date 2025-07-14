@@ -2,7 +2,7 @@ package org.example.bookmarket.common.controller;
 
 import lombok.RequiredArgsConstructor;
 import org.example.bookmarket.recommendation.service.RecommendationService;
-import org.example.bookmarket.banner.service.BannerService;
+import org.example.bookmarket.admin.banner.service.BannerService;
 import org.example.bookmarket.usedbook.dto.UsedBookResponse;
 import org.example.bookmarket.usedbook.service.UsedBookQueryService;
 import org.example.bookmarket.user.entity.User;
@@ -48,6 +48,10 @@ public class HomeController {
         Long userId = (currentUser != null) ? currentUser.getId() : null;
         List<UsedBookResponse> recommendedBooks = recommendationService.getPersonalizedRecommendations(userId, 4);
         model.addAttribute("recommendedBooks", recommendedBooks);
+
+        // 특수 계정 판매글
+        List<UsedBookResponse> specialBooks = usedBookQueryService.getSpecialUserBooks(4);
+        model.addAttribute("specialUserBooks", specialBooks);
 
         // 2. 방금 올라온 따끈한 책 데이터 (그대로 유지)
         List<UsedBookResponse> newlyAddedBooks = usedBookQueryService.getLatestUsedBooks(4);
