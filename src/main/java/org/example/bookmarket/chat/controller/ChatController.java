@@ -91,6 +91,18 @@ public class ChatController {
         return chatService.getMessages(channelId);
     }
 
+    @DeleteMapping("/message/{messageId}")
+    @ResponseStatus(HttpStatus.NO_CONTENT)
+    @ResponseBody
+    public void deleteMessage(@PathVariable Long messageId,
+                              Authentication authentication) {
+        User currentUser = resolveCurrentUser(authentication);
+        if (currentUser == null) {
+            throw new CustomException(ErrorCode.LOGIN_REQUIRED);
+        }
+        chatService.deleteMessage(messageId, currentUser.getId());
+    }
+
     /**
      * 일반 로그인과 소셜 로그인을 모두 처리하여 현재 로그인된 User 엔티티를 반환하는 헬퍼 메서드
      */

@@ -20,7 +20,11 @@
                     <p class="text-lg font-bold" th:text="${partnerNickname}">상대방 닉네임</p>
                     <p class="text-sm text-gray-500" th:text="'책 제목: ' + ${bookTitle}">책 제목</p>
                 </div>
-                <a th:href="${bookUrl}" class="text-sm text-blue-600 hover:underline">책 보러가기</a>
+                <div class="flex gap-2 items-center">
+                    <a th:href="${bookUrl}" class="text-sm text-blue-600 hover:underline">책 보러가기</a>
+                    <button class="px-2 py-1 text-xs border rounded" id="completeBtn">거래완료</button>
+                    <button class="px-2 py-1 text-xs border rounded" id="closeBtn">대화종료</button>
+                </div>
             </div>
 
             <div id="messageArea" class="flex flex-col gap-2 p-4 border rounded-lg h-[400px] overflow-y-auto bg-white shadow-inner">
@@ -40,6 +44,7 @@
     // Thymeleaf에서 받은 변수들을 JS 변수로 초기화
     const channelId = /*[[${channelId}]]*/ 0;
     const currentUserId = /*[[${userId}]]*/ 0;
+    let lastMessageId = 0;
 
     // SockJS와 STOMP 클라이언트 객체 초기화
     const socket = new SockJS("/ws-chat"); // WebSocketConfig에 설정된 엔드포인트
@@ -87,13 +92,24 @@
     const showMessage = (message) => {
         const messageArea = document.getElementById("messageArea");
         const msgEl = document.createElement("div");
+        const textEl = document.createElement("span");
 
         // 내가 보낸 메시지인지 확인
-        const isMine = message.senderId === currentUserId;
+        const isMine = Number(message.senderId) === Number(currentUserId);
 
         // 메시지 스타일 설정
-        msgEl.className = `max-w-[70%] px-4 py-2 rounded-lg text-sm shadow ${isMine ? 'bg-blue-100 self-end' : 'bg-gray-100 self-start'}`;
-        msgEl.innerText = message.content;
+        msgEl.className = `flex items-center max-w-[70%] px-4 py-2 rounded-lg text-sm shadow ${isMine ? 'bg-blue-100 self-end' : 'bg-gray-100 self-start'}`;
+        msgEl.dataset.messageId = message.messageId;
+        textEl.textContent = message.content;
+        msgEl.appendChild(textEl);
+
+        if (isMine) {
+            const delBtn = document.createElement('button');
+            delBtn.textContent = '삭제';
+            delBtn.className = 'ml-2 text-xs text-red-500';
+            delBtn.addEventListener('click', () => deleteMessage(message.messageId, msgEl));
+            msgEl.appendChild(delBtn);
+        }
 
         messageArea.appendChild(msgEl);
         messageArea.scrollTop = messageArea.scrollHeight; // 항상 최신 메시지가 보이도록 스크롤
@@ -104,9 +120,39 @@
         fetch(`/api/chat/channel/${channelId}/messages`)
             .then(response => response.json())
             .then(messages => {
-                messages.forEach(showMessage);
+                messages.forEach(msg => {
+                    showMessage(msg);
+                    if (msg.messageId && msg.messageId > lastMessageId) {
+                        lastMessageId = msg.messageId;
+                    }
+                });
             });
     };
+
+    const pollNewMessages = () => {
+        fetch(`/api/chat/channel/${channelId}/messages`)
+            .then(response => response.json())
+            .then(messages => {
+                messages.forEach(msg => {
+                    if (msg.messageId && msg.messageId > lastMessageId) {
+                        showMessage(msg);
+                        lastMessageId = msg.messageId;
+                    }
+                });
+            });
+    };
+
+    const deleteMessage = (messageId, element) => {
+        fetch(`/api/chat/message/${messageId}`, { method: 'DELETE' })
+            .then(res => {
+                if (res.ok) {
+                    element.remove();
+                } else {
+                    alert('삭제 실패');
+                }
+            });
+    };
+    setInterval(pollNewMessages, 3000); // 3초마다 새 메시지 확인
 
     // '전송' 버튼 클릭 이벤트 리스너
     document.getElementById("sendButton").addEventListener("click", sendMessage);

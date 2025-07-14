@@ -35,7 +35,8 @@ public class ChatServiceImpl implements ChatService { // ✅ ChatService 인터�
         UsedBook usedBook = usedBookRepository.findById(request.getUsedBookId())
                 .orElseThrow(() -> new CustomException(ErrorCode.USED_BOOK_NOT_FOUND));
 
-        ChatChannel channel = chatChannelRepository.findByUser1AndUser2AndRelatedUsedBook(user1, user2, usedBook)
+        ChatChannel channel = chatChannelRepository
+                .findByUserParticipantsAndUsedBook(user1, user2, usedBook)
                 .orElseGet(() -> {
                     ChatChannel newChannel = ChatChannel.builder()
                             .user1(user1)
@@ -91,6 +92,19 @@ public class ChatServiceImpl implements ChatService { // ✅ ChatService 인터�
         chatChannelRepository.save(channel);
 
         return toChatMessageResponse(message);
+    }
+
+    @Override
+    @Transactional
+    public void deleteMessage(Long messageId, Long currentUserId) {
+        ChatMessage message = chatMessageRepository.findById(messageId)
+                .orElseThrow(() -> new CustomException(ErrorCode.CHAT_MESSAGE_NOT_FOUND));
+
+        if (!message.getSender().getId().equals(currentUserId)) {
+            throw new CustomException(ErrorCode.UNAUTHORIZED_MESSAGE_DELETE);
+        }
+
+        chatMessageRepository.delete(message);
     }
 
     @Override // ✅ @Override 어노테이션 추가

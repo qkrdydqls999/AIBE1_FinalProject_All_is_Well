@@ -39,7 +39,7 @@
                         <tr th:if="${dmList.isEmpty()}">
                             <td colspan="4" class="text-center p-8 text-gray-500">메시지 내역이 없습니다.</td>
                         </tr>
-                        <tr th:each="dm : ${dmList}" class="border-b hover:bg-gray-50">
+                        <tr th:each="dm : ${dmList}" class="border-b hover:bg-gray-50 cursor-pointer" th:data-channel-id="${dm.channelId}">
                             <td class="px-6 py-4 font-medium text-gray-900 whitespace-nowrap" th:text="${dm.partnerNickname}">상대방</td>
                             <td class="px-6 py-4" th:text="${dm.bookTitle}">책 제목</td>
                             <td class="px-6 py-4 text-ellipsis overflow-hidden max-w-[200px]" th:text="${dm.lastMessage}">최근 메시지</td>
@@ -55,5 +55,15 @@
 
     <div th:replace="~{fragments/footer :: footer}"></div>
 </div>
+<script>
+    document.querySelectorAll('tr[data-channel-id]').forEach(row => {
+        row.addEventListener('click', () => {
+            const channelId = row.dataset.channelId;
+            if (channelId) {
+                window.location.href = `/api/chat/room/${channelId}`;
+            }
+        });
+    });
+</script>
 </body>
 </html>
