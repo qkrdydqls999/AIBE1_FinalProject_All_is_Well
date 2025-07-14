@@ -2,7 +2,7 @@ package org.example.bookmarket.common.controller;
 
 import lombok.RequiredArgsConstructor;
 import org.example.bookmarket.recommendation.service.RecommendationService;
-import org.example.bookmarket.banner.service.BannerService;
+import org.example.bookmarket.admin.banner.service.BannerService;
 import org.example.bookmarket.usedbook.dto.UsedBookResponse;
 import org.example.bookmarket.usedbook.service.UsedBookQueryService;
 import org.example.bookmarket.user.entity.User;

@@ -1,6 +1,6 @@
-package org.example.bookmarket.banner.dto;
+package org.example.bookmarket.admin.banner.dto;
 
-import org.example.bookmarket.banner.entity.BannerStatus;
+import org.example.bookmarket.admin.banner.entity.BannerStatus;
 
 /**
  * DTO used for banner form binding. Implemented as a record to allow

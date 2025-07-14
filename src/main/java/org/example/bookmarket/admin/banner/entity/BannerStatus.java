@@ -1,4 +1,4 @@
-package org.example.bookmarket.banner.entity;
+package org.example.bookmarket.admin.banner.entity;
 
 public enum BannerStatus {
     ACTIVE,

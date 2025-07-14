@@ -1,10 +1,10 @@
-package org.example.bookmarket.banner.entity;
+package org.example.bookmarket.admin.banner.entity;
 
 import jakarta.persistence.*;
 import lombok.*;
 import org.example.bookmarket.common.TimeEntity;
 
-import org.example.bookmarket.banner.entity.BannerStatus;
+import org.example.bookmarket.admin.banner.entity.BannerStatus;
 
 /**
  * Banner entity representing promotional banners.

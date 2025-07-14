@@ -1,4 +1,4 @@
-package org.example.bookmarket.specialaccount.entity;
+package org.example.bookmarket.admin.specialaccount.entity;
 
 public enum SpecialAccountStatus {
     ACTIVE,

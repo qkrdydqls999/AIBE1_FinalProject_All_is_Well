@@ -1,10 +1,10 @@
-package org.example.bookmarket.banner.service;
+package org.example.bookmarket.admin.banner.service;
 
 import lombok.RequiredArgsConstructor;
-import org.example.bookmarket.banner.dto.BannerRequest;
-import org.example.bookmarket.banner.entity.Banner;
-import org.example.bookmarket.banner.entity.BannerStatus;
-import org.example.bookmarket.banner.repository.BannerRepository;
+import org.example.bookmarket.admin.banner.dto.BannerRequest;
+import org.example.bookmarket.admin.banner.entity.Banner;
+import org.example.bookmarket.admin.banner.entity.BannerStatus;
+import org.example.bookmarket.admin.banner.repository.BannerRepository;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 

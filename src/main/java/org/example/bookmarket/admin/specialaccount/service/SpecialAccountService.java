@@ -1,10 +1,10 @@
-package org.example.bookmarket.specialaccount.service;
+package org.example.bookmarket.admin.specialaccount.service;
 
 import lombok.RequiredArgsConstructor;
-import org.example.bookmarket.specialaccount.dto.SpecialAccountRequest;
-import org.example.bookmarket.specialaccount.entity.SpecialAccount;
-import org.example.bookmarket.specialaccount.entity.SpecialAccountStatus;
-import org.example.bookmarket.specialaccount.repository.SpecialAccountRepository;
+import org.example.bookmarket.admin.specialaccount.dto.SpecialAccountRequest;
+import org.example.bookmarket.admin.specialaccount.entity.SpecialAccount;
+import org.example.bookmarket.admin.specialaccount.entity.SpecialAccountStatus;
+import org.example.bookmarket.admin.specialaccount.repository.SpecialAccountRepository;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 

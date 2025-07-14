@@ -1,9 +1,9 @@
-package org.example.bookmarket.specialaccount.controller;
+package org.example.bookmarket.admin.specialaccount.controller;
 
 import lombok.RequiredArgsConstructor;
-import org.example.bookmarket.specialaccount.dto.SpecialAccountRequest;
-import org.example.bookmarket.specialaccount.entity.SpecialAccount;
-import org.example.bookmarket.specialaccount.service.SpecialAccountService;
+import org.example.bookmarket.admin.specialaccount.dto.SpecialAccountRequest;
+import org.example.bookmarket.admin.specialaccount.entity.SpecialAccount;
+import org.example.bookmarket.admin.specialaccount.service.SpecialAccountService;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.*;

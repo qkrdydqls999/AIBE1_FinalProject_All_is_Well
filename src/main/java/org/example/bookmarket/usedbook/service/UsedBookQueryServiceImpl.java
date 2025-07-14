@@ -7,7 +7,7 @@ import org.example.bookmarket.usedbook.dto.UsedBookResponse;
 import org.example.bookmarket.usedbook.dto.UsedBookSummary;
 import org.example.bookmarket.usedbook.entity.UsedBook;
 import org.example.bookmarket.usedbook.repository.UsedBookRepository;
-import org.example.bookmarket.specialaccount.service.SpecialAccountService;
+import org.example.bookmarket.admin.specialaccount.service.SpecialAccountService;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Service;

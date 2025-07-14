@@ -1,6 +1,6 @@
-package org.example.bookmarket.specialaccount.dto;
+package org.example.bookmarket.admin.specialaccount.dto;
 
-import org.example.bookmarket.specialaccount.entity.SpecialAccountStatus;
+import org.example.bookmarket.admin.specialaccount.entity.SpecialAccountStatus;
 
 public record SpecialAccountRequest(
         Long id,
