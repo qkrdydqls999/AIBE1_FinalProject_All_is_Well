@@ -4,7 +4,6 @@ import lombok.RequiredArgsConstructor;
 import org.example.bookmarket.category.entity.Category;
 import org.example.bookmarket.category.repository.CategoryRepository;
 import org.example.bookmarket.chat.dto.ChatSummary;
-import org.example.bookmarket.chat.entity.ChatChannel;
 import org.example.bookmarket.chat.entity.ChatMessage;
 import org.example.bookmarket.chat.repository.ChatChannelRepository;
 import org.example.bookmarket.chat.repository.ChatMessageRepository;
@@ -17,12 +16,12 @@ import org.example.bookmarket.trade.dto.PurchaseSummary;
 import org.example.bookmarket.trade.entity.Trade;
 import org.example.bookmarket.trade.repository.TradeRepository;
 import org.example.bookmarket.usedbook.dto.UsedBookSummary;
+import org.example.bookmarket.usedbook.repository.UsedBookRepository;
 import org.example.bookmarket.user.dto.UserCategoryResponse;
 import org.example.bookmarket.user.entity.User;
 import org.example.bookmarket.user.entity.UserCategory;
 import org.example.bookmarket.user.repository.UserCategoryRepository;
 import org.example.bookmarket.user.repository.UserRepository;
-import org.example.bookmarket.usedbook.repository.UsedBookRepository;
 import org.example.bookmarket.wishlist.dto.WishlistItem;
 import org.example.bookmarket.wishlist.service.WishlistService;
 import org.springframework.stereotype.Service;
@@ -113,7 +112,14 @@ public class ProfileServiceImpl implements ProfileService {
                             .orElse(null);
                     User partner = ch.getUser1().getId().equals(userId) ? ch.getUser2() : ch.getUser1();
                     String lastContent = (lastMsg != null) ? lastMsg.getMessageContent() : "대화를 시작해보세요.";
-                    return new ChatSummary(ch.getId(), lastContent, partner.getNickname(), ch.getLastMessageAt());
+                    String bookTitle = ch.getRelatedUsedBook().getBook().getTitle();
+                    return new ChatSummary(
+                            ch.getId(),
+                            partner.getNickname(),
+                            bookTitle,
+                            lastContent,
+                            ch.getLastMessageAt()
+                    );
                 })
                 .collect(Collectors.toList());
     }

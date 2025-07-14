@@ -30,6 +30,13 @@ public interface ChatService {
     ChatMessageResponse sendMessage(ChatMessageRequest request);
 
     /**
+     * 메시지 삭제
+     * @param messageId 삭제할 메시지 ID
+     * @param currentUserId 현재 로그인한 사용자 ID
+     */
+    void deleteMessage(Long messageId, Long currentUserId);
+
+    /**
      * ✅ [추가] 채팅방 페이지에 필요한 정보를 조회하는 메서드 선언
      * @param channelId 조회할 채널 ID
      * @param currentUserId 현재 로그인한 사용자 ID
