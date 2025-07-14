@@ -1,4 +1,4 @@
-package org.example.bookmarket.banner.entity;
+package org.example.bookmarket.admin.banner.entity;
 
 import static com.querydsl.core.types.PathMetadataFactory.*;
 
@@ -15,7 +15,7 @@ import com.querydsl.core.types.Path;
 @Generated("com.querydsl.codegen.DefaultEntitySerializer")
 public class QBanner extends EntityPathBase<Banner> {
 
-    private static final long serialVersionUID = -40305456L;
+    private static final long serialVersionUID = -344154673L;
 
     public static final QBanner banner = new QBanner("banner");
 

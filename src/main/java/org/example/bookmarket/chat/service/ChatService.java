@@ -31,16 +31,22 @@ public interface ChatService {
 
     /**
      * 메시지 삭제
-     * @param messageId 삭제할 메시지 ID
+     *
+     * @param messageId     삭제할 메시지 ID
      * @param currentUserId 현재 로그인한 사용자 ID
      */
     void deleteMessage(Long messageId, Long currentUserId);
 
     /**
      * ✅ [추가] 채팅방 페이지에 필요한 정보를 조회하는 메서드 선언
-     * @param channelId 조회할 채널 ID
+     *
+     * @param channelId     조회할 채널 ID
      * @param currentUserId 현재 로그인한 사용자 ID
      * @return 채팅방 정보(상대방 닉네임, 책 제목 등) DTO
      */
     ChatRoomInfo getChatRoomInfo(Long channelId, Long currentUserId);
+
+    void completeTrade(Long channelId, Integer price, Long currentUserId);
+
+    void cancelTrade(Long channelId, Long currentUserId);
 }

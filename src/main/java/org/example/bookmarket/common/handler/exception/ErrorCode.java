@@ -58,6 +58,7 @@ public enum ErrorCode {
     BOOK_ALREADY_SOLD(HttpStatus.CONFLICT, "이미 판매 완료된 상품입니다."),
     WISHLIST_DUPLICATED(HttpStatus.CONFLICT, "이미 찜한 책입니다."),
     WISHLIST_OWN_BOOK(HttpStatus.CONFLICT, "자신의 판매글은 찜할 수 없습니다."),
+    TRADE_NOT_FOUND(HttpStatus.NOT_FOUND, "거래 정보를 찾을 수 없습니다."),
 
     USED_BOOK_DELETE_FORBIDDEN(HttpStatus.FORBIDDEN, "판매글을 삭제할 권한이 없습니다.");
 

@@ -44,7 +44,11 @@
     // Thymeleaf에서 받은 변수들을 JS 변수로 초기화
     const channelId = /*[[${channelId}]]*/ 0;
     const currentUserId = /*[[${userId}]]*/ 0;
+    const isSeller = /*[[${isSeller}]]*/ false;
+    let tradeStatus = /*[[${tradeStatus}]]*/ 'REQUESTED';
+    const initialPrice = /*[[${initialPrice}]]*/ 0;
     let lastMessageId = 0;
+
 
     // SockJS와 STOMP 클라이언트 객체 초기화
     const socket = new SockJS("/ws-chat"); // WebSocketConfig에 설정된 엔드포인트
@@ -152,6 +156,33 @@
                 }
             });
     };
+
+    const disableChat = () => {
+        document.getElementById('messageInput').disabled = true;
+        document.getElementById('sendButton').disabled = true;
+        const notice = document.createElement('p');
+        notice.textContent = '더 이상 대화를 나눌 수 없습니다.';
+        document.getElementById('messageArea').appendChild(notice);
+        tradeStatus = 'CLOSED';
+    };
+
+    document.getElementById('completeBtn').addEventListener('click', () => {
+        if (!isSeller) return;
+        const price = prompt('최종 가격을 입력하세요', initialPrice);
+        if (price === null) return;
+        fetch(`/api/chat/channel/${channelId}/complete?price=${price}`, {method:'POST'})
+            .then(res => { if(res.ok) disableChat(); else alert('오류'); });
+    });
+
+    document.getElementById('closeBtn').addEventListener('click', () => {
+        if (!confirm('대화를 종료하시겠습니까?')) return;
+        fetch(`/api/chat/channel/${channelId}/cancel`, {method:'POST'})
+            .then(res => { if(res.ok) disableChat(); else alert('오류'); });
+    });
+
+    if (tradeStatus !== 'REQUESTED') {
+        disableChat();
+    }
     setInterval(pollNewMessages, 3000); // 3초마다 새 메시지 확인
 
     // '전송' 버튼 클릭 이벤트 리스너
