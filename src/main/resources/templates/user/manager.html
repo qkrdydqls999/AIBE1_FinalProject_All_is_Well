@@ -1,0 +1,35 @@
+<!DOCTYPE html>
+<html lang="ko" xmlns:th="http://www.thymeleaf.org">
+<head>
+  <meta charset="UTF-8" />
+  <title>사용자 목록</title>
+  <script src="https://cdn.tailwindcss.com?plugins=forms"></script>
+</head>
+<body class="flex flex-col min-h-screen">
+<div class="flex grow flex-col">
+  <div th:replace="~{fragments/header :: header}"></div>
+  <main class="flex-1 p-6 max-w-3xl mx-auto w-full">
+    <h1 class="text-xl font-bold mb-4">사용자 목록</h1>
+    <table class="w-full text-left border">
+      <thead>
+      <tr class="bg-gray-100">
+        <th class="p-2">ID</th>
+        <th class="p-2">이메일</th>
+        <th class="p-2">닉네임</th>
+        <th class="p-2">역할</th>
+      </tr>
+      </thead>
+      <tbody>
+      <tr th:each="u : ${users}">
+        <td class="p-2" th:text="${u.id}"></td>
+        <td class="p-2" th:text="${u.email}"></td>
+        <td class="p-2" th:text="${u.nickname}"></td>
+        <td class="p-2" th:text="${u.role}"></td>
+      </tr>
+      </tbody>
+    </table>
+  </main>
+  <div th:replace="~{fragments/footer :: footer}"></div>
+</div>
+</body>
+</html>

@@ -19,7 +19,7 @@ public class SpecialAccountPageController {
         model.addAttribute("accounts", service.getAccounts(all));
         model.addAttribute("accountForm", new SpecialAccountRequest());
         model.addAttribute("showAll", all);
-        return "special-account/manager";
+        return "admin/special-account";
     }
 
     @GetMapping("/{id}")
@@ -29,7 +29,7 @@ public class SpecialAccountPageController {
         SpecialAccountRequest req = new SpecialAccountRequest(acc.getId(), acc.getNickname(), acc.getStatus());
         model.addAttribute("accountForm", req);
         model.addAttribute("showAll", all);
-        return "special-account/manager";
+        return "admin/special-account";
     }
 
     @PostMapping
