@@ -95,7 +95,7 @@
             <button id="delete-button" class="min-w-[84px] h-12 px-4 bg-red-600 text-white font-bold rounded-lg hover:bg-red-500"
                     th:if="${book.sellerId == userId}">삭제</button>
             <button id="purchase-button" class="flex-1 min-w-[84px] h-12 px-4 bg-gray-800 text-white font-bold rounded-lg hover:bg-gray-700"
-                    th:if="${book.sellerId != userId}">채팅하기 / 구매 요청</button>
+                    th:if="${book.sellerId != userId and book.status == 'FOR_SALE'}">채팅하기 / 구매 요청</button>
         </div>
     </footer>
 </div>

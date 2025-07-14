@@ -8,6 +8,7 @@ import org.example.bookmarket.user.entity.User;
 public interface TradeService {
     Trade createTrade(ChatChannel channel, UsedBook usedBook, User seller, User buyer);
     Trade getTradeByChannel(Long channelId);
+    java.util.Optional<Trade> findTradeByChannel(Long channelId);
     Trade completeTrade(Long tradeId, Integer price);
     Trade cancelTrade(Long tradeId);
 }

@@ -38,6 +38,9 @@ public class ChatServiceImpl implements ChatService { // ✅ ChatService 인터�
         User user2 = getUserById(request.getUser2Id());
         UsedBook usedBook = usedBookRepository.findById(request.getUsedBookId())
                 .orElseThrow(() -> new CustomException(ErrorCode.USED_BOOK_NOT_FOUND));
+        if (!"FOR_SALE".equalsIgnoreCase(usedBook.getStatus())) {
+            throw new CustomException(ErrorCode.BOOK_ALREADY_SOLD);
+        }
 
         ChatChannel channel = chatChannelRepository
                 .findByUserParticipantsAndUsedBook(user1, user2, usedBook)
@@ -49,9 +52,7 @@ public class ChatServiceImpl implements ChatService { // ✅ ChatService 인터�
                             .build();
                     return chatChannelRepository.save(newChannel);
                 });
-        try {
-            tradeService.getTradeByChannel(channel.getId());
-        } catch (CustomException e) {
+        if (tradeService.findTradeByChannel(channel.getId()).isEmpty()) {
             tradeService.createTrade(channel, usedBook, user2, user1);
         }
         return toChatResponse(channel);
@@ -150,6 +151,7 @@ public class ChatServiceImpl implements ChatService { // ✅ ChatService 인터�
                 .partnerNickname(partnerNickname)
                 .bookTitle(bookTitle)
                 .bookId(bookId)
+                .seller(isSeller)
                 .tradeStatus(trade.getStatus().name())
                 .initialPrice(trade.getAgreedPrice())
                 .build();

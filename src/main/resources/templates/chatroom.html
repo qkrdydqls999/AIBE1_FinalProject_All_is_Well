@@ -8,6 +8,8 @@
 
     <script src="https://cdn.jsdelivr.net/npm/sockjs-client@1/dist/sockjs.min.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/stompjs@2.3.3/lib/stomp.min.js"></script>
+    <meta name="_csrf" th:content="${_csrf.token}" />
+    <meta name="_csrf_header" th:content="${_csrf.headerName}" />
 </head>
 <body class="relative flex min-h-screen flex-col bg-white" style="font-family: 'Plus Jakarta Sans', 'Noto Sans', sans-serif;">
 <div class="flex flex-col grow layout-container">
@@ -48,6 +50,9 @@
     let tradeStatus = /*[[${tradeStatus}]]*/ 'REQUESTED';
     const initialPrice = /*[[${initialPrice}]]*/ 0;
     let lastMessageId = 0;
+    const csrfToken = document.querySelector("meta[name='_csrf']")?.getAttribute("content");
+    const csrfHeader = document.querySelector("meta[name='_csrf_header']")?.getAttribute("content");
+
 
 
     // SockJS와 STOMP 클라이언트 객체 초기화
@@ -147,7 +152,7 @@
     };
 
     const deleteMessage = (messageId, element) => {
-        fetch(`/api/chat/message/${messageId}`, { method: 'DELETE' })
+        fetch(`/api/chat/message/${messageId}`, { method: 'DELETE', headers: { [csrfHeader]: csrfToken } })
             .then(res => {
                 if (res.ok) {
                     element.remove();
@@ -170,13 +175,13 @@
         if (!isSeller) return;
         const price = prompt('최종 가격을 입력하세요', initialPrice);
         if (price === null) return;
-        fetch(`/api/chat/channel/${channelId}/complete?price=${price}`, {method:'POST'})
+        fetch(`/api/chat/channel/${channelId}/complete?price=${price}`, {method:'POST', headers: { [csrfHeader]: csrfToken }})
             .then(res => { if(res.ok) disableChat(); else alert('오류'); });
     });
 
     document.getElementById('closeBtn').addEventListener('click', () => {
         if (!confirm('대화를 종료하시겠습니까?')) return;
-        fetch(`/api/chat/channel/${channelId}/cancel`, {method:'POST'})
+        fetch(`/api/chat/channel/${channelId}/cancel`, {method:'POST', headers: { [csrfHeader]: csrfToken }})
             .then(res => { if(res.ok) disableChat(); else alert('오류'); });
     });
 

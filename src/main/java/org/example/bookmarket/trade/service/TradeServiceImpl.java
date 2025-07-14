@@ -40,12 +40,18 @@ public class TradeServiceImpl implements TradeService {
     }
 
     @Override
+    @Transactional(readOnly = true)
+    public java.util.Optional<Trade> findTradeByChannel(Long channelId) {
+        return tradeRepository.findByChannelId(channelId);
+    }
+    @Override
     @Transactional
     public Trade completeTrade(Long tradeId, Integer price) {
         Trade trade = tradeRepository.findById(tradeId)
                 .orElseThrow(() -> new CustomException(ErrorCode.TRADE_NOT_FOUND));
         trade.setAgreedPrice(price);
         trade.setStatus(TradeStatus.COMPLETED);
+        trade.getUsedBook().markAsSold();
         return trade;
     }
 
