@@ -17,6 +17,6 @@ public class UserPageController {
     @GetMapping
     public String list(Model model) {
         model.addAttribute("users", userRepository.findAll());
-        return "admin/users";
+        return "admin/user-manager";
     }
 }

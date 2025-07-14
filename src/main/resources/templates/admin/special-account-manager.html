@@ -19,8 +19,8 @@
       <div>
         <label class="block text-sm">상태</label>
         <select th:field="*{status}" class="border w-full">
-          <option th:value="${T(org.example.bookmarket.specialaccount.entity.SpecialAccountStatus).ACTIVE}">ACTIVE</option>
-          <option th:value="${T(org.example.bookmarket.specialaccount.entity.SpecialAccountStatus).INACTIVE}">INACTIVE</option>
+          <option th:value="${T(org.example.bookmarket.admin.specialaccount.entity.SpecialAccountStatus).ACTIVE}">ACTIVE</option>
+          <option th:value="${T(org.example.bookmarket.admin.specialaccount.entity.SpecialAccountStatus).INACTIVE}">INACTIVE</option>
         </select>
       </div>
       <button type="submit" class="bg-blue-600 text-white px-4 py-2 rounded">저장</button>

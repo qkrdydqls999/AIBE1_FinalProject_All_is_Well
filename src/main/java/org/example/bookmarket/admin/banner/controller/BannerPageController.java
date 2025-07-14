@@ -19,7 +19,7 @@ public class BannerPageController {
         model.addAttribute("banners", bannerService.getBanners(all));
         model.addAttribute("bannerForm", new BannerRequest());
         model.addAttribute("showAll", all);
-        return "admin/banner";
+        return "admin/banner-manager";
     }
 
     @GetMapping("/{id}")
@@ -36,7 +36,7 @@ public class BannerPageController {
         );
         model.addAttribute("bannerForm", req);
         model.addAttribute("showAll", all);
-        return "admin/banner";
+        return "admin/banner-manager";
     }
 
     @PostMapping
