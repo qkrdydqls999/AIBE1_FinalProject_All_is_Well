@@ -38,6 +38,7 @@ public enum ErrorCode {
     CHAT_CHANNEL_NOT_FOUND(HttpStatus.NOT_FOUND, "해당 채팅 채널을 찾을 수 없습니다."),
     UNAUTHORIZED_CHAT_ACCESS(HttpStatus.FORBIDDEN, "해당 채팅방에 접근할 권한이 없습니다."),
 
+
     // == Book Errors == //
     INVALID_ISBN(HttpStatus.BAD_REQUEST, "올바른 ISBN 형식이 아닙니다."),
     BOOK_NOT_FOUND(HttpStatus.NOT_FOUND, "해당 도서를 찾을 수 없습니다."),

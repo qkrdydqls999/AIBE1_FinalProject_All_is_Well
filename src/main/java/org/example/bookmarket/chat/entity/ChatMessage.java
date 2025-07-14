@@ -11,6 +11,7 @@ import java.time.LocalDateTime;
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
 @AllArgsConstructor
 @Builder
+@Table(name = "DIRECT_MESSAGE")
 public class ChatMessage {
 
     @Id
@@ -26,10 +27,15 @@ public class ChatMessage {
     private User sender;
 
     @Lob
+    // ✅ [핵심 수정] columnDefinition = "TEXT" 속성을 추가합니다.
+    // 이렇게 하면 JPA가 이 필드를 데이터베이스의 TEXT 타입과 올바르게 매핑합니다.
+    @Column(name = "message_content", nullable = false, columnDefinition = "TEXT")
     private String messageContent;
 
+    @Column(name = "is_read")
     private Boolean isRead;
 
+    @Column(name = "sent_at", nullable = false)
     private LocalDateTime sentAt;
 
     @PrePersist
