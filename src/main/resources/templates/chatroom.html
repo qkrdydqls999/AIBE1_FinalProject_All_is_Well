@@ -5,6 +5,8 @@
     <title>채팅방 - 북적북적</title>
     <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Noto+Sans:wght@400;500;700;900&family=Plus+Jakarta+Sans:wght@400;500;700;800&display=swap" />
     <script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+    <meta name="_csrf" th:content="${_csrf.token}" />
+    <meta name="_csrf_header" th:content="${_csrf.headerName}" />
 
     <script src="https://cdn.jsdelivr.net/npm/sockjs-client@1/dist/sockjs.min.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/stompjs@2.3.3/lib/stomp.min.js"></script>
@@ -45,6 +47,8 @@
     const channelId = /*[[${channelId}]]*/ 0;
     const currentUserId = /*[[${userId}]]*/ 0;
     let lastMessageId = 0;
+    const csrfToken = document.querySelector("meta[name='_csrf']")?.getAttribute('content');
+    const csrfHeader = document.querySelector("meta[name='_csrf_header']")?.getAttribute('content');
 
     // SockJS와 STOMP 클라이언트 객체 초기화
     const socket = new SockJS("/ws-chat"); // WebSocketConfig에 설정된 엔드포인트
@@ -91,27 +95,38 @@
     // 화면에 메시지를 그리는 함수
     const showMessage = (message) => {
         const messageArea = document.getElementById("messageArea");
+        const wrapper = document.createElement("div");
         const msgEl = document.createElement("div");
         const textEl = document.createElement("span");
+        const timeEl = document.createElement("small");
 
         // 내가 보낸 메시지인지 확인
         const isMine = Number(message.senderId) === Number(currentUserId);
-
         // 메시지 스타일 설정
-        msgEl.className = `flex items-center max-w-[70%] px-4 py-2 rounded-lg text-sm shadow ${isMine ? 'bg-blue-100 self-end' : 'bg-gray-100 self-start'}`;
+        wrapper.className = `w-full flex flex-col ${isMine ? 'items-end' : 'items-start'}`;
+
+        msgEl.className = `inline-block max-w-[70%] px-4 py-2 rounded-lg text-sm shadow break-words ${isMine ? 'bg-blue-100' : 'bg-gray-100'}`;
         msgEl.dataset.messageId = message.messageId;
         textEl.textContent = message.content;
         msgEl.appendChild(textEl);
+        wrapper.appendChild(msgEl);
+        // 전송 시간을 표시
+        const time = new Date(message.sentAt).toLocaleTimeString('ko-KR', {
+            hour: '2-digit', minute: '2-digit'
+        });
+        timeEl.textContent = time;
+        timeEl.className = 'text-[10px] text-gray-400 mt-1';
+        wrapper.appendChild(timeEl);
 
         if (isMine) {
             const delBtn = document.createElement('button');
             delBtn.textContent = '삭제';
-            delBtn.className = 'ml-2 text-xs text-red-500';
-            delBtn.addEventListener('click', () => deleteMessage(message.messageId, msgEl));
-            msgEl.appendChild(delBtn);
+            delBtn.className = 'mt-1 text-xs text-red-500';
+            delBtn.addEventListener('click', () => deleteMessage(message.messageId, wrapper));
+            wrapper.appendChild(delBtn);
         }
 
-        messageArea.appendChild(msgEl);
+        messageArea.appendChild(wrapper);
         messageArea.scrollTop = messageArea.scrollHeight; // 항상 최신 메시지가 보이도록 스크롤
     };
 
@@ -143,7 +158,10 @@
     };
 
     const deleteMessage = (messageId, element) => {
-        fetch(`/api/chat/message/${messageId}`, { method: 'DELETE' })
+        fetch(`/api/chat/message/${messageId}`, {
+            method: 'DELETE',
+            headers: { [csrfHeader]: csrfToken }
+        })
             .then(res => {
                 if (res.ok) {
                     element.remove();
