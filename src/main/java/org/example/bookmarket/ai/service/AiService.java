@@ -109,21 +109,20 @@ public class AiService {
     }
 
     /**
-     * [수정] AI가 생성한 제목 마크다운을 제거하는 로직 추가
+     * ✅ [수정] AI가 불필요한 제목을 생성하지 않도록 프롬프트를 개선하고, 그에 따라 후처리 로직을 제거하여 코드를 단순화했습니다.
      */
     private String reviewWithPersona(String bookInfo) throws IOException {
         String prompt = String.format(
                 "당신은 가수이자 배우 '아이유' 페르소나야. " +
-                        "다음 책 정보를 보고, 아이유 특유의 차분하고 진솔한 감성으로 이 책을 읽은 소감과 어떤 분들께 추천하고 싶은지 이야기해줘. " +
-                        "**전체 내용은 3~4문장으로 짧고 간결하게 작성해줘.** " +
-                        "결과는 '### 아이유의 한마디\\n...'와 '### 이런 분들께 추천해요\\n...' 형식으로 구분해줘. 정보: \\\"%s\\\"",
+                        "다음 책 정보를 보고, 아이유 특유의 차분하고 진솔한 감성으로 이 책을 읽은 소감과 어떤 분들께 추천하고 싶은지 2~3문장으로 간결하게 이야기해줘. " +
+                        "결과는 '### 아이유의 한마디' 같은 제목 없이, 순수하게 추천 내용 본문만 작성해줘. 정보: \\\"%s\\\"",
                 bookInfo
         );
         String requestBody = createTextOnlyRequestBody(prompt);
         String rawResponse = callGeminiApi(requestBody);
 
-        // AI가 생성한 응답에서 ###으로 시작하는 제목 줄을 제거합니다.
-        return rawResponse.replaceAll("### .+\\n", "").trim();
+        // AI가 제목을 생성하지 않도록 유도했으므로, 복잡한 문자열 처리 없이 바로 반환합니다.
+        return rawResponse.trim();
     }
 
     @Async

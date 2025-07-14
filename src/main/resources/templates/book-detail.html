@@ -12,44 +12,45 @@
 <div class="flex flex-col grow layout-container">
     <div th:replace="~{fragments/header :: header}"></div>
 
-    <main class="flex flex-1 justify-center px-6 md:px-40 py-6">
+    <main class="flex-1 flex justify-center px-6 md:px-40 py-6">
         <div class="w-full max-w-[960px] flex flex-col">
 
             <section class="px-4 pt-4 text-center">
-                <img th:src="${book.coverImageUrl}" alt="Book Cover" class="w-full max-w-xs mx-auto mb-4 rounded-lg" />
-                <h1 class="text-[22px] font-bold text-[#111418] pb-2" th:text="${book.title}">The Great Gatsby</h1>
-                <p class="text-base text-[#111418] pb-2" th:text="${book.author} + ' | ' + ${book.publisher} + ' | ' + ${book.publicationYear}"></p>
+                <img th:src="${book.coverImageUrl}" alt="Book Cover" class="w-full max-w-xs mx-auto mb-4 rounded-lg shadow-lg" />
+                <h1 class="text-2xl font-bold text-gray-800 pb-2" th:text="${book.title}">The Great Gatsby</h1>
+                <p class="text-base text-gray-600 pb-2" th:text="${book.author} + ' | ' + ${book.publisher} + ' | ' + ${book.publicationYear}"></p>
             </section>
 
             <section class="px-4 pt-6">
-                <h2 class="text-lg font-bold text-[#111418] pb-2">판매자 정보</h2>
+                <h2 class="text-lg font-bold text-gray-800 pb-2">판매자 정보</h2>
                 <div class="flex items-center gap-4 bg-white py-2">
                     <div class="size-14 aspect-square bg-center bg-cover rounded-full"
                          th:style="'background-image: url(' + ${book.sellerProfileImageUrl} + ')'">
                     </div>
                     <div>
-                        <p class="text-base font-medium text-[#111418] line-clamp-1"
+                        <p class="text-base font-medium text-gray-800 line-clamp-1"
                            th:text="${book.sellerNickname}">판매자 닉네임</p>
                     </div>
                 </div>
             </section>
 
             <section class="px-4 pt-6">
+                <h2 class="text-lg font-bold text-gray-800 pb-2">책 상태</h2>
                 <div class="flex items-center gap-4 py-2">
-                    <div class="shrink-0 size-12 flex items-center justify-center rounded-lg bg-[#f0f2f5]">
-                        <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" fill="currentColor" viewBox="0 0 256 256">
-                            <path d="M224,48H160a40,40,0,0,0-32,16A40,40,0,0,0,96,48H32A16,16,0,0,0,16,64V192a16,16,0,0,0,16,16H96a24,24,0,0,1,24,24,8,8,0,0,0,16,0,24,24,0,0,1,24-24h64a16,16,0,0,0,16-16V64A16,16,0,0,0,224,48ZM96,192H32V64H96a24,24,0,0,1,24,24V200A39.81,39.81,0,0,0,96,192Zm128,0H160a39.81,39.81,0,0,0-24,8V88a24,24,0,0,1,24-24h64Z" />
-                        </svg>
+                    <div class="shrink-0 size-12 flex items-center justify-center rounded-lg bg-gray-100 text-gray-500">
+                        <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" fill="currentColor" viewBox="0 0 256 256"><path d="M224,48H160a40,40,0,0,0-32,16A40,40,0,0,0,96,48H32A16,16,0,0,0,16,64V192a16,16,0,0,0,16,16H96a24,24,0,0,1,24,24,8,8,0,0,0,16,0,24,24,0,0,1,24-24h64a16,16,0,0,0,16-16V64A16,16,0,0,0,224,48ZM96,192H32V64H96a24,24,0,0,1,24,24V200A39.81,39.81,0,0,0,96,192Zm128,0H160a39.81,39.81,0,0,0-24,8V88a24,24,0,0,1,24-24h64Z"></path></svg>
                     </div>
-                    <p class="text-base text-[#111418]" th:text="${book.detailedCondition}">This book is in excellent condition...</p>
+                    <div>
+                        <p class="text-base font-medium text-gray-800" th:text="${book.conditionGrade}">최상</p>
+                        <p class="text-sm text-gray-500" th:text="${book.detailedCondition}">This book is in excellent condition...</p>
+                    </div>
                 </div>
             </section>
 
             <section class="px-4 pt-8">
                 <div class="p-6 rounded-lg bg-gray-50 border space-y-6">
                     <div>
-                        <h3 class="text-lg font-bold text-[#111418] pb-2 flex items-center gap-2">
-                            <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" fill="currentColor" viewBox="0 0 256 256"><path d="M224,48H160a40,40,0,0,0-32,16A40,40,0,0,0,96,48H32A16,16,0,0,0,16,64V192a16,16,0,0,0,16,16H96a24,24,0,0,1,24,24,8,8,0,0,0,16,0,24,24,0,0,1,24-24h64a16,16,0,0,0,16-16V64A16,16,0,0,0,224,48ZM96,192H32V64H96a24,24,0,0,1,24,24V200A39.81,39.81,0,0,0,96,192Zm128,0H160a39.81,39.81,0,0,0-24,8V88a24,24,0,0,1,24-24h64Z"></path></svg>
+                        <h3 class="text-lg font-bold text-gray-800 pb-2 flex items-center gap-2">
                             AI가 요약한 책 정보
                         </h3>
                         <p class="text-base text-gray-700 leading-relaxed" th:text="${book.summary}">
@@ -59,25 +60,24 @@
 
                     <hr/>
 
-                    <div>
-                        <h3 class="text-lg font-bold text-[#111418] pb-2 flex items-center gap-2">
-                            <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" fill="currentColor" viewBox="0 0 256 256"><path d="M128,24A104,104,0,1,0,232,128,104.11,104.11,0,0,0,128,24Zm0,192a88,88,0,1,1,88-88A88.1,88.1,0,0,1,128,216Zm-32-88a12,12,0,1,1,12,12A12,12,0,0,1,96,128Zm64,0a12,12,0,1,1,12,12A12,12,0,0,1,160,128Zm-21.84,41.42a8,8,0,0,1-11.32,1.13,47.81,47.81,0,0,0-53.68,0,8,8,0,0,1-12.45-10.1A64,64,0,0,1,128,136a63.81,63.81,0,0,1,49,22.32A8,8,0,0,1,169.84,169.42Z"></path></svg>
-                            아이유의 리뷰
+                    <div th:if="${book.personaReview != null and !book.personaReview.isEmpty()}">
+                        <h3 class="text-lg font-bold text-gray-800 pb-2 flex items-center gap-2">
+                            아이유 한마디
                         </h3>
-                        <div class="text-base text-gray-700 leading-relaxed" th:utext="${#strings.replace(book.personaReview, '\n', '<br/>')}">
-                            AI가 생성한 페르소나 리뷰가 여기에 표시됩니다.
-                        </div>
+                        <p class="text-base text-gray-700 leading-relaxed whitespace-pre-wrap" th:text="${book.personaReview}">
+                            AI 페르소나 리뷰가 여기에 표시됩니다.
+                        </p>
                     </div>
                 </div>
             </section>
 
             <section class="px-4 pt-6 pb-4">
-                <h2 class="text-lg font-bold text-[#111418] pb-2">최종 가격</h2>
+                <h2 class="text-lg font-bold text-gray-800 pb-2">최종 가격</h2>
                 <div class="flex justify-between items-center bg-white min-h-14">
-                    <p class="text-xl font-bold text-[#111418] truncate" th:text="${#numbers.formatInteger(book.sellingPrice, 3, 'COMMA')} + '원'"></p>
+                    <p class="text-2xl font-bold text-gray-800" th:text="${#numbers.formatInteger(book.sellingPrice, 3, 'COMMA')} + '원'"></p>
                     <div class="flex items-center gap-2">
-                        <div class="size-3 rounded-full bg-[#07883b]"></div>
-                        <span class="text-sm font-medium text-[#07883b]"
+                        <div class="size-3 rounded-full bg-green-500"></div>
+                        <span class="text-sm font-medium text-green-600"
                               th:text="${book.status == 'FOR_SALE' ? '판매중' : (book.status == 'SOLD' || book.status == '판매 완료' ? '판매 완료' : book.status)}">
                             판매중
                         </span>
@@ -90,7 +90,7 @@
 
     <footer class="sticky bottom-0 border-t border-gray-200 bg-white">
         <div class="flex gap-3 p-3 max-w-[960px] mx-auto">
-            <button id="wishlist-button" class="min-w-[84px] h-12 px-4 bg-[#f0f2f5] text-[#111418] font-bold rounded-lg"
+            <button id="wishlist-button" class="min-w-[84px] h-12 px-4 bg-gray-200 text-gray-800 font-bold rounded-lg hover:bg-gray-300"
                     th:if="${book.sellerId != userId}">찜하기</button>
             <button id="delete-button" class="min-w-[84px] h-12 px-4 bg-red-600 text-white font-bold rounded-lg hover:bg-red-500"
                     th:if="${book.sellerId == userId}">삭제</button>
@@ -101,79 +101,92 @@
 <script th:inline="javascript">
     /*<![CDATA[*/
     const bookId = /*[[${book.id}]]*/ 'default';
+    const userId = /*[[${userId}]]*/ null; // 서버에서 주입된 현재 사용자 ID
 
-    const wishlistBtn = document.getElementById('wishlist-button');
-    if (wishlistBtn) wishlistBtn.addEventListener('click', function() {
-        const csrfToken = document.querySelector('meta[name="_csrf"]').getAttribute('content');
-        const csrfHeader = document.querySelector('meta[name="_csrf_header"]').getAttribute('content');
+    document.addEventListener('DOMContentLoaded', function() {
+        const sellerId = /*[[${book.sellerId}]]*/ 0;
+        const csrfToken = document.querySelector("meta[name='_csrf']")?.getAttribute("content");
+        const csrfHeader = document.querySelector("meta[name='_csrf_header']")?.getAttribute("content");
 
-        fetch(`/api/wishlist?usedBookId=${bookId}`, {
-            method: 'POST',
-            headers: { [csrfHeader]: csrfToken }
-        })
-            .then(async response => {
-                if (response.ok) {
-                    alert('위시리스트에 추가되었습니다.');
-                } else if (response.status === 401) {
-                    alert('로그인이 필요합니다.');
-                } else if (response.status === 403) {
-                    alert('보안 토큰이 유효하지 않습니다.');
-                } else if (response.status === 409) {
-                    alert('이미 찜한 책입니다.');
-                } else {
-                    const data = await response.json().catch(() => ({}));
-                    throw new Error(data.message || '찜하기 중 오류가 발생했습니다.');
-                }
-            })
-            .catch(error => {
-                alert(error.message);
-            });
-    });
+        const wishlistButton = document.getElementById('wishlist-button');
+        const purchaseButton = document.getElementById('purchase-button');
 
-    const deleteBtn = document.getElementById('delete-button');
-    if (deleteBtn) deleteBtn.addEventListener('click', function() {
-        if (!confirm('정말 삭제하시겠습니까?')) return;
-        const token = document.querySelector('meta[name="_csrf"]').getAttribute('content');
-        const header = document.querySelector('meta[name="_csrf_header"]').getAttribute('content');
-        fetch(`/api/used-books/${bookId}`, {
-            method: 'DELETE',
-            headers: { [header]: token }
-        }).then(async res => {
-            if (res.ok) {
-                alert('삭제되었습니다.');
-                location.href = '/profile/sales';
-            } else if (res.status === 401) {
-                alert('로그인이 필요합니다.');
-            } else if (res.status === 403) {
-                alert('삭제 권한이 없습니다.');
-            } else {
-                const data = await res.json().catch(() => ({}));
-                alert(data.message || '삭제 중 오류가 발생했습니다.');
+        const handleAuthError = () => {
+            if (confirm('로그인이 필요합니다. 로그인 페이지로 이동하시겠습니까?')) {
+                window.location.href = '/auth/login';
             }
-        }).catch(err => alert(err.message));
-    });
+        };
 
-    document.getElementById('purchase-button').addEventListener('click', function() {
-        if (!confirm('정말로 이 책을 구매하시겠습니까?')) {
-            return;
+        if (wishlistButton) {
+            wishlistButton.addEventListener('click', function() {
+                if (!userId) {
+                    handleAuthError();
+                    return;
+                }
+                fetch(`/api/wishlist?usedBookId=${bookId}`, {
+                    method: 'POST',
+                    headers: { [csrfHeader]: csrfToken }
+                })
+                    .then(async response => {
+                        if (response.ok) {
+                            alert('위시리스트에 추가되었습니다.');
+                        } else if (response.status === 401) {
+                            handleAuthError();
+                        } else if (response.status === 409) {
+                            alert('이미 찜한 책입니다.');
+                        } else {
+                            const data = await response.json().catch(() => ({}));
+                            throw new Error(data.message || '찜하기 중 오류가 발생했습니다.');
+                        }
+                    })
+                    .catch(error => {
+                        alert(error.message);
+                    });
+            });
         }
 
-        fetch(`/api/used-books/${bookId}/purchase`, {
-            method: 'POST',
-        })
-            .then(response => {
-                if (response.ok) {
-                    return response.text();
+        if (purchaseButton) {
+            purchaseButton.addEventListener('click', function() {
+                if (!userId) {
+                    handleAuthError();
+                    return;
                 }
-                throw new Error('구매 처리 중 문제가 발생했습니다.');
-            })
-            .then(message => {
-                alert(message);
-                window.location.reload();
-            })
-            .catch(error => {
-                alert(error.message);
+
+                const chatRequest = {
+                    usedBookId: bookId,
+                    user1Id: userId,
+                    user2Id: sellerId
+                };
+
+                fetch(`/api/chat/channel`, {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                        [csrfHeader]: csrfToken
+                    },
+                    body: JSON.stringify(chatRequest)
+                })
+                    .then(response => {
+                        if (response.ok) return response.json();
+                        if (response.status === 401) {
+                            handleAuthError();
+                            throw new Error('Unauthorized');
+                        }
+                        return response.json().then(err => {
+                            throw new Error(err.message || '알 수 없는 오류가 발생했습니다.');
+                        });
+                    })
+                    .then(chatResponse => {
+                        window.location.href = `/api/chat/room/${chatResponse.channelId}`;
+                    })
+                    .catch(error => {
+                        if (error.message !== 'Unauthorized') {
+                            console.error('Error in fetch process:', error);
+                            alert(error.message);
+                        }
+                    });
             });
+        }
     });
     /*]]>*/
 </script>
