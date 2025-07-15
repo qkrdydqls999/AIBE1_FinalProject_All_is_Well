@@ -14,6 +14,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.util.List;
+import java.util.Comparator;
 import java.util.stream.Collectors;
 
 @Service
@@ -32,6 +33,7 @@ public class WishlistServiceImpl implements WishlistService {
             throw new CustomException(ErrorCode.USER_NOT_FOUND);
         }
         return wishlistRepository.findByUserId(userId).stream()
+                .sorted(Comparator.comparing(Wishlist::getCreatedAt).reversed())
                 .map(this::toDto)
                 .collect(Collectors.toList());
     }

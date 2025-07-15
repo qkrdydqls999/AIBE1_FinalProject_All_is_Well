@@ -34,7 +34,7 @@
 
             <div class="flex gap-2">
                 <input id="messageInput" type="text" placeholder="메시지를 입력하세요" class="w-full rounded-lg border border-gray-300 px-4 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-blue-500" />
-                <button id="sendButton" class="px-4 py-2 bg-blue-600 text-white rounded-lg text-sm font-bold hover:bg-blue-700">전송</button>
+                <button id="sendButton" class="px-4 py-2 bg-blue-600 text-white rounded-lg text-sm font-bold hover:bg-blue-700 disabled:opacity-50">전송</button>
             </div>
         </div>
     </main>
@@ -112,10 +112,10 @@
         textEl.textContent = message.content;
         msgEl.appendChild(textEl);
 
-        if (isMine) {
+        if (isMine && tradeStatus === 'REQUESTED') {
             const delBtn = document.createElement('button');
             delBtn.textContent = '삭제';
-            delBtn.className = 'ml-2 text-xs text-red-500';
+            delBtn.className = 'ml-2 text-xs text-red-500 whitespace-nowrap delete-btn';
             delBtn.addEventListener('click', () => deleteMessage(message.messageId, msgEl));
             msgEl.appendChild(delBtn);
         }
@@ -163,8 +163,13 @@
     };
 
     const disableChat = () => {
-        document.getElementById('messageInput').disabled = true;
-        document.getElementById('sendButton').disabled = true;
+        const input = document.getElementById('messageInput');
+        const sendBtn = document.getElementById('sendButton');
+        input.disabled = true;
+        input.placeholder = '더 이상 대화를 나눌 수 없습니다.';
+        sendBtn.disabled = true;
+        sendBtn.style.opacity = '0.5';
+        document.querySelectorAll('.delete-btn').forEach(btn => btn.remove());
         const notice = document.createElement('p');
         notice.textContent = '더 이상 대화를 나눌 수 없습니다.';
         document.getElementById('messageArea').appendChild(notice);

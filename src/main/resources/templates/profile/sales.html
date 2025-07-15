@@ -51,13 +51,13 @@
                             <td class="px-6 py-4">
                    <span th:text="${item.status == 'FOR_SALE' ? '판매중' : (item.status == 'SOLD' || item.status == '판매 완료' ? '판매 완료' : item.status)}"
                          th:classappend="${item.status == '판매 완료' || item.status == 'SOLD'} ? ' bg-green-100 text-green-800' : ' bg-yellow-100 text-yellow-800'"
-                        class="px-2 py-1 text-xs font-medium rounded-full">
+                        class="px-2 py-1 text-xs font-medium rounded-full whitespace-nowrap">
                     판매중
                   </span>
                             </td>
-                            <td class="px-6 py-4" th:text="${item.buyerNickname ?: '-'}">-</td>
-                            <td class="px-6 py-4" th:text="${#temporals.format(item.updatedAt, 'yyyy-MM-dd')}">2025-06-25</td>
-                            <td class="px-6 py-4"><button type="button" class="sales-delete text-red-600" th:data-id="${item.usedBookId}">삭제</button></td>
+                            <td class="px-6 py-4 whitespace-nowrap" th:text="${item.buyerNickname ?: '-'}">-</td>
+                            <td class="px-6 py-4 whitespace-nowrap" th:text="${#temporals.format(item.updatedAt, 'yyyy-MM-dd')}">2025-06-25</td>
+                            <td class="px-6 py-4"><button type="button" class="sales-delete text-red-600 whitespace-nowrap" th:data-id="${item.usedBookId}">삭제</button></td>
                         </tr>
                         </tbody>
                     </table>
