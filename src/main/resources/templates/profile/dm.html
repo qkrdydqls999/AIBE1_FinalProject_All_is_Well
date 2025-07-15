@@ -43,7 +43,7 @@
                             <td class="px-6 py-4 font-medium text-gray-900 whitespace-nowrap" th:text="${dm.partnerNickname}">상대방</td>
                             <td class="px-6 py-4" th:text="${dm.bookTitle}">책 제목</td>
                             <td class="px-6 py-4 text-ellipsis overflow-hidden max-w-[200px]" th:text="${dm.lastMessage}">최근 메시지</td>
-                            <td class="px-6 py-4" th:text="${#temporals.format(dm.updatedAt, 'yyyy-MM-dd')}">2025-06-26</td>
+                            <td class="px-6 py-4" th:text="${#temporals.format(dm.updatedAt, 'yyyy-MM-dd HH:mm')}">2025-06-26</td>
                         </tr>
                         </tbody>
                     </table>
