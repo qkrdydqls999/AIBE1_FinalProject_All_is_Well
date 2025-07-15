@@ -12,24 +12,12 @@ services:
     depends_on:
       - redis-cache
     env_file:
-      - ...env  # ✅ 환경 변수 파일 등록
+      - .env
+    volumes:
+      # Gradle 캐시를 로컬에 매핑하여 빌드 속도 개선
+      - ~/.gradle:/home/gradle/.gradle
     networks:
       - backend
-
-  # mysql-db:
-  #   image: mysql:8.0
-  #   container_name: mysql-db
-  #   environment:
-  #     MYSQL_DATABASE: bookmarket
-  #     MYSQL_USER: admin
-  #     MYSQL_PASSWORD: 1234
-  #     MYSQL_ROOT_PASSWORD: root
-  #   ports:
-  #     - "3306:3306"
-  #   volumes:
-  #     - mysql-data:/var/lib/mysql
-  #   networks:
-  #     - backend
 
   redis-cache:
     image: redis:alpine
@@ -38,7 +26,6 @@ services:
       - "6379:6379"
     networks:
       - backend
-
 
 networks:
   backend:
