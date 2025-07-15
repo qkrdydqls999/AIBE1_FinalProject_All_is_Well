@@ -56,7 +56,6 @@
     const csrfHeader = document.querySelector("meta[name='_csrf_header']")?.getAttribute('content');
 
 
-
     // SockJS와 STOMP 클라이언트 객체 초기화
     const socket = new SockJS("/ws-chat"); // WebSocketConfig에 설정된 엔드포인트
     const stompClient = Stomp.over(socket);
@@ -109,7 +108,6 @@
 
         // 내가 보낸 메시지인지 확인
         const isMine = Number(message.senderId) === Number(currentUserId);
-
         // 메시지 스타일 설정
         wrapper.className = `w-full flex flex-col ${isMine ? 'items-end' : 'items-start'}`;
 
