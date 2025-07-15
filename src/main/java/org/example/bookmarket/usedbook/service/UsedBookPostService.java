@@ -114,8 +114,37 @@ public class UsedBookPostService {
         if (!usedBook.getSeller().getId().equals(currentUser.getId())) {
             throw new CustomException(ErrorCode.USED_BOOK_DELETE_FORBIDDEN);
         }
+        if ("판매 완료".equalsIgnoreCase(usedBook.getStatus()) || "SOLD".equalsIgnoreCase(usedBook.getStatus())) {
+            throw new CustomException(ErrorCode.BOOK_ALREADY_SOLD);
+        }
         usedBookRepository.delete(usedBook);
         log.info("중고책이 삭제되었습니다. ID: {}", usedBookId);
+    }
+
+    @Transactional
+    public void updateUsedBook(Long usedBookId, UsedBookPostRequest request) {
+        User currentUser = getCurrentUser();
+        UsedBook usedBook = usedBookRepository.findById(usedBookId)
+                .orElseThrow(() -> new CustomException(ErrorCode.USED_BOOK_NOT_FOUND));
+        if (!usedBook.getSeller().getId().equals(currentUser.getId())) {
+            throw new CustomException(ErrorCode.USED_BOOK_DELETE_FORBIDDEN);
+        }
+        if ("판매 완료".equalsIgnoreCase(usedBook.getStatus()) || "SOLD".equalsIgnoreCase(usedBook.getStatus())) {
+            throw new CustomException(ErrorCode.BOOK_ALREADY_SOLD);
+        }
+        if (request.getSellingPrice() != null) {
+            usedBook.setSellingPrice(request.getSellingPrice());
+        }
+        if (request.getDetailedCondition() != null) {
+            usedBook.setDetailedCondition(request.getDetailedCondition());
+        }
+        if (request.getCategoryId() != null) {
+            Category category = categoryRepository.findById(request.getCategoryId())
+                    .orElseThrow(() -> new CustomException(ErrorCode.CATEGORY_NOT_FOUND));
+            usedBook.setCategory(category);
+        }
+        usedBookRepository.save(usedBook);
+        log.info("중고책이 수정되었습니다. ID: {}", usedBookId);
     }
 
     /**

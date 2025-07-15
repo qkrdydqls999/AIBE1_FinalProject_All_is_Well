@@ -17,6 +17,7 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.*;
+import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 
 import java.io.IOException;
 import java.util.Collections;
@@ -110,5 +111,20 @@ public class BookPageController {
         usedBookPostService.registerUsedBook(request);
         // 등록 성공 후 마이페이지의 판매 목록으로 리다이렉트
         return "redirect:/profile/me";
+    }
+
+    @GetMapping("/used-books/{bookId}/edit")
+    public String editBookForm(@PathVariable Long bookId,
+                               Model model,
+                               RedirectAttributes redirectAttributes) {
+        UsedBookResponse book = usedBookQueryService.getUsedBookById(bookId);
+        if ("판매 완료".equalsIgnoreCase(book.status()) || "SOLD".equalsIgnoreCase(book.status())) {
+            redirectAttributes.addFlashAttribute("alertMessage", "판매 완료된 책은 수정할 수 없습니다.");
+            return "redirect:/used-books/" + bookId;
+        }
+        List<CategoryResponse> categories = categoryService.getAllCategories();
+        model.addAttribute("book", book);
+        model.addAttribute("categories", categories);
+        return "book-edit";
     }
 }
