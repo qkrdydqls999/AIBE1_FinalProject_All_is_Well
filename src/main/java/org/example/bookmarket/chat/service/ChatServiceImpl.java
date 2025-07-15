@@ -10,6 +10,9 @@ import org.example.bookmarket.common.handler.exception.CustomException;
 import org.example.bookmarket.common.handler.exception.ErrorCode;
 import org.example.bookmarket.usedbook.entity.UsedBook;
 import org.example.bookmarket.usedbook.repository.UsedBookRepository;
+import org.example.bookmarket.trade.entity.Trade;
+import org.example.bookmarket.trade.entity.TradeStatus;
+import org.example.bookmarket.trade.service.TradeService;
 import org.example.bookmarket.user.entity.User;
 import org.example.bookmarket.user.repository.UserRepository;
 import org.springframework.stereotype.Service;
@@ -26,6 +29,7 @@ public class ChatServiceImpl implements ChatService { // ✅ ChatService 인터�
     private final ChatMessageRepository chatMessageRepository;
     private final UserRepository userRepository;
     private final UsedBookRepository usedBookRepository;
+    private final TradeService tradeService;
 
     @Override // ✅ @Override 어노테이션 추가
     @Transactional
@@ -34,6 +38,9 @@ public class ChatServiceImpl implements ChatService { // ✅ ChatService 인터�
         User user2 = getUserById(request.getUser2Id());
         UsedBook usedBook = usedBookRepository.findById(request.getUsedBookId())
                 .orElseThrow(() -> new CustomException(ErrorCode.USED_BOOK_NOT_FOUND));
+        if (!"FOR_SALE".equalsIgnoreCase(usedBook.getStatus())) {
+            throw new CustomException(ErrorCode.BOOK_ALREADY_SOLD);
+        }
 
         ChatChannel channel = chatChannelRepository
                 .findByUserParticipantsAndUsedBook(user1, user2, usedBook)
@@ -45,7 +52,9 @@ public class ChatServiceImpl implements ChatService { // ✅ ChatService 인터�
                             .build();
                     return chatChannelRepository.save(newChannel);
                 });
-
+        if (tradeService.findTradeByChannel(channel.getId()).isEmpty()) {
+            tradeService.createTrade(channel, usedBook, user2, user1);
+        }
         return toChatResponse(channel);
     }
 
@@ -78,6 +87,11 @@ public class ChatServiceImpl implements ChatService { // ✅ ChatService 인터�
         ChatChannel channel = chatChannelRepository.findById(request.getChannelId())
                 .orElseThrow(() -> new CustomException(ErrorCode.CHAT_CHANNEL_NOT_FOUND));
         User sender = getUserById(request.getSenderId());
+
+        Trade trade = tradeService.getTradeByChannel(channel.getId());
+        if (trade.getStatus() != TradeStatus.REQUESTED) {
+            throw new CustomException(ErrorCode.INVALID_REQUEST);
+        }
 
         ChatMessage message = ChatMessage.builder()
                 .channel(channel)
@@ -116,11 +130,14 @@ public class ChatServiceImpl implements ChatService { // ✅ ChatService 인터�
         User user1 = channel.getUser1();
         User user2 = channel.getUser2();
         String partnerNickname;
+        boolean isSeller;
 
         if (user1.getId().equals(currentUserId)) {
             partnerNickname = user2.getNickname();
+            isSeller = false;
         } else if (user2.getId().equals(currentUserId)) {
             partnerNickname = user1.getNickname();
+            isSeller = true;
         } else {
             throw new CustomException(ErrorCode.UNAUTHORIZED_CHAT_ACCESS);
         }
@@ -128,11 +145,44 @@ public class ChatServiceImpl implements ChatService { // ✅ ChatService 인터�
         String bookTitle = channel.getRelatedUsedBook().getBook().getTitle();
         Long bookId = channel.getRelatedUsedBook().getId();
 
+        Trade trade = tradeService.getTradeByChannel(channelId);
+
         return ChatRoomInfo.builder()
                 .partnerNickname(partnerNickname)
                 .bookTitle(bookTitle)
                 .bookId(bookId)
+                .seller(isSeller)
+                .tradeStatus(trade.getStatus().name())
+                .initialPrice(trade.getAgreedPrice())
                 .build();
+    }
+
+    @Override
+    @Transactional
+    public void completeTrade(Long channelId, Integer price, Long currentUserId) {
+        ChatChannel channel = chatChannelRepository.findById(channelId)
+                .orElseThrow(() -> new CustomException(ErrorCode.CHAT_CHANNEL_NOT_FOUND));
+
+        if (!channel.getUser2().getId().equals(currentUserId)) {
+            throw new CustomException(ErrorCode.UNAUTHORIZED_CHAT_ACCESS);
+        }
+
+        Trade trade = tradeService.getTradeByChannel(channelId);
+        tradeService.completeTrade(trade.getId(), price);
+    }
+
+    @Override
+    @Transactional
+    public void cancelTrade(Long channelId, Long currentUserId) {
+        ChatChannel channel = chatChannelRepository.findById(channelId)
+                .orElseThrow(() -> new CustomException(ErrorCode.CHAT_CHANNEL_NOT_FOUND));
+
+        if (!channel.getUser1().getId().equals(currentUserId) && !channel.getUser2().getId().equals(currentUserId)) {
+            throw new CustomException(ErrorCode.UNAUTHORIZED_CHAT_ACCESS);
+        }
+
+        Trade trade = tradeService.getTradeByChannel(channelId);
+        tradeService.cancelTrade(trade.getId());
     }
 
     // --- Private Helper Methods ---

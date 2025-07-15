@@ -47,9 +47,9 @@
                                 <a th:href="@{/used-books/{id}(id=${item.usedBookId})}" th:text="${item.title}" class="text-blue-600 hover:underline"></a>
                             </td>
                             <td class="px-6 py-4" th:text="${#numbers.formatInteger(item.price, 3, 'COMMA')} + '원'">8,000원</td>
-                            <td class="px-6 py-4" th:text="${item.sellerNickname ?: '-'}">판매자</td>
-                            <td class="px-6 py-4" th:text="${#temporals.format(item.createdAt, 'yyyy-MM-dd')}">2025-06-26</td>
-                            <td class="px-6 py-4"><button type="button" class="wishlist-remove text-red-600" th:data-id="${item.usedBookId}">삭제</button></td>
+                            <td class="px-6 py-4 whitespace-nowrap" th:text="${item.sellerNickname ?: '-'}">판매자</td>
+                            <td class="px-6 py-4 whitespace-nowrap" th:text="${#temporals.format(item.createdAt, 'yyyy-MM-dd')}">2025-06-26</td>
+                            <td class="px-6 py-4"><button type="button" class="wishlist-remove text-red-600 whitespace-nowrap" th:data-id="${item.usedBookId}">삭제</button></td>
                         </tr>
                         </tbody>
                     </table>

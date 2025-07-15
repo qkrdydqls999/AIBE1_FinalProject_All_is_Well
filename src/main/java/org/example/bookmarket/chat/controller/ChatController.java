@@ -69,6 +69,9 @@ public class ChatController {
         model.addAttribute("partnerNickname", chatRoomInfo.getPartnerNickname());
         model.addAttribute("bookTitle", chatRoomInfo.getBookTitle());
         model.addAttribute("bookUrl", "/used-books/" + chatRoomInfo.getBookId());
+        model.addAttribute("isSeller", chatRoomInfo.isSeller());
+        model.addAttribute("tradeStatus", chatRoomInfo.getTradeStatus());
+        model.addAttribute("initialPrice", chatRoomInfo.getInitialPrice());
 
         return "chatroom";
     }
@@ -89,6 +92,31 @@ public class ChatController {
     @ResponseBody
     public List<ChatMessageResponse> getMessages(@PathVariable Long channelId) {
         return chatService.getMessages(channelId);
+    }
+
+    @PostMapping("/channel/{channelId}/complete")
+    @ResponseStatus(HttpStatus.OK)
+    @ResponseBody
+    public void complete(@PathVariable Long channelId,
+                         @RequestParam Integer price,
+                         Authentication authentication) {
+        User currentUser = resolveCurrentUser(authentication);
+        if (currentUser == null) {
+            throw new CustomException(ErrorCode.LOGIN_REQUIRED);
+        }
+        chatService.completeTrade(channelId, price, currentUser.getId());
+    }
+
+    @PostMapping("/channel/{channelId}/cancel")
+    @ResponseStatus(HttpStatus.OK)
+    @ResponseBody
+    public void cancel(@PathVariable Long channelId,
+                       Authentication authentication) {
+        User currentUser = resolveCurrentUser(authentication);
+        if (currentUser == null) {
+            throw new CustomException(ErrorCode.LOGIN_REQUIRED);
+        }
+        chatService.cancelTrade(channelId, currentUser.getId());
     }
 
     @DeleteMapping("/message/{messageId}")

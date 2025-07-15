@@ -9,4 +9,5 @@ public interface TradeRepository extends JpaRepository<Trade, Long> {
     boolean existsByUsedBookIdAndStatusIn(Long usedBookId, List<org.example.bookmarket.trade.entity.TradeStatus> statuses);
     java.util.List<Trade> findByBuyerId(Long buyerId);
     java.util.List<Trade> findBySellerId(Long sellerId);
+    java.util.Optional<Trade> findByChannelId(Long channelId);
 }

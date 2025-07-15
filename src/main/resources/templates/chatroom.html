@@ -10,6 +10,8 @@
 
     <script src="https://cdn.jsdelivr.net/npm/sockjs-client@1/dist/sockjs.min.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/stompjs@2.3.3/lib/stomp.min.js"></script>
+    <meta name="_csrf" th:content="${_csrf.token}" />
+    <meta name="_csrf_header" th:content="${_csrf.headerName}" />
 </head>
 <body class="relative flex min-h-screen flex-col bg-white" style="font-family: 'Plus Jakarta Sans', 'Noto Sans', sans-serif;">
 <div class="flex flex-col grow layout-container">
@@ -34,7 +36,7 @@
 
             <div class="flex gap-2">
                 <input id="messageInput" type="text" placeholder="메시지를 입력하세요" class="w-full rounded-lg border border-gray-300 px-4 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-blue-500" />
-                <button id="sendButton" class="px-4 py-2 bg-blue-600 text-white rounded-lg text-sm font-bold hover:bg-blue-700">전송</button>
+                <button id="sendButton" class="px-4 py-2 bg-blue-600 text-white rounded-lg text-sm font-bold hover:bg-blue-700 disabled:opacity-50">전송</button>
             </div>
         </div>
     </main>
@@ -46,9 +48,13 @@
     // Thymeleaf에서 받은 변수들을 JS 변수로 초기화
     const channelId = /*[[${channelId}]]*/ 0;
     const currentUserId = /*[[${userId}]]*/ 0;
+    const isSeller = /*[[${isSeller}]]*/ false;
+    let tradeStatus = /*[[${tradeStatus}]]*/ 'REQUESTED';
+    const initialPrice = /*[[${initialPrice}]]*/ 0;
     let lastMessageId = 0;
     const csrfToken = document.querySelector("meta[name='_csrf']")?.getAttribute('content');
     const csrfHeader = document.querySelector("meta[name='_csrf_header']")?.getAttribute('content');
+
 
     // SockJS와 STOMP 클라이언트 객체 초기화
     const socket = new SockJS("/ws-chat"); // WebSocketConfig에 설정된 엔드포인트
@@ -118,7 +124,7 @@
         timeEl.className = 'text-[10px] text-gray-400 mt-1';
         wrapper.appendChild(timeEl);
 
-        if (isMine) {
+        if (isMine && tradeStatus === 'REQUESTED') {
             const delBtn = document.createElement('button');
             delBtn.textContent = '삭제';
             delBtn.className = 'mt-1 text-xs text-red-500';
@@ -170,6 +176,35 @@
                 }
             });
     };
+
+    const disableChat = () => {
+        const input = document.getElementById('messageInput');
+        const sendBtn = document.getElementById('sendButton');
+        input.disabled = true;
+        input.placeholder = '더 이상 대화를 나눌 수 없습니다.';
+        sendBtn.disabled = true;
+        sendBtn.style.opacity = '0.5';
+        document.querySelectorAll('.delete-btn').forEach(btn => btn.remove());
+        tradeStatus = 'CLOSED';
+    };
+
+    document.getElementById('completeBtn').addEventListener('click', () => {
+        if (!isSeller) return;
+        const price = prompt('최종 가격을 입력하세요', initialPrice);
+        if (price === null) return;
+        fetch(`/api/chat/channel/${channelId}/complete?price=${price}`, {method:'POST', headers: { [csrfHeader]: csrfToken }})
+            .then(res => { if(res.ok) disableChat(); else alert('오류'); });
+    });
+
+    document.getElementById('closeBtn').addEventListener('click', () => {
+        if (!confirm('대화를 종료하시겠습니까?')) return;
+        fetch(`/api/chat/channel/${channelId}/cancel`, {method:'POST', headers: { [csrfHeader]: csrfToken }})
+            .then(res => { if(res.ok) disableChat(); else alert('오류'); });
+    });
+
+    if (tradeStatus !== 'REQUESTED') {
+        disableChat();
+    }
     setInterval(pollNewMessages, 3000); // 3초마다 새 메시지 확인
 
     // '전송' 버튼 클릭 이벤트 리스너

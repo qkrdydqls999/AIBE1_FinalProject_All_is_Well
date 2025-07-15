@@ -73,6 +73,19 @@ public class UsedBook extends TimeEntity {
             images.forEach(image -> image.setUsedBook(this)); // 양방향 연관관계 설정
         }
     }
+
+    public void setSellingPrice(Integer sellingPrice) {
+        this.sellingPrice = sellingPrice;
+    }
+
+    public void setDetailedCondition(String detailedCondition) {
+        this.detailedCondition = detailedCondition;
+    }
+
+    public void setCategory(Category category) {
+        this.category = category;
+    }
+
     public void markAsSold() {
         this.status = "판매 완료";
     }

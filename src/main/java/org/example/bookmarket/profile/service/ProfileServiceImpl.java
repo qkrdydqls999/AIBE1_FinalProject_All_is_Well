@@ -7,6 +7,7 @@ import org.example.bookmarket.chat.dto.ChatSummary;
 import org.example.bookmarket.chat.entity.ChatMessage;
 import org.example.bookmarket.chat.repository.ChatChannelRepository;
 import org.example.bookmarket.chat.repository.ChatMessageRepository;
+import org.example.bookmarket.chat.entity.ChatChannel;
 import org.example.bookmarket.common.handler.exception.CustomException;
 import org.example.bookmarket.common.handler.exception.ErrorCode;
 import org.example.bookmarket.common.service.S3UploadService;
@@ -17,6 +18,7 @@ import org.example.bookmarket.trade.entity.Trade;
 import org.example.bookmarket.trade.repository.TradeRepository;
 import org.example.bookmarket.usedbook.dto.UsedBookSummary;
 import org.example.bookmarket.usedbook.repository.UsedBookRepository;
+import org.example.bookmarket.usedbook.entity.UsedBook;
 import org.example.bookmarket.user.dto.UserCategoryResponse;
 import org.example.bookmarket.user.entity.User;
 import org.example.bookmarket.user.entity.UserCategory;
@@ -29,6 +31,7 @@ import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.multipart.MultipartFile;
 
 import java.util.List;
+import java.util.Comparator;
 import java.util.stream.Collectors;
 
 @Service
@@ -106,6 +109,7 @@ public class ProfileServiceImpl implements ProfileService {
                 .orElseThrow(() -> new CustomException(ErrorCode.USER_NOT_FOUND));
 
         return chatChannelRepository.findByUser1OrUser2(user, user).stream()
+                .sorted(Comparator.comparing(ChatChannel::getLastMessageAt).reversed())
                 .map(ch -> {
                     ChatMessage lastMsg = chatMessageRepository
                             .findFirstByChannelOrderBySentAtDesc(ch)
@@ -134,6 +138,7 @@ public class ProfileServiceImpl implements ProfileService {
             throw new CustomException(ErrorCode.USER_NOT_FOUND);
         }
         return usedBookRepository.findBySellerId(userId).stream()
+                .sorted(Comparator.comparing(UsedBook::getUpdatedAt).reversed())
                 .map(ub -> {
                     String buyerNickname = null;
                     if ("판매 완료".equalsIgnoreCase(ub.getStatus()) || "SOLD".equalsIgnoreCase(ub.getStatus())) {
@@ -164,6 +169,7 @@ public class ProfileServiceImpl implements ProfileService {
             throw new CustomException(ErrorCode.USER_NOT_FOUND);
         }
         return tradeRepository.findByBuyerId(userId).stream()
+                .sorted(Comparator.comparing(Trade::getUpdatedAt).reversed())
                 .map(tx -> new PurchaseSummary(
                         tx.getId(),
                         tx.getUsedBook().getBook().getTitle(),

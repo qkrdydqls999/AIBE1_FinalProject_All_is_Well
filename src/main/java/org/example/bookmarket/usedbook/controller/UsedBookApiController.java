@@ -1,6 +1,7 @@
 package org.example.bookmarket.usedbook.controller;
 
 import lombok.RequiredArgsConstructor;
+import org.example.bookmarket.usedbook.dto.UsedBookPostRequest;
 import org.example.bookmarket.book.dto.BookResponse;
 import org.example.bookmarket.book.service.BookService;
 import org.example.bookmarket.usedbook.dto.UsedBookResponse;
@@ -62,6 +63,13 @@ public class UsedBookApiController {
         usedBookPurchaseService.purchase(bookId);
         return ResponseEntity.ok("책 구매에 성공했습니다. ID: " + bookId);
     }
+
+    @PatchMapping("/{id}")
+    public ResponseEntity<Void> updateUsedBook(@PathVariable Long id, @RequestBody UsedBookPostRequest request) {
+        usedBookPostService.updateUsedBook(id, request);
+        return ResponseEntity.noContent().build();
+    }
+
 
     @DeleteMapping("/{id}")
     public ResponseEntity<Void> deleteUsedBook(@PathVariable Long id) {

@@ -28,20 +28,14 @@ public class QTrade extends EntityPathBase<Trade> {
 
     public final org.example.bookmarket.user.entity.QUser buyer;
 
-    public final StringPath buyerContactInfo = createString("buyerContactInfo");
+    public final org.example.bookmarket.chat.entity.QChatChannel channel;
 
     //inherited
     public final DateTimePath<java.time.LocalDateTime> createdAt = _super.createdAt;
 
-    public final StringPath deliveryAddress = createString("deliveryAddress");
-
     public final NumberPath<Long> id = createNumber("id", Long.class);
 
-    public final StringPath pickupLocation = createString("pickupLocation");
-
     public final org.example.bookmarket.user.entity.QUser seller;
-
-    public final StringPath sellerContactInfo = createString("sellerContactInfo");
 
     public final EnumPath<TradeStatus> status = createEnum("status", TradeStatus.class);
 
@@ -71,6 +65,7 @@ public class QTrade extends EntityPathBase<Trade> {
     public QTrade(Class<? extends Trade> type, PathMetadata metadata, PathInits inits) {
         super(type, metadata, inits);
         this.buyer = inits.isInitialized("buyer") ? new org.example.bookmarket.user.entity.QUser(forProperty("buyer")) : null;
+        this.channel = inits.isInitialized("channel") ? new org.example.bookmarket.chat.entity.QChatChannel(forProperty("channel"), inits.get("channel")) : null;
         this.seller = inits.isInitialized("seller") ? new org.example.bookmarket.user.entity.QUser(forProperty("seller")) : null;
         this.usedBook = inits.isInitialized("usedBook") ? new org.example.bookmarket.usedbook.entity.QUsedBook(forProperty("usedBook"), inits.get("usedBook")) : null;
     }

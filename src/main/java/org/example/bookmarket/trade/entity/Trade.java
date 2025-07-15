@@ -5,6 +5,7 @@ import lombok.*;
 import org.example.bookmarket.usedbook.entity.UsedBook;
 import org.example.bookmarket.user.entity.User;
 import org.example.bookmarket.common.TimeEntity;
+import org.example.bookmarket.chat.entity.ChatChannel;
 
 @Entity
 @Table(name = "transaction")
@@ -39,8 +40,7 @@ public class Trade extends TimeEntity {
     @Enumerated(EnumType.STRING)
     private TradeType tradeType;
 
-    private String pickupLocation;
-    private String deliveryAddress;
-    private String buyerContactInfo;
-    private String sellerContactInfo;
+    @OneToOne
+    @JoinColumn(name = "channel_id")
+    private ChatChannel channel;
 }
