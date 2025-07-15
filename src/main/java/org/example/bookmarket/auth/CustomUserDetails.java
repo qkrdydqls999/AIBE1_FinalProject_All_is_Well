@@ -1,4 +1,4 @@
-package org.example.bookmarket.security;
+package org.example.bookmarket.auth;
 
 import lombok.Getter;
 import org.example.bookmarket.user.entity.User;
