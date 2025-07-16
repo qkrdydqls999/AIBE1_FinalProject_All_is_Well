@@ -10,8 +10,6 @@
 
     <script src="https://cdn.jsdelivr.net/npm/sockjs-client@1/dist/sockjs.min.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/stompjs@2.3.3/lib/stomp.min.js"></script>
-    <meta name="_csrf" th:content="${_csrf.token}" />
-    <meta name="_csrf_header" th:content="${_csrf.headerName}" />
 </head>
 <body class="relative flex min-h-screen flex-col bg-white" style="font-family: 'Plus Jakarta Sans', 'Noto Sans', sans-serif;">
 <div class="flex flex-col grow layout-container">
@@ -51,13 +49,11 @@
     const isSeller = /*[[${isSeller}]]*/ false;
     let tradeStatus = /*[[${tradeStatus}]]*/ 'REQUESTED';
     const initialPrice = /*[[${initialPrice}]]*/ 0;
-    let lastMessageId = 0;
     const csrfToken = document.querySelector("meta[name='_csrf']")?.getAttribute('content');
     const csrfHeader = document.querySelector("meta[name='_csrf_header']")?.getAttribute('content');
 
-
     // SockJS와 STOMP 클라이언트 객체 초기화
-    const socket = new SockJS("/ws-chat"); // WebSocketConfig에 설정된 엔드포인트
+    const socket = new SockJS("/ws-chat");
     const stompClient = Stomp.over(socket);
 
     // 에러 콜백 함수 정의
@@ -79,7 +75,6 @@
 
     // STOMP 클라이언트 연결 실행
     stompClient.connect({}, onConnected, onError);
-
 
     // 메시지 전송 함수
     const sendMessage = () => {
@@ -106,9 +101,7 @@
         const textEl = document.createElement("span");
         const timeEl = document.createElement("small");
 
-        // 내가 보낸 메시지인지 확인
         const isMine = Number(message.senderId) === Number(currentUserId);
-        // 메시지 스타일 설정
         wrapper.className = `w-full flex flex-col ${isMine ? 'items-end' : 'items-start'}`;
 
         msgEl.className = `inline-block max-w-[70%] px-4 py-2 rounded-lg text-sm shadow break-words ${isMine ? 'bg-blue-100' : 'bg-gray-100'}`;
@@ -116,7 +109,7 @@
         textEl.textContent = message.content;
         msgEl.appendChild(textEl);
         wrapper.appendChild(msgEl);
-        // 전송 시간을 표시
+        
         const time = new Date(message.sentAt).toLocaleTimeString('ko-KR', {
             hour: '2-digit', minute: '2-digit'
         });
@@ -127,13 +120,13 @@
         if (isMine && tradeStatus === 'REQUESTED') {
             const delBtn = document.createElement('button');
             delBtn.textContent = '삭제';
-            delBtn.className = 'mt-1 text-xs text-red-500';
+            delBtn.className = 'mt-1 text-xs text-red-500 delete-btn'; // 클래스 추가
             delBtn.addEventListener('click', () => deleteMessage(message.messageId, wrapper));
             wrapper.appendChild(delBtn);
         }
 
         messageArea.appendChild(wrapper);
-        messageArea.scrollTop = messageArea.scrollHeight; // 항상 최신 메시지가 보이도록 스크롤
+        messageArea.scrollTop = messageArea.scrollHeight;
     };
 
     // 이전 대화 내역을 불러오는 함수
@@ -141,82 +134,92 @@
         fetch(`/api/chat/channel/${channelId}/messages`)
             .then(response => response.json())
             .then(messages => {
-                messages.forEach(msg => {
-                    showMessage(msg);
-                    if (msg.messageId && msg.messageId > lastMessageId) {
-                        lastMessageId = msg.messageId;
-                    }
-                });
+                messages.forEach(msg => showMessage(msg));
             });
     };
-
-    const pollNewMessages = () => {
-        fetch(`/api/chat/channel/${channelId}/messages`)
-            .then(response => response.json())
-            .then(messages => {
-                messages.forEach(msg => {
-                    if (msg.messageId && msg.messageId > lastMessageId) {
-                        showMessage(msg);
-                        lastMessageId = msg.messageId;
-                    }
-                });
-            });
-    };
-
+    
     const deleteMessage = (messageId, element) => {
+        if (!confirm('메시지를 삭제하시겠습니까?')) return;
         fetch(`/api/chat/message/${messageId}`, {
             method: 'DELETE',
             headers: { [csrfHeader]: csrfToken }
         })
-            .then(res => {
-                if (res.ok) {
-                    element.remove();
-                } else {
-                    alert('삭제 실패');
-                }
-            });
+        .then(res => {
+            if (res.ok) {
+                element.remove();
+            } else {
+                alert('메시지 삭제에 실패했습니다.');
+            }
+        });
     };
 
-    const disableChat = () => {
+    const disableChat = (statusMessage) => {
         const input = document.getElementById('messageInput');
         const sendBtn = document.getElementById('sendButton');
         input.disabled = true;
-        input.placeholder = '더 이상 대화를 나눌 수 없습니다.';
+        input.placeholder = statusMessage;
         sendBtn.disabled = true;
         sendBtn.style.opacity = '0.5';
         document.querySelectorAll('.delete-btn').forEach(btn => btn.remove());
-        tradeStatus = 'CLOSED';
+        tradeStatus = 'CLOSED'; // 상태를 닫힘으로 변경하여 더 이상 액션이 일어나지 않게 함
     };
 
     document.getElementById('completeBtn').addEventListener('click', () => {
-        if (!isSeller) return;
-        const price = prompt('최종 가격을 입력하세요', initialPrice);
-        if (price === null) return;
-        fetch(`/api/chat/channel/${channelId}/complete?price=${price}`, {method:'POST', headers: { [csrfHeader]: csrfToken }})
-            .then(res => { if(res.ok) disableChat(); else alert('오류'); });
+        if (!isSeller) {
+            alert('판매자만 거래를 완료할 수 있습니다.');
+            return;
+        }
+        const price = prompt('최종 거래 가격을 입력하세요.', initialPrice);
+        if (price === null || isNaN(price) || price.trim() === '') {
+            alert('유효한 가격을 입력해주세요.');
+            return;
+        }
+        fetch(`/api/chat/channel/${channelId}/complete?price=${price}`, {
+            method:'POST',
+            headers: { [csrfHeader]: csrfToken }
+        })
+        .then(res => {
+            if(res.ok) {
+                disableChat('거래가 완료되어 대화를 종료합니다.');
+                alert('거래가 완료되었습니다.');
+            } else {
+                alert('거래 완료 처리 중 오류가 발생했습니다.');
+            }
+        });
     });
 
     document.getElementById('closeBtn').addEventListener('click', () => {
-        if (!confirm('대화를 종료하시겠습니까?')) return;
-        fetch(`/api/chat/channel/${channelId}/cancel`, {method:'POST', headers: { [csrfHeader]: csrfToken }})
-            .then(res => { if(res.ok) disableChat(); else alert('오류'); });
+        if (!confirm('대화를 종료하시겠습니까? 종료 후에는 메시지를 보낼 수 없습니다.')) return;
+        fetch(`/api/chat/channel/${channelId}/cancel`, {
+            method:'POST',
+            headers: { [csrfHeader]: csrfToken }
+        })
+        .then(res => {
+            if(res.ok) {
+                disableChat('대화가 종료되었습니다.');
+                alert('대화가 종료되었습니다.');
+            } else {
+                alert('대화 종료 처리 중 오류가 발생했습니다.');
+            }
+        });
     });
 
+    // 페이지 로드 시 거래 상태에 따라 채팅 입력창 비활성화
     if (tradeStatus !== 'REQUESTED') {
-        disableChat();
+        const statusMessage = tradeStatus === 'COMPLETED' ? '거래가 완료되어 대화를 종료합니다.' : '대화가 종료되었습니다.';
+        disableChat(statusMessage);
     }
-    setInterval(pollNewMessages, 3000); // 3초마다 새 메시지 확인
 
     // '전송' 버튼 클릭 이벤트 리스너
     document.getElementById("sendButton").addEventListener("click", sendMessage);
 
     // Enter 키 입력 이벤트 리스너
     document.getElementById("messageInput").addEventListener("keypress", (e) => {
-        if (e.key === 'Enter') {
+        if (e.key === 'Enter' && !e.shiftKey) { // Shift+Enter는 줄바꿈으로 동작하도록
+            e.preventDefault(); // 기본 Enter 동작(폼 제출 등) 방지
             sendMessage();
         }
     });
-
 </script>
 
 </body>
