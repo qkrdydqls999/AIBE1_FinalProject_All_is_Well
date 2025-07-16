@@ -13,7 +13,7 @@ import java.time.LocalDateTime;
 @AllArgsConstructor
 @Builder
 // ✅ [수정] 테이블 이름을 DB 스키마에 맞게 "DM_CHANNEL"로 변경합니다.
-@Table(name = "DM_CHANNEL")
+@Table(name = "dm_channel")
 public class ChatChannel {
 
     @Id

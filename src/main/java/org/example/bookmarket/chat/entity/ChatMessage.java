@@ -11,7 +11,7 @@ import java.time.LocalDateTime;
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
 @AllArgsConstructor
 @Builder
-@Table(name = "DIRECT_MESSAGE")
+@Table(name = "direct_message")
 public class ChatMessage {
 
     @Id
